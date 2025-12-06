@@ -291,7 +291,7 @@ function HeroSection() {
             </div>
 
             {/* Eiffel Tower - enlarged to overlap navbar */}
-            <div className="absolute left-[-20%] lg:left-[-10%] top-[15%] z-10 md:z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
+            <div className="absolute left-[-20%] lg:left-[-10%] top-[17%] md:top-[15%] z-10 md:z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
                 <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/eb89dd7aca05fa3afa46375542789c2eadeb70ea?width=2070"
                     alt="Eiffel Tower illustration"
