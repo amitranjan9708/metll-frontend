@@ -355,19 +355,19 @@ const features = [
         step: "02",
         title: "Smart Matching",
         description: "Our intelligent algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
-        image: "https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
+        image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
         step: "03",
         title: "Reveal & Connect",
         description: "Both parties are instantly notified when there's a mutual confession. Start your conversation with confidence.",
-        image: "https://api.builder.io/api/v1/image/assets/TEMP/62d2788c50a1d94ab391f6ece6bbe53236540d5f?width=1754"
+        image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
         step: "04",
         title: "Build Real Bonds",
         description: "Transform anonymous confessions into meaningful relationships. What starts as a secret crush becomes your love story.",
-        image: "https://api.builder.io/api/v1/image/assets/TEMP/c1558402295e4bb94f7781e7c2cb19961b0d991e?width=1648"
+        image: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D"
     }
 ];
 
