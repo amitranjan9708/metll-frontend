@@ -1,12 +1,89 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import AnimatedCharactersLoginPage from "@/components/ui/animated-characters-login-page";
 import { ConicGradientButton } from "@/components/ui/conic-gradient-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 
+// Preloader Component
+function Preloader({ onComplete }: { onComplete: () => void }) {
+    const [isExiting, setIsExiting] = useState(false);
+
+    useEffect(() => {
+        // Start exit animation after 2 seconds
+        const timer = setTimeout(() => {
+            setIsExiting(true);
+        }, 2000);
+
+        // Complete after exit animation
+        const completeTimer = setTimeout(() => {
+            onComplete();
+        }, 2800);
+
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(completeTimer);
+        };
+    }, [onComplete]);
+
+    return (
+        <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#A4B8E7]"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isExiting ? 0 : 1 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+        >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{
+                    opacity: isExiting ? 0 : 1,
+                    scale: isExiting ? 1.1 : 1,
+                    y: isExiting ? -20 : 0
+                }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="flex flex-col items-center"
+            >
+                <motion.h1
+                    className="text-6xl md:text-8xl lg:text-9xl font-semibold text-[#311717]"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    MetLL
+                </motion.h1>
+
+                {/* Animated loading dots */}
+                <motion.div
+                    className="flex gap-2 mt-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    {[0, 1, 2].map((i) => (
+                        <motion.div
+                            key={i}
+                            className="w-3 h-3 rounded-full bg-[#311717]"
+                            animate={{
+                                scale: [1, 1.3, 1],
+                                opacity: [0.5, 1, 0.5]
+                            }}
+                            transition={{
+                                duration: 0.8,
+                                repeat: Infinity,
+                                delay: i * 0.2
+                            }}
+                        />
+                    ))}
+                </motion.div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
 export default function Index() {
     const [isDarkNavbar, setIsDarkNavbar] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const featuresRef = useRef<HTMLElement>(null);
     const testimonialsRef = useRef<HTMLElement>(null);
     const loginRef = useRef<HTMLElement>(null);
@@ -20,7 +97,6 @@ export default function Index() {
             const featuresTop = featuresRef.current?.offsetTop ?? Infinity;
             const featuresBottom = featuresTop + (featuresRef.current?.offsetHeight ?? 0);
             const loginTop = loginRef.current?.offsetTop ?? Infinity;
-            const loginBottom = loginTop + (loginRef.current?.offsetHeight ?? 0);
             const footerTop = footerRef.current?.offsetTop ?? Infinity;
 
             const currentPosition = scrollY + navbarHeight;
@@ -45,18 +121,25 @@ export default function Index() {
     }, []);
 
     return (
-        <div className="w-full bg-[#A4B8E7] relative pt-14">
-            <Header isDark={isDarkNavbar} />
-            <HeroSection />
-            <FeaturesSection ref={featuresRef} />
-            <TestimonialsSection ref={testimonialsRef} />
-            <LoginSection ref={loginRef} />
-            <FooterSection ref={footerRef} />
-        </div>
+        <>
+            {/* Preloader */}
+            <AnimatePresence>
+                {isLoading && (
+                    <Preloader onComplete={() => setIsLoading(false)} />
+                )}
+            </AnimatePresence>
+
+            <div className="w-full bg-[#A4B8E7] relative pt-14">
+                <Header isDark={isDarkNavbar} />
+                <HeroSection />
+                <FeaturesSection ref={featuresRef} />
+                <TestimonialsSection ref={testimonialsRef} />
+                <LoginSection ref={loginRef} />
+                <FooterSection ref={footerRef} />
+            </div>
+        </>
     );
 }
-
-import { forwardRef } from "react";
 
 const LoginSection = forwardRef<HTMLElement>((_, ref) => {
     return (
@@ -334,9 +417,9 @@ function HeroSection() {
 
             {/* Images container - hidden on mobile, positioned at bottom-right, BEHIND text */}
             <div className="hidden md:block absolute right-[5%] bottom-[5%] z-[1] pointer-events-none">
-                <img 
-                    src="/Component 8.svg" 
-                    alt="" 
+                <img
+                    src="/Component 8.svg"
+                    alt=""
                     className="w-[500px] lg:w-[650px] xl:w-[800px] 2xl:w-[900px] h-auto scale-[1.4]"
                 />
             </div>
