@@ -493,13 +493,13 @@ function LoginPage() {
           </div>
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Join the Waitlist</h1>
-            <p className="text-muted-foreground text-sm">Be the first to know when we launch. Get early access!</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Join the Waitlist</h1>
+            <p className="text-muted-foreground text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>Be the first to know when we launch. Get early access!</p>
           </div>
           {/* Waitlist Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -511,10 +511,11 @@ function LoginPage() {
                 onBlur={() => setIsTyping(false)}
                 required
                 className="h-12 bg-background border-border/60 focus:border-primary"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -526,10 +527,11 @@ function LoginPage() {
                 onBlur={() => setIsTyping(false)}
                 required
                 className="h-12 bg-background border-border/60 focus:border-primary"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="suggestion" className="text-sm font-medium">
+              <Label htmlFor="suggestion" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Suggestion <span className="text-muted-foreground font-normal">(optional)</span>
               </Label>
               <textarea
@@ -540,6 +542,7 @@ function LoginPage() {
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
               />
             </div>
             {error && (
@@ -550,7 +553,7 @@ function LoginPage() {
             <Button
               type="submit"
               className="w-full h-12 text-base font-medium text-[#311717] hover:opacity-90"
-              style={{ backgroundColor: '#4A5E96', color: '#ffffff' }}
+              style={{ backgroundColor: '#4A5E96', color: '#ffffff', fontFamily: "'DM Sans', sans-serif" }}
               size="lg"
               disabled={isLoading}
             >
@@ -558,7 +561,7 @@ function LoginPage() {
             </Button>
           </form>
           {/* Benefits */}
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 space-y-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-primary text-xs">✓</span>
@@ -578,10 +581,6 @@ function LoginPage() {
               <span>Be part of our founding community</span>
             </div>
           </div>
-          {/* Privacy note */}
-          <div className="text-center text-xs text-muted-foreground mt-8">
-            We respect your privacy. Unsubscribe at any time.
-          </div>
         </div>
       </div>
     </div>
@@ -590,4 +589,3 @@ function LoginPage() {
 
 export const Component = LoginPage;
 export default LoginPage;
-

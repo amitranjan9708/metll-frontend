@@ -5,20 +5,26 @@ import { ConicGradientButton } from "@/components/ui/conic-gradient-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 
-// Preloader Component
+// Preloader Component with fancy MetLL animation and vertical bars exit
 function Preloader({ onComplete }: { onComplete: () => void }) {
     const [isExiting, setIsExiting] = useState(false);
+    const [showLetters, setShowLetters] = useState(false);
+    const letters = ['M', 'e', 't', 'L', 'L'];
+    const numBars = 10; // Number of vertical bars
 
     useEffect(() => {
-        // Start exit animation after 2 seconds
+        // Start showing letters immediately
+        setShowLetters(true);
+
+        // Start exit animation after 2.5 seconds (give time for animation)
         const timer = setTimeout(() => {
             setIsExiting(true);
-        }, 2000);
+        }, 2500);
 
-        // Complete after exit animation
+        // Complete after exit animation (bars take ~1 second to all exit)
         const completeTimer = setTimeout(() => {
             onComplete();
-        }, 2800);
+        }, 3600);
 
         return () => {
             clearTimeout(timer);
@@ -28,54 +34,90 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#A4B8E7]"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: isExiting ? 0 : 1 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+            style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
         >
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                    opacity: isExiting ? 0 : 1,
-                    scale: isExiting ? 1.1 : 1,
-                    y: isExiting ? -20 : 0
-                }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="flex flex-col items-center"
-            >
-                <motion.h1
-                    className="text-6xl md:text-8xl lg:text-9xl font-semibold text-[#311717]"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                    MetLL
-                </motion.h1>
+            {/* Vertical bars overlay */}
+            <div className="absolute inset-0 flex">
+                {[...Array(numBars)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="h-full bg-[#A4B8E7]"
+                        style={{
+                            width: `${100 / numBars}%`,
+                        }}
+                        initial={{ y: 0 }}
+                        animate={{
+                            y: isExiting ? '-100%' : 0
+                        }}
+                        transition={{
+                            duration: 0.5,
+                            ease: [0.65, 0, 0.35, 1],
+                            delay: isExiting ? i * 0.06 : 0  // Stagger from left to right
+                        }}
+                    />
+                ))}
+            </div>
 
-                {/* Animated loading dots */}
+            {/* Main content container */}
+            <motion.div
+                className="relative z-10 flex flex-col items-center justify-center"
+                initial={{ scale: 1 }}
+                animate={{
+                    scale: isExiting ? 0.8 : 1,
+                    opacity: isExiting ? 0 : 1,
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+                {/* MetLL text with letter-by-letter animation */}
+                <div className="relative flex items-center justify-center">
+                    {/* Letter container */}
+                    <div
+                        className="relative flex text-6xl md:text-8xl lg:text-9xl font-semibold"
+                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                    >
+                        {letters.map((letter, index) => (
+                            <motion.span
+                                key={index}
+                                className="relative inline-block text-[#311717]"
+                                initial={{
+                                    opacity: 0,
+                                    y: 50,
+                                    rotateX: -90,
+                                    scale: 0.5
+                                }}
+                                animate={showLetters ? {
+                                    opacity: 1,
+                                    y: 0,
+                                    rotateX: 0,
+                                    scale: 1
+                                } : {}}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.12,
+                                    ease: [0.23, 1, 0.32, 1],
+                                }}
+                            >
+                                {letter}
+                            </motion.span>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Subtle underline animation */}
                 <motion.div
-                    className="flex gap-2 mt-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                >
-                    {[0, 1, 2].map((i) => (
-                        <motion.div
-                            key={i}
-                            className="w-3 h-3 rounded-full bg-[#311717]"
-                            animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.5, 1, 0.5]
-                            }}
-                            transition={{
-                                duration: 0.8,
-                                repeat: Infinity,
-                                delay: i * 0.2
-                            }}
-                        />
-                    ))}
-                </motion.div>
+                    className="mt-4 h-[2px] bg-gradient-to-r from-transparent via-[#311717] to-transparent"
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={showLetters ? {
+                        width: '120%',
+                        opacity: [0, 0.6, 0.4]
+                    } : {}}
+                    transition={{
+                        duration: 1,
+                        delay: 0.8,
+                        ease: "easeOut",
+                    }}
+                />
             </motion.div>
         </motion.div>
     );
@@ -83,6 +125,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
 export default function Index() {
     const [isDarkNavbar, setIsDarkNavbar] = useState(false);
+    const [isInHero, setIsInHero] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const featuresRef = useRef<HTMLElement>(null);
     const testimonialsRef = useRef<HTMLElement>(null);
@@ -112,6 +155,8 @@ export default function Index() {
             const isOverFeatures = currentPosition >= featuresTop && currentPosition < featuresBottom;
             const isOverLogin = currentPosition >= loginTop && currentPosition < footerTop;
 
+            // Check if we're in the hero section (before features)
+            setIsInHero(currentPosition < featuresTop);
             setIsDarkNavbar(isOverFeatures || isOverLogin);
         };
 
@@ -130,7 +175,7 @@ export default function Index() {
             </AnimatePresence>
 
             <div className="w-full bg-[#A4B8E7] relative pt-14">
-                <Header isDark={isDarkNavbar} />
+                <Header isDark={isDarkNavbar} isTransparent={isInHero} />
                 <HeroSection />
                 <FeaturesSection ref={featuresRef} />
                 <TestimonialsSection ref={testimonialsRef} />
@@ -200,11 +245,11 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
                             >
                                 MetLL
                             </h3>
-                            <p className="text-white/70 text-sm leading-relaxed mb-4">
+                            <p className="text-white/70 text-sm leading-relaxed mb-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                                 Confess anonymously, connect genuinely.<br />
                                 Where secret crushes become love stories.
                             </p>
-                            <p className="text-white/50 text-xs">
+                            <p className="text-white/50 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                                 © 2025 MetLL. All rights reserved.
                             </p>
                         </div>
@@ -213,7 +258,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
                         <div className="flex gap-10 sm:gap-16 md:gap-20">
                             {/* Company Links */}
                             <div>
-                                <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Company</h4>
+                                <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>Company</h4>
                                 <ul className="space-y-3">
                                     <li><a href="/about" className="text-white/70 hover:text-white transition-colors text-sm">About us</a></li>
                                     <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Blog</a></li>
@@ -223,7 +268,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 
                             {/* Social Links */}
                             <div>
-                                <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Social</h4>
+                                <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>Social</h4>
                                 <ul className="space-y-3">
                                     <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Twitter (X)</a></li>
                                     <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Facebook</a></li>
@@ -239,12 +284,16 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 });
 
 
-function Header({ isDark }: { isDark: boolean }) {
+function Header({ isDark, isTransparent }: { isDark: boolean; isTransparent: boolean }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/95' : 'bg-white/95'
+            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 transition-all duration-700 ease-in-out ${isTransparent
+                ? 'bg-transparent'
+                : isDark
+                    ? 'bg-black/95 backdrop-blur-md shadow-sm'
+                    : 'bg-white/95 backdrop-blur-md shadow-sm'
                 }`}
         >
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
@@ -258,7 +307,7 @@ function Header({ isDark }: { isDark: boolean }) {
 
                 <nav
                     className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
-                    style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                     <Link to="/" className="hover:opacity-70 transition-opacity">
                         Home
@@ -278,6 +327,7 @@ function Header({ isDark }: { isDark: boolean }) {
                             ? 'border-white bg-white text-black hover:bg-gray-200'
                             : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'
                             }`}
+                        style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                         JOIN THE WAITLIST
                     </button>
@@ -317,6 +367,7 @@ function Header({ isDark }: { isDark: boolean }) {
                                 ? 'border-white bg-white text-black'
                                 : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'
                                 }`}
+                            style={{ fontFamily: "'DM Sans', sans-serif" }}
                         >
                             JOIN THE WAITLIST
                         </button>
@@ -388,7 +439,7 @@ function HeroSection() {
                     Confess. Connect. Date.
                 </h1>
 
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Confess Anomously , we match when its mutual.
                 </p>
 
@@ -396,7 +447,7 @@ function HeroSection() {
                 <button
                     onClick={scrollToWaitlist}
                     className="md:hidden mt-8 px-10 py-4 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all z-30"
-                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)', fontFamily: "'DM Sans', sans-serif" }}
                 >
                     JOIN THE WAITLIST
                 </button>
@@ -411,7 +462,7 @@ function HeroSection() {
                     className="hidden md:flex mt-6 md:mt-8 h-auto text-sm md:text-base"
                     onClick={scrollToWaitlist}
                 >
-                    <span>JOIN THE WAITLIST</span>
+                    <span style={{ color: '#311717', fontFamily: "'DM Sans', sans-serif" }}>JOIN THE WAITLIST</span>
                 </ConicGradientButton>
             </div>
 
@@ -694,7 +745,7 @@ function FeatureContent({
                     </h3>
 
                     {/* Description */}
-                    <p className="text-base md:text-lg text-[#311717]/70 leading-relaxed max-w-[480px]">
+                    <p className="text-base md:text-lg text-[#311717]/70 leading-relaxed max-w-[480px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {feature.description}
                     </p>
 
@@ -815,7 +866,14 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     };
 
     return (
-        <section ref={sectionRef} className="py-24 md:py-32 bg-[#A4B8E7] relative overflow-hidden">
+        <section
+            ref={sectionRef}
+            className="py-24 md:py-32 bg-[#A4B8E7] relative overflow-hidden"
+            onClick={() => {
+                setActiveIndex((prev) => (prev + 1) % testimonials.length);
+                setProgress(0);
+            }}
+        >
             {/* Subtle background gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#A4B8E7] via-[#B5C7EF] to-[#A4B8E7]" />
 
@@ -831,20 +889,21 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                 className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
             />
 
-            <div className="max-w-5xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
                 {/* Section header */}
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-16"
+                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-16 text-left"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     What Our Users Say
                 </motion.p>
 
                 {/* Testimonial content */}
-                <div className="min-h-[300px] md:min-h-[350px] relative">
+                <div className="min-h-[300px] md:min-h-[350px] relative text-left max-w-4xl">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeIndex}
@@ -868,26 +927,32 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             {/* Testimonial text */}
                             <p
                                 className="text-[#311717] text-2xl md:text-3xl lg:text-4xl font-medium leading-relaxed mb-10"
-                                style={{ fontFamily: "Georgia, serif" }}
+                                style={{ fontFamily: "'Crimson Pro', serif" }}
                             >
                                 {testimonials[activeIndex].content}
                             </p>
 
                             {/* Author name */}
-                            <p className="text-[#311717]/80 text-base md:text-lg font-medium">
-                                {testimonials[activeIndex].name}
+                            <p
+                                className="text-[#311717]/80 text-base md:text-lg font-medium italic"
+                                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                            >
+                                ~ {testimonials[activeIndex].name}
                             </p>
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Progress bars */}
+                {/* Progress bars - full width */}
                 <div className="flex gap-3 md:gap-4 mt-16">
                     {testimonials.map((_, index) => (
                         <button
                             key={index}
-                            onClick={() => handleProgressClick(index)}
-                            className="flex-1 h-1 bg-[#311717]/20 rounded-full overflow-hidden cursor-pointer hover:bg-[#311717]/30 transition-colors"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent section click from firing
+                                handleProgressClick(index);
+                            }}
+                            className="flex-1 h-1.5 bg-[#311717]/20 rounded-full overflow-hidden cursor-pointer hover:bg-[#311717]/30 transition-colors"
                             aria-label={`Go to testimonial ${index + 1}`}
                         >
                             <motion.div
