@@ -76,7 +76,7 @@ const scrollToWaitlist = () => {
 // Footer Section Component
 const FooterSection = forwardRef<HTMLElement>((_, ref) => {
     return (
-        <section ref={ref} className="relative bg-[#5A6FA3] overflow-hidden min-h-[700px] md:min-h-[800px]">
+        <section ref={ref} className="relative bg-[#5A6FA3] overflow-hidden min-h-[500px] md:min-h-[700px] lg:min-h-[800px]">
             {/* Large MetLL Text as Background - positioned absolutely to fill the section */}
             <div className="absolute inset-0 flex items-end justify-center overflow-hidden pointer-events-none">
                 <motion.h1
@@ -127,7 +127,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
                         </div>
 
                         {/* Links - Right */}
-                        <div className="flex gap-16 md:gap-20">
+                        <div className="flex gap-10 sm:gap-16 md:gap-20">
                             {/* Company Links */}
                             <div>
                                 <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Company</h4>
@@ -157,6 +157,8 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 
 
 function Header({ isDark }: { isDark: boolean }) {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     return (
         <header
             className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/95' : 'bg-white/95'
@@ -165,7 +167,7 @@ function Header({ isDark }: { isDark: boolean }) {
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
                 <Link
                     to="/"
-                    className={`text-3xl md:text-4xl font-semibold transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
+                    className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     MetLL
@@ -186,42 +188,84 @@ function Header({ isDark }: { isDark: boolean }) {
                     </Link>
                 </nav>
 
-                <button
-                    onClick={scrollToWaitlist}
-                    className={`px-5 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark
-                        ? 'border-white bg-white text-black hover:bg-gray-200'
-                        : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'
-                        }`}
-                >
-                    JOIN THE WAITLIST
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={scrollToWaitlist}
+                        className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark
+                            ? 'border-white bg-white text-black hover:bg-gray-200'
+                            : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'
+                            }`}
+                    >
+                        JOIN THE WAITLIST
+                    </button>
+
+                    {/* Mobile hamburger menu */}
+                    <button
+                        className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? 'text-white hover:bg-white/10' : 'text-[#311717] hover:bg-black/5'}`}
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {mobileMenuOpen ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            ) : (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            )}
+                        </svg>
+                    </button>
+                </div>
             </div>
+
+            {/* Mobile dropdown menu */}
+            {mobileMenuOpen && (
+                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
+                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
+                        <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                            Home
+                        </Link>
+                        <Link to="/about" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                            About
+                        </Link>
+                        <Link to="/contact" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                            Contact Us
+                        </Link>
+                        <button
+                            onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
+                            className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark
+                                ? 'border-white bg-white text-black'
+                                : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'
+                                }`}
+                        >
+                            JOIN THE WAITLIST
+                        </button>
+                    </nav>
+                </div>
+            )}
         </header>
     );
 }
 
 function HeroSection() {
     return (
-        <section className="relative w-full min-h-[63rem] flex items-center justify-center px-4 md:px-8 lg:px-12 pb-8 md:pb-12">
+        <section className="relative w-full min-h-[40rem] md:min-h-[63rem] flex items-start justify-center px-4 md:px-8 lg:px-12 pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
 
                 <div className="absolute right-[5%] top-[15%] w-[400px] h-[400px] md:w-[812px] md:h-[695px]   "></div>
 
-                <svg className="absolute left-[5%] md:left-[7%] top-[15%] w-[800px] md:w-[1319px] h-[60px] md:h-[96px] opacity-55 blur-[20px]" viewBox="0 0 1399 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg className="absolute left-[5%] md:left-[7%] top-[15%] w-[800px] md:w-[1319px] h-[60px] md:h-[96px] opacity-55 blur-[20px] hidden md:block" viewBox="0 0 1399 176" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1126.94 89.1665C852.119 115.067 960.588 136 679.196 136C236.082 86.3281 40 162.481 40 120.744C263.873 107.261 112.566 31.6891 549.504 45.1714C1165.54 21.0451 1671.96 89.1665 1126.94 89.1665Z" fill="#CAE1FE" />
                 </svg>
 
                 <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/21e7f575e0ad819c60cd1414087041c754c0922f?width=484"
                     alt=""
-                    className="absolute left-[5%] md:left-[7%] top-[25%] md:top-[30%] w-[120px] md:w-[242px] h-[120px] md:h-[242px] rotate-[-14deg]"
+                    className="absolute left-[5%] md:left-[7%] top-[25%] md:top-[30%] w-[120px] md:w-[242px] h-[120px] md:h-[242px] rotate-[-14deg] hidden md:block"
                 />
 
                 <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
                     alt=""
-                    className="absolute left-[15%] md:left-[20%] top-[40%] md:top-[42%] w-[130px] md:w-[260px] h-[130px] md:h-[260px]"
+                    className="absolute left-[15%] md:left-[20%] top-[40%] md:top-[42%] w-[130px] md:w-[260px] h-[130px] md:h-[260px] hidden md:block"
                 />
 
                 <img
@@ -238,7 +282,7 @@ function HeroSection() {
             </div>
 
             {/* Ellipse behind Eiffel Tower */}
-            <div className="absolute left-[-50%] lg:left-[0%] bottom-[-20%] z-10 pointer-events-none">
+            <div className="absolute left-[-50%] lg:left-[0%] bottom-[-20%] z-[5] pointer-events-none">
                 <img
                     src="/Ellipse 31.svg"
                     alt=""
@@ -247,7 +291,7 @@ function HeroSection() {
             </div>
 
             {/* Eiffel Tower - enlarged to overlap navbar */}
-            <div className="absolute left-[-20%] lg:left-[-10%] top-[15%] z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
+            <div className="absolute left-[-20%] lg:left-[-10%] top-[15%] z-10 md:z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
                 <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/eb89dd7aca05fa3afa46375542789c2eadeb70ea?width=2070"
                     alt="Eiffel Tower illustration"
@@ -255,55 +299,46 @@ function HeroSection() {
                 />
             </div>
 
-            <div className="max-w-[1500px] w-full mx-auto relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
-                {/* Spacer for Eiffel Tower */}
-                <div className="flex-1 hidden lg:block"></div>
+            {/* Main content area - centered text at top */}
+            <div className="max-w-[1500px] w-full mx-auto relative z-20 flex flex-col items-center pt-4 md:-mt-8 lg:-mt-16 px-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[70px] font-semibold leading-tight text-[#311717] text-center" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
+                    Confess. Connect. Date.
+                </h1>
 
-                <div className="flex-1 flex flex-col items-center text-center space-y-4 md:space-y-6 max-w-[90%] lg:max-w-none">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-[60px] font-semibold leading-tight text-[#311717] whitespace-nowrap mt-12 md:mt-16 self-start -ml-24 md:-ml-96 lg:-ml-[500px]" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
-                        Confess. Connect. Date.
-                    </h1>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                    Confess Anomously , we match when its mutual.
+                </p>
 
-                    <p className="text-lg md:text-xl lg:text-2xl xl:text-[24px] font-normal text-white max-w-[600px] self-start -ml-24 md:-ml-96 lg:-ml-[290px]" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
-                        Confess Anomously , we match when its mutual.
-                    </p>
+                {/* Mobile-only white button */}
+                <button
+                    onClick={scrollToWaitlist}
+                    className="md:hidden mt-8 px-10 py-4 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all z-30"
+                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                >
+                    JOIN THE WAITLIST
+                </button>
 
-                    <ConicGradientButton
-                        lightColor="#ffffff"
-                        backgroundColor="rgba(200, 215, 245, 0.5)"
-                        borderWidth={2}
-                        duration={6}
-                        blurAmount={4}
-                        className="mt-4 md:mt-6 h-auto self-start -ml-24 md:-ml-96 lg:-ml-[150px] text-sm md:text-base"
-                        onClick={scrollToWaitlist}
-                    >
-                        <span >JOIN THE WAITLIST</span>
+                {/* Desktop ConicGradientButton */}
+                <ConicGradientButton
+                    lightColor="#ffffff"
+                    backgroundColor="rgba(200, 215, 245, 0.5)"
+                    borderWidth={2}
+                    duration={6}
+                    blurAmount={4}
+                    className="hidden md:flex mt-6 md:mt-8 h-auto text-sm md:text-base"
+                    onClick={scrollToWaitlist}
+                >
+                    <span>JOIN THE WAITLIST</span>
+                </ConicGradientButton>
+            </div>
 
-                    </ConicGradientButton>
-
-                    <div className="relative mt-8 md:mt-12 lg:mt-16 ">
-                        {/* Ellipse behind the images */}
-                        <img
-                            src="/Ellipse 30.svg"
-                            alt=""
-                            className="absolute top-[-20%] left-[-15%] w-[400px] md:w-[600px] lg:w-[800px] h-auto -z-10"
-                        />
-
-                        <img
-                            src="https://api.builder.io/api/v1/image/assets/TEMP/62d2788c50a1d94ab391f6ece6bbe53236540d5f?width=1754"
-                            alt="People using the app"
-                            className="w-full max-w-[400px] md:max-w-[900px] lg:max-w-[1000px] xl:max-w-[1200px] h-auto"
-                            style={{ transform: 'scale(1.3) translateY(0%) translateX(-10%)', right: '50%' }}
-                        />
-
-                        <img
-                            src="https://api.builder.io/api/v1/image/assets/TEMP/c1558402295e4bb94f7781e7c2cb19961b0d991e?width=1648"
-                            alt="App interface preview"
-                            className="absolute top-[-5.5%] left-[8%] w-[400px] md:w-[600px] lg:w-[750px] xl:w-[900px] h-auto"
-                            style={{ transform: 'scale(1.25) translateY(-10%) translateX(-7%)' }}
-                        />
-                    </div>
-                </div>
+            {/* Images container - hidden on mobile, positioned at bottom-right, BEHIND text */}
+            <div className="hidden md:block absolute right-[5%] bottom-[5%] z-[1] pointer-events-none">
+                <img 
+                    src="/Component 8.svg" 
+                    alt="" 
+                    className="w-[500px] lg:w-[650px] xl:w-[800px] 2xl:w-[900px] h-auto scale-[1.4]"
+                />
             </div>
         </section>
     );
@@ -440,8 +475,8 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
             {/* Sticky container - single viewport */}
             <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
 
-                {/* Section header - fixed, moved down to avoid navbar overlap */}
-                <div className="absolute top-24 md:top-28 left-8 md:left-16 lg:left-24 z-20">
+                {/* Section header - hidden on mobile to avoid overlap */}
+                <div className="absolute top-24 md:top-28 left-8 md:left-16 lg:left-24 z-20 hidden md:block">
                     <p className="text-[#5A6FA3] text-sm md:text-base font-medium tracking-[0.2em] uppercase mb-2">
                         How It Works
                     </p>
@@ -543,6 +578,19 @@ function FeatureContent({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full max-w-[1400px]">
                 {/* Text content */}
                 <div className="space-y-5 md:space-y-6">
+                    {/* Mobile header - shown inline with content */}
+                    <div className="md:hidden mb-4">
+                        <p className="text-[#5A6FA3] text-xs font-medium tracking-[0.2em] uppercase mb-1">
+                            How It Works
+                        </p>
+                        <h2
+                            className="text-xl font-bold text-[#311717]"
+                            style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                        >
+                            Simple Steps to Love
+                        </h2>
+                    </div>
+
                     {/* Large step number */}
                     <div className="flex items-center gap-4">
                         <span
