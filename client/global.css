@@ -2,6 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Narnoor&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nats&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap");
 
 @font-face {
   font-family: 'Novaklasse';
@@ -24,6 +26,7 @@
 @tailwind utilities;
 
 @layer base {
+
   /**
    * Tailwind CSS theme
    * tailwind.config.ts expects the following color variables to be expressed as HSL values.

@@ -244,7 +244,7 @@ function Header({ isDark }: { isDark: boolean }) {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/95' : 'bg-white/95'
+            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/80' : 'bg-white/70'
                 }`}
         >
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
@@ -300,7 +300,7 @@ function Header({ isDark }: { isDark: boolean }) {
 
             {/* Mobile dropdown menu */}
             {mobileMenuOpen && (
-                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
+                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all backdrop-blur-md ${isDark ? 'bg-black/80' : 'bg-white/70'}`}>
                     <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
                         <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                             Home
@@ -340,18 +340,6 @@ function HeroSection() {
                 </svg>
 
                 <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/21e7f575e0ad819c60cd1414087041c754c0922f?width=484"
-                    alt=""
-                    className="absolute left-[5%] md:left-[7%] top-[25%] md:top-[30%] w-[120px] md:w-[242px] h-[120px] md:h-[242px] rotate-[-14deg] hidden md:block"
-                />
-
-                <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
-                    alt=""
-                    className="absolute left-[15%] md:left-[20%] top-[40%] md:top-[42%] w-[130px] md:w-[260px] h-[130px] md:h-[260px] hidden md:block"
-                />
-
-                <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
                     alt=""
                     className="absolute left-[8%] md:left-[11%] top-[-2%] w-[130px] md:w-[260px] h-[130px] md:h-[260px] hidden md:block"
@@ -381,6 +369,20 @@ function HeroSection() {
                     className="w-auto h-[600px] md:h-[1035px] lg:h-[1035px]"
                 />
             </div>
+
+            {/* First heart balloon - aligned with first level of Eiffel Tower */}
+            <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/21e7f575e0ad819c60cd1414087041c754c0922f?width=484"
+                alt="Heart balloon"
+                className="absolute left-[22%] md:left-[7%] top-[78%] md:top-[30%] w-[70px] md:w-[242px] h-[70px] md:h-[242px] rotate-[-14deg] z-[12] pointer-events-none"
+            />
+
+            {/* Second heart balloon - aligned above second level of Eiffel Tower */}
+            <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
+                alt="Heart balloon"
+                className="absolute left-[12%] md:left-[20%] top-[48%] md:top-[42%] w-[65px] md:w-[260px] h-[65px] md:h-[260px] z-[12] pointer-events-none"
+            />
 
             {/* Main content area - centered text at top */}
             <div className="max-w-[1500px] w-full mx-auto relative z-20 flex flex-col items-center pt-4 md:-mt-8 lg:-mt-16 px-4">
@@ -831,20 +833,27 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                 className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
             />
 
-            <div className="max-w-5xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="w-full mx-auto px-6 md:px-12 lg:px-16 relative z-10">
                 {/* Section header */}
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-16"
+                    className="text-[#311717] text-sm md:text-base font-semibold tracking-[0.15em] uppercase mb-16"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     What Our Users Say
                 </motion.p>
 
-                {/* Testimonial content */}
-                <div className="min-h-[300px] md:min-h-[350px] relative">
+                {/* Testimonial content - clickable to go to next */}
+                <div
+                    className="min-h-[300px] md:min-h-[350px] relative cursor-default select-none"
+                    onClick={() => {
+                        setActiveIndex((prev) => (prev + 1) % testimonials.length);
+                        setProgress(0);
+                    }}
+                >
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeIndex}
@@ -868,14 +877,17 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             {/* Testimonial text */}
                             <p
                                 className="text-[#311717] text-2xl md:text-3xl lg:text-4xl font-medium leading-relaxed mb-10"
-                                style={{ fontFamily: "Georgia, serif" }}
+                                style={{ fontFamily: "'Crimson Pro', Georgia, serif" }}
                             >
                                 {testimonials[activeIndex].content}
                             </p>
 
-                            {/* Author name */}
-                            <p className="text-[#311717]/80 text-base md:text-lg font-medium">
-                                {testimonials[activeIndex].name}
+                            {/* Author name with tilde */}
+                            <p
+                                className="text-[#311717]/80 text-base md:text-lg font-medium italic"
+                                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                            >
+                                ~ {testimonials[activeIndex].name}
                             </p>
                         </motion.div>
                     </AnimatePresence>

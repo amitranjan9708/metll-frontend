@@ -483,7 +483,7 @@ function LoginPage() {
       </div>
       {/* Right Waitlist Section */}
       <div className="flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-[420px]">
+        <div className="w-full max-w-[420px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12">
             <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -493,7 +493,7 @@ function LoginPage() {
           </div>
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Join the Waitlist</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Join the Waitlist</h1>
             <p className="text-muted-foreground text-sm">Be the first to know when we launch. Get early access!</p>
           </div>
           {/* Waitlist Form */}
