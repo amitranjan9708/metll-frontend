@@ -1,0 +1,18 @@
+
+> dev
+> vite
+
+[31mfailed to load config from D:\metll\metll-frontend\vite.config.ts[39m
+[31merror when starting dev server:
+PrismaClientConstructorValidationError: Unknown property datasources provided to PrismaClient constructor.
+Read more at https://pris.ly/d/client-constructor
+    at al (D:\metll\metll-frontend\node_modules\@prisma\client\runtime\client.js:66:3832)
+    at new t (D:\metll\metll-frontend\node_modules\@prisma\client\runtime\client.js:70:1241)
+    at file:///D:/metll/metll-frontend/node_modules/.vite-temp/vite.config.ts.timestamp-1765133523158-4d04e9751a987.mjs:24:31
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26)
+    at async loadConfigFromBundledFile (file:///D:/metll/metll-frontend/node_modules/vite/dist/node/chunks/config.js:35901:12)
+    at async bundleAndLoadConfigFile (file:///D:/metll/metll-frontend/node_modules/vite/dist/node/chunks/config.js:35789:17)
+    at async loadConfigFromFile (file:///D:/metll/metll-frontend/node_modules/vite/dist/node/chunks/config.js:35756:42)
+    at async resolveConfig (file:///D:/metll/metll-frontend/node_modules/vite/dist/node/chunks/config.js:35405:22)
+    at async _createServer (file:///D:/metll/metll-frontend/node_modules/vite/dist/node/chunks/config.js:25352:67)[39m

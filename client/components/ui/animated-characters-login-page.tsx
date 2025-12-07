@@ -272,18 +272,35 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    // Mock waitlist signup
-    if (email && email.includes("@")) {
+
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, suggestion }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
       console.log("✅ Waitlist signup successful!");
       alert("You're on the waitlist! We'll notify you when we launch.");
+      setName("");
       setEmail("");
-    } else {
-      setError("Please enter a valid email address.");
-      console.log("❌ Signup failed");
+      setSuggestion("");
+      // Reset typing state
+      setIsTyping(false);
+    } catch (err: any) {
+      console.error("Signup failed", err);
+      setError(err.message || "Failed to join waitlist. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
