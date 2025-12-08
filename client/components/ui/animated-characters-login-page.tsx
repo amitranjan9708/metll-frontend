@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, Sparkles, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PupilProps {
   size?: number;
@@ -161,6 +162,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [mouseX, setMouseX] = useState<number>(0);
   const [mouseY, setMouseY] = useState<number>(0);
   const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
@@ -289,10 +291,7 @@ function LoginPage() {
       }
 
       console.log("✅ Waitlist signup successful!");
-      alert("You're on the waitlist! We'll notify you when we launch.");
-      setName("");
-      setEmail("");
-      setSuggestion("");
+      setIsSuccess(true);
       // Reset typing state
       setIsTyping(false);
     } catch (err: any) {
@@ -501,104 +500,164 @@ function LoginPage() {
       {/* Right Waitlist Section */}
       <div className="flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-[420px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12">
-            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Sparkles className="size-4 text-primary" />
-            </div>
-            <span>MetLL</span>
-          </div>
-          {/* Header */}
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Join the Waitlist</h1>
-            <p className="text-muted-foreground text-sm">Be the first to know when we launch. Get early access!</p>
-          </div>
-          {/* Waitlist Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                autoComplete="off"
-                onChange={(e) => setName(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                required
-                className="h-12 bg-background border-border/60 focus:border-primary"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                autoComplete="off"
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                required
-                className="h-12 bg-background border-border/60 focus:border-primary"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="suggestion" className="text-sm font-medium">
-                Suggestion <span className="text-muted-foreground font-normal">(optional)</span>
-              </Label>
-              <textarea
-                id="suggestion"
-                placeholder="Any features you'd love to see?"
-                value={suggestion}
-                onChange={(e) => setSuggestion(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
-            </div>
-            {error && (
-              <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
-                {error}
-              </div>
+          <AnimatePresence mode="wait">
+            {!isSuccess ? (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Mobile Logo */}
+                <div className="lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12">
+                  <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="size-4 text-primary" />
+                  </div>
+                  <span>MetLL</span>
+                </div>
+                {/* Header */}
+                <div className="text-center mb-10">
+                  <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Join the Waitlist</h1>
+                  <p className="text-muted-foreground text-sm">Be the first to know when we launch. Get early access!</p>
+                </div>
+                {/* Waitlist Form */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium">Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Your name"
+                      value={name}
+                      autoComplete="off"
+                      onChange={(e) => setName(e.target.value)}
+                      onFocus={() => setIsTyping(true)}
+                      onBlur={() => setIsTyping(false)}
+                      required
+                      className="h-12 bg-background border-border/60 focus:border-primary"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      autoComplete="off"
+                      onChange={(e) => setEmail(e.target.value)}
+                      onFocus={() => setIsTyping(true)}
+                      onBlur={() => setIsTyping(false)}
+                      required
+                      className="h-12 bg-background border-border/60 focus:border-primary"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="suggestion" className="text-sm font-medium">
+                      Suggestion <span className="text-muted-foreground font-normal">(optional)</span>
+                    </Label>
+                    <textarea
+                      id="suggestion"
+                      placeholder="Any features you'd love to see?"
+                      value={suggestion}
+                      onChange={(e) => setSuggestion(e.target.value)}
+                      onFocus={() => setIsTyping(true)}
+                      onBlur={() => setIsTyping(false)}
+                      className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                    />
+                  </div>
+                  {error && (
+                    <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
+                      {error}
+                    </div>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full h-12 text-base font-medium text-[#311717] hover:opacity-90"
+                    style={{ backgroundColor: '#4A5E96', color: '#ffffff' }}
+                    size="lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Joining..." : "Join Waitlist"}
+                  </Button>
+                </form>
+                {/* Benefits */}
+                <div className="mt-8 space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary text-xs">✓</span>
+                    </div>
+                    <span>Early access to the app</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary text-xs">✓</span>
+                    </div>
+                    <span>Exclusive launch discounts</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary text-xs">✓</span>
+                    </div>
+                    <span>Be part of our founding community</span>
+                  </div>
+                </div>
+                {/* Privacy note */}
+                <div className="text-center text-xs text-muted-foreground mt-8">
+                  We respect your privacy. Unsubscribe at any time.
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="flex flex-col items-center justify-center text-center py-10"
+              >
+                {/* Success Icon Animation */}
+                <motion.div
+                  initial={{ rotate: -180, scale: 0 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    delay: 0.1
+                  }}
+                  className="w-24 h-24 bg-[#E8F5E9] rounded-full flex items-center justify-center mb-6 shadow-sm"
+                >
+                  <Heart className="w-12 h-12 text-[#4A5E96] fill-[#4A5E96] animate-pulse" />
+                </motion.div>
+
+                <h2
+                  className="text-3xl font-bold text-[#311717] mb-4"
+                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                >
+                  You're on the list!
+                </h2>
+
+                <p className="text-muted-foreground text-lg mb-8 max-w-[300px]">
+                  Thank you for joining. We'll notify <span className="font-medium text-[#4A5E96]">{email}</span> as soon as we launch.
+                </p>
+
+                <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 w-full mb-8">
+                  <p className="text-sm text-[#311717]/80 font-medium">
+                    "Confess anonymously, connect genuinely."
+                  </p>
+                </div>
+
+                <Button
+                  onClick={() => setIsSuccess(false)}
+                  variant="outline"
+                  className="mt-2"
+                >
+                  Add another email
+                </Button>
+              </motion.div>
             )}
-            <Button
-              type="submit"
-              className="w-full h-12 text-base font-medium text-[#311717] hover:opacity-90"
-              style={{ backgroundColor: '#4A5E96', color: '#ffffff' }}
-              size="lg"
-              disabled={isLoading}
-            >
-              {isLoading ? "Joining..." : "Join Waitlist"}
-            </Button>
-          </form>
-          {/* Benefits */}
-          <div className="mt-8 space-y-3">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Early access to the app</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Exclusive launch discounts</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Be part of our founding community</span>
-            </div>
-          </div>
-          {/* Privacy note */}
-          <div className="text-center text-xs text-muted-foreground mt-8">
-            We respect your privacy. Unsubscribe at any time.
-          </div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
