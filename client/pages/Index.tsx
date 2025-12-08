@@ -329,7 +329,7 @@ function Header({ isDark }: { isDark: boolean }) {
 
 function HeroSection() {
     return (
-        <section className="relative w-full min-h-[40rem] md:min-h-[63rem] flex items-start justify-center px-4 md:px-8 lg:px-12 pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12 overflow-hidden">
+        <section className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
 
@@ -373,8 +373,8 @@ function HeroSection() {
                 />
             </div>
 
-            {/* Eiffel Tower - enlarged to overlap navbar */}
-            <div className="absolute left-[-20%] lg:left-[-10%] top-[17%] md:top-[15%] z-10 md:z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
+            {/* Eiffel Tower - hidden on mobile, shown on desktop */}
+            <div className="hidden md:block absolute left-[-20%] lg:left-[-10%] top-[17%] md:top-[15%] z-10 md:z-20 pointer-events-none" style={{ transform: 'translateY(calc(-25% + 80px))' }}>
                 <img
                     src="https://api.builder.io/api/v1/image/assets/TEMP/eb89dd7aca05fa3afa46375542789c2eadeb70ea?width=2070"
                     alt="Eiffel Tower illustration"
@@ -382,8 +382,43 @@ function HeroSection() {
                 />
             </div>
 
-            {/* Main content area - centered text at top */}
-            <div className="max-w-[1500px] w-full mx-auto relative z-20 flex flex-col items-center pt-4 md:-mt-8 lg:-mt-16 px-4">
+            {/* Mobile-only images - Component 8 and Component 9 stacked */}
+            <div className="md:hidden relative z-10 flex flex-col overflow-hidden" style={{ width: '100vw', marginLeft: '-50vw', left: '50%', position: 'relative' }}>
+                <img
+                    src="/Rectangle 21.png"
+                    alt=""
+                    className="w-full h-auto block object-cover"
+                    style={{ minWidth: '100%' }}
+                />
+                <img
+                    src="/Component 9.svg"
+                    alt=""
+                    className="w-full h-auto block object-cover -mt-1"
+                    style={{ minWidth: '100%' }}
+                />
+                
+                {/* Mobile text overlay */}
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6">
+                    <h1 className="text-3xl sm:text-4xl font-semibold leading-tight text-white text-center drop-shadow-lg" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
+                        Confess. Connect. Date.
+                    </h1>
+
+                    <p className="text-sm sm:text-base font-normal text-white text-center mt-3 max-w-[300px] drop-shadow-md" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                        Confess Anonymously, we match when its mutual.
+                    </p>
+
+                    <button
+                        onClick={scrollToWaitlist}
+                        className="mt-6 px-8 py-3 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all"
+                        style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                    >
+                        JOIN THE WAITLIST
+                    </button>
+                </div>
+            </div>
+
+            {/* Main content area - desktop only */}
+            <div className="hidden md:flex max-w-[1500px] w-full mx-auto relative z-20 flex-col items-center pt-4 md:-mt-8 lg:-mt-16 px-4">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[70px] font-semibold leading-tight text-[#311717] text-center" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
                     Confess. Connect. Date.
                 </h1>
@@ -392,15 +427,6 @@ function HeroSection() {
                     Confess Anomously , we match when its mutual.
                 </p>
 
-                {/* Mobile-only white button */}
-                <button
-                    onClick={scrollToWaitlist}
-                    className="md:hidden mt-8 px-10 py-4 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all z-30"
-                    style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
-                >
-                    JOIN THE WAITLIST
-                </button>
-
                 {/* Desktop ConicGradientButton */}
                 <ConicGradientButton
                     lightColor="#ffffff"
@@ -408,7 +434,7 @@ function HeroSection() {
                     borderWidth={2}
                     duration={6}
                     blurAmount={4}
-                    className="hidden md:flex mt-6 md:mt-8 h-auto text-sm md:text-base"
+                    className="mt-6 md:mt-8 h-auto text-sm md:text-base"
                     onClick={scrollToWaitlist}
                 >
                     <span>JOIN THE WAITLIST</span>
