@@ -258,20 +258,20 @@ function Header({ isDark }: { isDark: boolean }) {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-[#A4B8E7]/95' : 'bg-white/95'
+            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/95' : 'bg-white/95'
                 }`}
         >
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
                 <Link
                     to="/"
-                    className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#311717]"
+                    className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     MetLL
                 </Link>
 
                 <nav
-                    className="hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal text-[#311717]"
+                    className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
                 >
                     <Link to="/" className="hover:opacity-70 transition-opacity">
@@ -288,14 +288,14 @@ function Header({ isDark }: { isDark: boolean }) {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={scrollToWaitlist}
-                        className="hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]"
+                        className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark ? 'border-white bg-white text-black hover:bg-gray-200' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'}`}
                     >
                         JOIN THE WAITLIST
                     </button>
 
                     {/* Mobile hamburger menu */}
                     <button
-                        className="md:hidden p-2 rounded-lg transition-colors text-[#311717] hover:bg-black/5"
+                        className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? 'text-white hover:bg-white/10' : 'text-[#311717] hover:bg-black/5'}`}
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,8 +311,8 @@ function Header({ isDark }: { isDark: boolean }) {
 
             {/* Mobile dropdown menu */}
             {mobileMenuOpen && (
-                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-[#A4B8E7]/95' : 'bg-white/95'}`}>
-                    <nav className="flex flex-col gap-4 text-[#311717]">
+                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
+                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
                         <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                             Home
                         </Link>
@@ -324,7 +324,7 @@ function Header({ isDark }: { isDark: boolean }) {
                         </Link>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
-                            className="sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-[#5A6FA3] bg-[#5A6FA3] text-white"
+                            className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark ? 'border-white bg-white text-black' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'}`}
                         >
                             JOIN THE WAITLIST
                         </button>
