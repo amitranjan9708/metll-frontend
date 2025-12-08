@@ -530,37 +530,58 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     };
 
     // Snap to section when it enters viewport - prevents skipping
+    // Only activate after user has scrolled from the top
     useEffect(() => {
         const section = sectionRef.current;
         if (!section) return;
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    // When section first becomes visible from scrolling down
-                    if (entry.isIntersecting && !hasSnappedRef.current) {
-                        const rect = section.getBoundingClientRect();
-                        // Only snap if we're scrolling into it from above (not scrolling up from below)
-                        if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
-                            hasSnappedRef.current = true;
-                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }
-                    // Reset snap flag when leaving section completely
-                    if (!entry.isIntersecting) {
-                        const rect = section.getBoundingClientRect();
-                        if (rect.bottom < 0) {
-                            // We've scrolled past, allow re-snap if coming back
-                            hasSnappedRef.current = false;
-                        }
-                    }
-                });
-            },
-            { threshold: [0.1, 0.2, 0.3] }
-        );
+        let hasUserScrolled = false;
+        let observer: IntersectionObserver | null = null;
 
-        observer.observe(section);
-        return () => observer.disconnect();
+        // Wait for user to start scrolling before enabling snap
+        const handleFirstScroll = () => {
+            // Only consider it a real scroll if we've moved away from the top
+            if (window.scrollY > 100) {
+                hasUserScrolled = true;
+            }
+        };
+
+        // Delayed setup to avoid triggering on page load
+        const setupTimer = setTimeout(() => {
+            observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        // Only snap if user has scrolled and we haven't snapped yet
+                        if (entry.isIntersecting && !hasSnappedRef.current && hasUserScrolled) {
+                            const rect = section.getBoundingClientRect();
+                            // Only snap if we're scrolling into it from above
+                            if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
+                                hasSnappedRef.current = true;
+                                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                        // Reset snap flag when leaving section completely
+                        if (!entry.isIntersecting) {
+                            const rect = section.getBoundingClientRect();
+                            if (rect.bottom < 0) {
+                                hasSnappedRef.current = false;
+                            }
+                        }
+                    });
+                },
+                { threshold: [0.1, 0.2, 0.3] }
+            );
+
+            observer.observe(section);
+        }, 500); // Wait 500ms before enabling
+
+        window.addEventListener('scroll', handleFirstScroll, { passive: true });
+
+        return () => {
+            clearTimeout(setupTimer);
+            window.removeEventListener('scroll', handleFirstScroll);
+            if (observer) observer.disconnect();
+        };
     }, []);
 
     useEffect(() => {
