@@ -94,6 +94,12 @@ export default function Index() {
             const scrollY = window.scrollY;
             const navbarHeight = 60;
 
+            // If at the very top of the page, always use light navbar
+            if (scrollY < 50) {
+                setIsDarkNavbar(false);
+                return;
+            }
+
             // If refs aren't ready yet, default to light navbar (for hero section)
             if (!featuresRef.current) {
                 setIsDarkNavbar(false);
@@ -107,7 +113,7 @@ export default function Index() {
 
             const currentPosition = scrollY + navbarHeight;
 
-            // Dark navbar (A4B8E7 bg) when over:
+            // Dark navbar (black bg) when over:
             // - Features section (white bg)
             // - Login section (white right side)
             // Light navbar (white bg) when over:
@@ -123,14 +129,11 @@ export default function Index() {
 
         window.addEventListener('scroll', handleScroll);
         
-        // Delay initial check to ensure refs are ready
-        const timer = setTimeout(() => {
-            handleScroll();
-        }, 100);
+        // Set initial state immediately - always light at top
+        setIsDarkNavbar(false);
         
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            clearTimeout(timer);
         };
     }, []);
 
