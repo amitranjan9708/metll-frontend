@@ -159,7 +159,7 @@ const scrollToWaitlist = () => {
 // Footer Section Component
 const FooterSection = forwardRef<HTMLElement>((_, ref) => {
     return (
-        <section ref={ref} className="relative bg-[#5A6FA3] overflow-hidden min-h-[500px] md:min-h-[700px] lg:min-h-[800px]">
+        <section ref={ref} id="footer" className="relative bg-[#5A6FA3] overflow-hidden min-h-[500px] md:min-h-[700px] lg:min-h-[800px]">
             {/* Large MetLL Text as Background - positioned absolutely to fill the section */}
             <div className="absolute inset-0 flex items-end justify-center overflow-hidden pointer-events-none">
                 <motion.h1
@@ -260,15 +260,15 @@ function Header({ isDark }: { isDark: boolean }) {
                     className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
                 >
-                    <Link to="/" className="hover:opacity-70 transition-opacity">
+                    <a href="#hero" className="hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }); }}>
                         Home
-                    </Link>
-                    <Link to="/about" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#how-it-works" className="hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' }); }}>
                         About
-                    </Link>
-                    <Link to="/contact" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#footer" className="hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' }); }}>
                         Contact Us
-                    </Link>
+                    </a>
                 </nav>
 
                 <div className="flex items-center gap-3">
@@ -302,15 +302,15 @@ function Header({ isDark }: { isDark: boolean }) {
             {mobileMenuOpen && (
                 <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all backdrop-blur-md ${isDark ? 'bg-black/80' : 'bg-white/70'}`}>
                     <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
-                        <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        <a href="#hero" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }}>
                             Home
-                        </Link>
-                        <Link to="/about" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#how-it-works" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }}>
                             About
-                        </Link>
-                        <Link to="/contact" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#footer" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }}>
                             Contact Us
-                        </Link>
+                        </a>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
                             className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark
@@ -329,7 +329,7 @@ function Header({ isDark }: { isDark: boolean }) {
 
 function HeroSection() {
     return (
-        <section className="relative w-full min-h-[40rem] md:min-h-[63rem] flex items-start justify-center px-4 md:px-8 lg:px-12 pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12 overflow-hidden">
+        <section id="hero" className="relative w-full min-h-[40rem] md:min-h-[63rem] flex items-start justify-center px-4 md:px-8 lg:px-12 pt-20 md:pt-28 lg:pt-32 pb-8 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
 
@@ -433,7 +433,7 @@ const features = [
     {
         step: "01",
         title: "Confess Anonymously",
-        description: "Share your feelings without revealing your identity. Your confession stays completely private until there's a mutual match.",
+        description: "Pour out the real feelings for your crush, Don't worry no peeks until it's reciprocated. If your dream crush confesses for you, we reveal the shared feelings.",
         image: "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
@@ -450,8 +450,8 @@ const features = [
     },
     {
         step: "04",
-        title: "Build Real Bonds",
-        description: "Transform anonymous confessions into meaningful relationships. What starts as a secret crush becomes your love story.",
+        title: "Build Bonds Locally",
+        description: "Souls within a common locality, just share your feeling anonymously. BOOM!! Both confessions would be revealed and best of luck from our side.",
         image: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D"
     }
 ];
@@ -554,6 +554,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     return (
         <section
             ref={sectionRef}
+            id="how-it-works"
             className="relative"
             style={{ height: "400vh", backgroundColor: '#ffffff' }}
         >
@@ -734,28 +735,28 @@ const testimonials = [
     {
         name: "Sarah M.",
         role: "Found her soulmate",
-        content: "I was skeptical at first, but the anonymous confession feature made it so easy to express myself. We've been dating for 6 months now!",
+        content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "James L.",
         role: "Matched with his crush",
-        content: "The smart matching algorithm is incredible. It felt like magic when we both matched. Highly recommend!",
+        content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history ;))",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Emily R.",
         role: "In a relationship",
-        content: "Finally, a dating app that focuses on genuine connections. The experience is seamless and heartfelt.",
+        content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever.......",
         avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Michael K.",
         role: "Engaged!",
-        content: "I love how privacy-focused this app is. It gave me the confidence to reach out to my crush. Now we're engaged!",
+        content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me.............",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
