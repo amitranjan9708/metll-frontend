@@ -420,10 +420,16 @@ function HeroSection() {
 
                     <button
                         onClick={scrollToWaitlist}
-                        className="mt-6 px-8 py-3 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all"
-                        style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                        className="mt-8 px-10 py-4 bg-white text-[#311717] rounded-full font-bold text-base tracking-wide border-2 border-white/50 backdrop-blur-sm transition-all duration-300 active:scale-95 flex items-center gap-3"
+                        style={{ 
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5)',
+                            fontFamily: "'Novaklasse', sans-serif"
+                        }}
                     >
                         JOIN THE WAITLIST
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </button>
                 </div>
             </div>
