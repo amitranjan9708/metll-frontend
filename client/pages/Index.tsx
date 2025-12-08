@@ -483,12 +483,14 @@ const features = [
 const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [animProgress, setAnimProgress] = useState(0);
-    const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-    const lastScrollTime = useRef(0);
-    const accumulatedDelta = useRef(0);
+    const isLockedRef = useRef(false);
     const touchStartY = useRef(0);
+    const currentIndexRef = useRef(0);
+
+    // Keep ref in sync with state
+    useEffect(() => {
+        currentIndexRef.current = currentIndex;
+    }, [currentIndex]);
 
     // Combine refs for both internal use and forwarding
     useEffect(() => {
@@ -497,33 +499,17 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         }
     }, [forwardedRef]);
 
-    const goToSlide = (newIndex: number, dir: 'forward' | 'backward') => {
-        if (isAnimating || newIndex === currentIndex || newIndex < 0 || newIndex > 3) return;
+    const goToSlide = (newIndex: number) => {
+        if (isLockedRef.current) return;
+        if (newIndex === currentIndexRef.current || newIndex < 0 || newIndex > 3) return;
         
-        setIsAnimating(true);
-        setDirection(dir);
+        isLockedRef.current = true;
+        setCurrentIndex(newIndex);
         
-        const startTime = performance.now();
-        const duration = 600;
-        
-        const animate = (time: number) => {
-            const elapsed = time - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            
-            setAnimProgress(eased);
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                setCurrentIndex(newIndex);
-                setAnimProgress(0);
-                setIsAnimating(false);
-                accumulatedDelta.current = 0;
-            }
-        };
-        
-        requestAnimationFrame(animate);
+        // Lock for animation duration + buffer
+        setTimeout(() => {
+            isLockedRef.current = false;
+        }, 700);
     };
 
     useEffect(() => {
@@ -532,89 +518,77 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
         const handleWheel = (e: WheelEvent) => {
             const rect = section.getBoundingClientRect();
-            const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight - 100;
+            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
             
             if (!isInView) return;
             
-            // Prevent default only when we're in the section and can scroll
-            const canScrollDown = currentIndex < 3;
-            const canScrollUp = currentIndex > 0;
+            const idx = currentIndexRef.current;
+            const canScrollDown = idx < 3;
+            const canScrollUp = idx > 0;
             const scrollingDown = e.deltaY > 0;
-            const scrollingUp = e.deltaY < 0;
             
-            if ((scrollingDown && canScrollDown) || (scrollingUp && canScrollUp)) {
+            // Only prevent default if we can scroll in that direction
+            if ((scrollingDown && canScrollDown) || (!scrollingDown && canScrollUp)) {
                 e.preventDefault();
-            } else {
-                return; // Let normal scroll happen
-            }
-            
-            if (isAnimating) return;
-            
-            // Throttle: require minimum time between slides
-            const now = Date.now();
-            if (now - lastScrollTime.current < 100) {
-                return;
-            }
-            
-            // Accumulate scroll delta for consistent behavior
-            accumulatedDelta.current += e.deltaY;
-            
-            // Threshold for triggering slide change (adjust for device sensitivity)
-            const threshold = 80;
-            
-            if (Math.abs(accumulatedDelta.current) >= threshold) {
-                lastScrollTime.current = now;
                 
-                if (accumulatedDelta.current > 0 && currentIndex < 3) {
-                    goToSlide(currentIndex + 1, 'forward');
-                } else if (accumulatedDelta.current < 0 && currentIndex > 0) {
-                    goToSlide(currentIndex - 1, 'backward');
+                if (!isLockedRef.current) {
+                    goToSlide(scrollingDown ? idx + 1 : idx - 1);
                 }
-                
-                accumulatedDelta.current = 0;
             }
         };
 
-        // Touch support for mobile
         const handleTouchStart = (e: TouchEvent) => {
             touchStartY.current = e.touches[0].clientY;
         };
 
-        const handleTouchEnd = (e: TouchEvent) => {
+        const handleTouchMove = (e: TouchEvent) => {
             const rect = section.getBoundingClientRect();
-            const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight - 100;
+            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
+            if (!isInView) return;
+
+            const idx = currentIndexRef.current;
+            const deltaY = touchStartY.current - e.touches[0].clientY;
+            const canScrollDown = idx < 3;
+            const canScrollUp = idx > 0;
             
-            if (!isInView || isAnimating) return;
+            // Prevent page scroll when we're handling the swipe
+            if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+                e.preventDefault();
+            }
+        };
+
+        const handleTouchEnd = (e: TouchEvent) => {
+            if (isLockedRef.current) return;
             
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaY = touchStartY.current - touchEndY;
+            const rect = section.getBoundingClientRect();
+            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
+            if (!isInView) return;
             
-            // Minimum swipe distance
-            if (Math.abs(deltaY) < 50) return;
+            const deltaY = touchStartY.current - e.changedTouches[0].clientY;
+            const idx = currentIndexRef.current;
             
-            if (deltaY > 0 && currentIndex < 3) {
-                goToSlide(currentIndex + 1, 'forward');
-            } else if (deltaY < 0 && currentIndex > 0) {
-                goToSlide(currentIndex - 1, 'backward');
+            // Require minimum swipe of 40px
+            if (Math.abs(deltaY) < 40) return;
+            
+            if (deltaY > 0 && idx < 3) {
+                goToSlide(idx + 1);
+            } else if (deltaY < 0 && idx > 0) {
+                goToSlide(idx - 1);
             }
         };
 
         section.addEventListener('wheel', handleWheel, { passive: false });
         section.addEventListener('touchstart', handleTouchStart, { passive: true });
+        section.addEventListener('touchmove', handleTouchMove, { passive: false });
         section.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         return () => {
             section.removeEventListener('wheel', handleWheel);
             section.removeEventListener('touchstart', handleTouchStart);
+            section.removeEventListener('touchmove', handleTouchMove);
             section.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [currentIndex, isAnimating]);
-
-    // Determine animation state
-    const goingForward = direction === 'forward';
-    const exitingIndex = isAnimating ? currentIndex : null;
-    const enteringIndex = isAnimating ? (goingForward ? currentIndex + 1 : currentIndex - 1) : null;
-    const activeIndex = currentIndex;
+    }, []); // Empty dependency - use refs for current values
 
     return (
         <section
@@ -645,11 +619,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             key={index}
                             feature={feature}
                             index={index}
-                            activeIndex={activeIndex}
-                            exitingIndex={exitingIndex}
-                            enteringIndex={enteringIndex}
-                            animProgress={animProgress}
-                            goingForward={goingForward}
+                            currentIndex={currentIndex}
                         />
                     ))}
                 </div>
@@ -662,67 +632,25 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 function FeatureContent({
     feature,
     index,
-    activeIndex,
-    exitingIndex,
-    enteringIndex,
-    animProgress,
-    goingForward
+    currentIndex,
 }: {
     feature: typeof features[0];
     index: number;
-    activeIndex: number;
-    exitingIndex: number | null;
-    enteringIndex: number | null;
-    animProgress: number;
-    goingForward: boolean;
+    currentIndex: number;
 }) {
-    const isActive = activeIndex === index && exitingIndex === null;
-    const isExiting = exitingIndex === index;
-    const isEntering = enteringIndex === index;
-
-    let opacity = 0;
-    let translateX = 0;
-    let scale = 1;
-    let blur = 0;
-
-    if (isActive) {
-        // Current slide, fully visible
-        opacity = 1;
-        translateX = 0;
-        scale = 1;
-        blur = 0;
-    } else if (isExiting) {
-        // Exiting slide - fade out and slide left (or right if going backward)
-        opacity = 1 - animProgress;
-        translateX = goingForward ? -animProgress * 150 : animProgress * 150;
-        scale = 1 - animProgress * 0.1;
-        blur = animProgress * 12;
-    } else if (isEntering) {
-        // Entering slide - fade in and slide from right (or left if going backward)
-        opacity = animProgress;
-        translateX = goingForward ? 150 - animProgress * 150 : -150 + animProgress * 150;
-        scale = 0.9 + animProgress * 0.1;
-        blur = (1 - animProgress) * 12;
-    } else {
-        // Hidden
-        opacity = 0;
-        translateX = index > activeIndex ? 150 : -150;
-        scale = 0.9;
-        blur = 12;
-    }
-
-    const isVisible = opacity > 0.01;
+    const isActive = currentIndex === index;
+    const isPast = index < currentIndex;
+    const isFuture = index > currentIndex;
 
     return (
         <div
             className="absolute inset-0 flex items-center justify-center px-8 md:px-16 lg:px-24 pt-20"
             style={{
-                opacity,
-                transform: `translateX(${translateX}px) scale(${scale})`,
-                filter: `blur(${blur}px)`,
+                opacity: isActive ? 1 : 0,
+                transform: `translateX(${isPast ? -80 : isFuture ? 80 : 0}px) scale(${isActive ? 1 : 0.95})`,
                 pointerEvents: isActive ? "auto" : "none",
-                visibility: isVisible ? "visible" : "hidden",
-                willChange: "transform, opacity, filter",
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                willChange: 'transform, opacity',
             }}
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full max-w-[1400px]">
