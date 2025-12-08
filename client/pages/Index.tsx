@@ -578,11 +578,8 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             key={index}
                             feature={feature}
                             index={index}
-                            activeIndex={activeIndex}
-                            exitingIndex={exitingIndex}
-                            enteringIndex={enteringIndex}
-                            animProgress={animProgress}
-                            goingForward={goingForward}
+                            currentIndex={currentIndex}
+                            transitionDuration={transitionDuration}
                         />
                     ))}
                 </div>
@@ -595,67 +592,26 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 function FeatureContent({
     feature,
     index,
-    activeIndex,
-    exitingIndex,
-    enteringIndex,
-    animProgress,
-    goingForward
+    currentIndex,
+    transitionDuration,
 }: {
     feature: typeof features[0];
     index: number;
-    activeIndex: number;
-    exitingIndex: number | null;
-    enteringIndex: number | null;
-    animProgress: number;
-    goingForward: boolean;
+    currentIndex: number;
+    transitionDuration: number;
 }) {
-    const isActive = activeIndex === index && exitingIndex === null;
-    const isExiting = exitingIndex === index;
-    const isEntering = enteringIndex === index;
-
-    let opacity = 0;
-    let translateX = 0;
-    let scale = 1;
-    let blur = 0;
-
-    if (isActive) {
-        // Current slide, fully visible
-        opacity = 1;
-        translateX = 0;
-        scale = 1;
-        blur = 0;
-    } else if (isExiting) {
-        // Exiting slide - fade out and slide left (or right if going backward)
-        opacity = 1 - animProgress;
-        translateX = goingForward ? -animProgress * 150 : animProgress * 150;
-        scale = 1 - animProgress * 0.1;
-        blur = animProgress * 12;
-    } else if (isEntering) {
-        // Entering slide - fade in and slide from right (or left if going backward)
-        opacity = animProgress;
-        translateX = goingForward ? 150 - animProgress * 150 : -150 + animProgress * 150;
-        scale = 0.9 + animProgress * 0.1;
-        blur = (1 - animProgress) * 12;
-    } else {
-        // Hidden
-        opacity = 0;
-        translateX = index > activeIndex ? 150 : -150;
-        scale = 0.9;
-        blur = 12;
-    }
-
-    const isVisible = opacity > 0.01;
+    const isActive = currentIndex === index;
+    const isPast = index < currentIndex;
+    const isFuture = index > currentIndex;
 
     return (
         <div
-            className="absolute inset-0 flex items-center justify-center px-8 md:px-16 lg:px-24 pt-20"
+            className="absolute inset-0 flex items-center justify-center px-8 md:px-16 lg:px-24 pt-20 ease-out"
             style={{
-                opacity,
-                transform: `translateX(${translateX}px) scale(${scale})`,
-                filter: `blur(${blur}px)`,
+                opacity: isActive ? 1 : 0,
+                transform: `translateX(${isPast ? -100 : isFuture ? 100 : 0}px) scale(${isActive ? 1 : 0.95})`,
                 pointerEvents: isActive ? "auto" : "none",
-                visibility: isVisible ? "visible" : "hidden",
-                willChange: "transform, opacity, filter",
+                transition: `all ${transitionDuration}ms ease-out`,
             }}
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full max-w-[1400px]">
