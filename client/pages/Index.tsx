@@ -94,6 +94,12 @@ export default function Index() {
             const scrollY = window.scrollY;
             const navbarHeight = 60;
 
+            // If refs aren't ready yet, default to light navbar (for hero section)
+            if (!featuresRef.current) {
+                setIsDarkNavbar(false);
+                return;
+            }
+
             const featuresTop = featuresRef.current?.offsetTop ?? Infinity;
             const featuresBottom = featuresTop + (featuresRef.current?.offsetHeight ?? 0);
             const loginTop = loginRef.current?.offsetTop ?? Infinity;
@@ -101,10 +107,10 @@ export default function Index() {
 
             const currentPosition = scrollY + navbarHeight;
 
-            // Dark navbar (black bg, white text) when over:
+            // Dark navbar (A4B8E7 bg) when over:
             // - Features section (white bg)
             // - Login section (white right side)
-            // Light navbar (white bg, dark text) when over:
+            // Light navbar (white bg) when over:
             // - Hero section (blue bg)
             // - Testimonials section (blue bg)
             // - Footer section (blue bg)
@@ -116,8 +122,16 @@ export default function Index() {
         };
 
         window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Check initial state
-        return () => window.removeEventListener('scroll', handleScroll);
+        
+        // Delay initial check to ensure refs are ready
+        const timer = setTimeout(() => {
+            handleScroll();
+        }, 100);
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(timer);
+        };
     }, []);
 
     return (
@@ -244,20 +258,20 @@ function Header({ isDark }: { isDark: boolean }) {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-black/95' : 'bg-white/95'
+            className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? 'bg-[#A4B8E7]/95' : 'bg-white/95'
                 }`}
         >
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
                 <Link
                     to="/"
-                    className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
+                    className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#311717]"
                     style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     MetLL
                 </Link>
 
                 <nav
-                    className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
+                    className="hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal text-[#311717]"
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
                 >
                     <Link to="/" className="hover:opacity-70 transition-opacity">
@@ -274,17 +288,14 @@ function Header({ isDark }: { isDark: boolean }) {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={scrollToWaitlist}
-                        className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark
-                            ? 'border-white bg-white text-black hover:bg-gray-200'
-                            : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'
-                            }`}
+                        className="hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]"
                     >
                         JOIN THE WAITLIST
                     </button>
 
                     {/* Mobile hamburger menu */}
                     <button
-                        className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? 'text-white hover:bg-white/10' : 'text-[#311717] hover:bg-black/5'}`}
+                        className="md:hidden p-2 rounded-lg transition-colors text-[#311717] hover:bg-black/5"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,8 +311,8 @@ function Header({ isDark }: { isDark: boolean }) {
 
             {/* Mobile dropdown menu */}
             {mobileMenuOpen && (
-                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
-                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
+                <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-[#A4B8E7]/95' : 'bg-white/95'}`}>
+                    <nav className="flex flex-col gap-4 text-[#311717]">
                         <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                             Home
                         </Link>
@@ -313,10 +324,7 @@ function Header({ isDark }: { isDark: boolean }) {
                         </Link>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
-                            className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark
-                                ? 'border-white bg-white text-black'
-                                : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'
-                                }`}
+                            className="sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all border-[#5A6FA3] bg-[#5A6FA3] text-white"
                         >
                             JOIN THE WAITLIST
                         </button>
@@ -486,6 +494,9 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     const isLockedRef = useRef(false);
     const touchStartY = useRef(0);
     const currentIndexRef = useRef(0);
+    const touchProcessedRef = useRef(false);
+    const lastChangeTime = useRef(0);
+    const hasSnappedRef = useRef(false);
 
     // Keep ref in sync with state
     useEffect(() => {
@@ -500,17 +511,57 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     }, [forwardedRef]);
 
     const goToSlide = (newIndex: number) => {
-        if (isLockedRef.current) return;
-        if (newIndex === currentIndexRef.current || newIndex < 0 || newIndex > 3) return;
+        if (isLockedRef.current) return false;
+        if (newIndex === currentIndexRef.current || newIndex < 0 || newIndex > 3) return false;
+        
+        const now = Date.now();
+        if (now - lastChangeTime.current < 800) return false;
         
         isLockedRef.current = true;
+        lastChangeTime.current = now;
+        currentIndexRef.current = newIndex;
         setCurrentIndex(newIndex);
         
-        // Lock for animation duration + buffer
         setTimeout(() => {
             isLockedRef.current = false;
-        }, 700);
+        }, 900);
+        
+        return true;
     };
+
+    // Snap to section when it enters viewport - prevents skipping
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    // When section first becomes visible from scrolling down
+                    if (entry.isIntersecting && !hasSnappedRef.current) {
+                        const rect = section.getBoundingClientRect();
+                        // Only snap if we're scrolling into it from above (not scrolling up from below)
+                        if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
+                            hasSnappedRef.current = true;
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                    // Reset snap flag when leaving section completely
+                    if (!entry.isIntersecting) {
+                        const rect = section.getBoundingClientRect();
+                        if (rect.bottom < 0) {
+                            // We've scrolled past, allow re-snap if coming back
+                            hasSnappedRef.current = false;
+                        }
+                    }
+                });
+            },
+            { threshold: [0.1, 0.2, 0.3] }
+        );
+
+        observer.observe(section);
+        return () => observer.disconnect();
+    }, []);
 
     useEffect(() => {
         const section = sectionRef.current;
@@ -518,7 +569,17 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
         const handleWheel = (e: WheelEvent) => {
             const rect = section.getBoundingClientRect();
+            // Wider catch zone - section is "in view" if any part is visible
+            const isEntering = rect.top > 0 && rect.top < window.innerHeight;
             const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
+            
+            // If entering the section from above while scrolling down, snap to it
+            if (isEntering && e.deltaY > 0 && !hasSnappedRef.current) {
+                e.preventDefault();
+                hasSnappedRef.current = true;
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
             
             if (!isInView) return;
             
@@ -527,9 +588,9 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
             const canScrollUp = idx > 0;
             const scrollingDown = e.deltaY > 0;
             
-            // Only prevent default if we can scroll in that direction
             if ((scrollingDown && canScrollDown) || (!scrollingDown && canScrollUp)) {
                 e.preventDefault();
+                e.stopPropagation();
                 
                 if (!isLockedRef.current) {
                     goToSlide(scrollingDown ? idx + 1 : idx - 1);
@@ -539,56 +600,62 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
         const handleTouchStart = (e: TouchEvent) => {
             touchStartY.current = e.touches[0].clientY;
+            touchProcessedRef.current = false;
         };
 
         const handleTouchMove = (e: TouchEvent) => {
             const rect = section.getBoundingClientRect();
+            const isEntering = rect.top > 0 && rect.top < window.innerHeight;
             const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
+            
+            const deltaY = touchStartY.current - e.touches[0].clientY;
+            
+            // If entering the section from above while swiping down, snap to it
+            if (isEntering && deltaY > 30 && !hasSnappedRef.current) {
+                e.preventDefault();
+                hasSnappedRef.current = true;
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            
             if (!isInView) return;
 
             const idx = currentIndexRef.current;
-            const deltaY = touchStartY.current - e.touches[0].clientY;
             const canScrollDown = idx < 3;
             const canScrollUp = idx > 0;
             
-            // Prevent page scroll when we're handling the swipe
             if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
                 e.preventDefault();
+                
+                if (!touchProcessedRef.current && !isLockedRef.current && Math.abs(deltaY) > 60) {
+                    touchProcessedRef.current = true;
+                    
+                    if (deltaY > 0 && canScrollDown) {
+                        goToSlide(idx + 1);
+                    } else if (deltaY < 0 && canScrollUp) {
+                        goToSlide(idx - 1);
+                    }
+                }
             }
         };
 
-        const handleTouchEnd = (e: TouchEvent) => {
-            if (isLockedRef.current) return;
-            
-            const rect = section.getBoundingClientRect();
-            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
-            if (!isInView) return;
-            
-            const deltaY = touchStartY.current - e.changedTouches[0].clientY;
-            const idx = currentIndexRef.current;
-            
-            // Require minimum swipe of 40px
-            if (Math.abs(deltaY) < 40) return;
-            
-            if (deltaY > 0 && idx < 3) {
-                goToSlide(idx + 1);
-            } else if (deltaY < 0 && idx > 0) {
-                goToSlide(idx - 1);
-            }
+        const handleTouchEnd = () => {
+            touchProcessedRef.current = false;
         };
 
-        section.addEventListener('wheel', handleWheel, { passive: false });
-        section.addEventListener('touchstart', handleTouchStart, { passive: true });
-        section.addEventListener('touchmove', handleTouchMove, { passive: false });
-        section.addEventListener('touchend', handleTouchEnd, { passive: true });
+        // Use window-level listeners to catch scroll before it happens
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         return () => {
-            section.removeEventListener('wheel', handleWheel);
-            section.removeEventListener('touchstart', handleTouchStart);
-            section.removeEventListener('touchmove', handleTouchMove);
-            section.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, []); // Empty dependency - use refs for current values
+    }, []);
 
     return (
         <section
@@ -649,7 +716,7 @@ function FeatureContent({
                 opacity: isActive ? 1 : 0,
                 transform: `translateX(${isPast ? -80 : isFuture ? 80 : 0}px) scale(${isActive ? 1 : 0.95})`,
                 pointerEvents: isActive ? "auto" : "none",
-                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)',
                 willChange: 'transform, opacity',
             }}
         >
