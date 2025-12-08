@@ -94,6 +94,18 @@ export default function Index() {
             const scrollY = window.scrollY;
             const navbarHeight = 60;
 
+            // If at the very top of the page, always use light navbar
+            if (scrollY < 50) {
+                setIsDarkNavbar(false);
+                return;
+            }
+
+            // If refs aren't ready yet, default to light navbar (for hero section)
+            if (!featuresRef.current) {
+                setIsDarkNavbar(false);
+                return;
+            }
+
             const featuresTop = featuresRef.current?.offsetTop ?? Infinity;
             const featuresBottom = featuresTop + (featuresRef.current?.offsetHeight ?? 0);
             const loginTop = loginRef.current?.offsetTop ?? Infinity;
@@ -101,10 +113,10 @@ export default function Index() {
 
             const currentPosition = scrollY + navbarHeight;
 
-            // Dark navbar (black bg, white text) when over:
+            // Dark navbar (black bg) when over:
             // - Features section (white bg)
             // - Login section (white right side)
-            // Light navbar (white bg, dark text) when over:
+            // Light navbar (white bg) when over:
             // - Hero section (blue bg)
             // - Testimonials section (blue bg)
             // - Footer section (blue bg)
@@ -116,8 +128,13 @@ export default function Index() {
         };
 
         window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Check initial state
-        return () => window.removeEventListener('scroll', handleScroll);
+        
+        // Set initial state immediately - always light at top
+        setIsDarkNavbar(false);
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     return (
@@ -250,14 +267,14 @@ function Header({ isDark }: { isDark: boolean }) {
             <div className="max-w-[1500px] mx-auto flex items-center justify-between">
                 <Link
                     to="/"
-                    className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
+                    className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     MetLL
                 </Link>
 
                 <nav
-                    className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ease-in-out ${isDark ? 'text-white' : 'text-[#311717]'}`}
+                    className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
                 >
                     <Link to="/" className="hover:opacity-70 transition-opacity">
@@ -274,10 +291,7 @@ function Header({ isDark }: { isDark: boolean }) {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={scrollToWaitlist}
-                        className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark
-                            ? 'border-white bg-white text-black hover:bg-gray-200'
-                            : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'
-                            }`}
+                        className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all shadow-md ${isDark ? 'border-white bg-white text-black hover:bg-gray-200' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]'}`}
                     >
                         JOIN THE WAITLIST
                     </button>
@@ -313,10 +327,7 @@ function Header({ isDark }: { isDark: boolean }) {
                         </Link>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
-                            className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark
-                                ? 'border-white bg-white text-black'
-                                : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'
-                                }`}
+                            className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark ? 'border-white bg-white text-black' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'}`}
                         >
                             JOIN THE WAITLIST
                         </button>
@@ -483,12 +494,17 @@ const features = [
 const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [animProgress, setAnimProgress] = useState(0);
-    const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-    const lastScrollTime = useRef(0);
-    const accumulatedDelta = useRef(0);
+    const isLockedRef = useRef(false);
     const touchStartY = useRef(0);
+    const currentIndexRef = useRef(0);
+    const touchProcessedRef = useRef(false);
+    const lastChangeTime = useRef(0);
+    const hasSnappedRef = useRef(false);
+
+    // Keep ref in sync with state
+    useEffect(() => {
+        currentIndexRef.current = currentIndex;
+    }, [currentIndex]);
 
     // Combine refs for both internal use and forwarding
     useEffect(() => {
@@ -497,34 +513,79 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         }
     }, [forwardedRef]);
 
-    const goToSlide = (newIndex: number, dir: 'forward' | 'backward') => {
-        if (isAnimating || newIndex === currentIndex || newIndex < 0 || newIndex > 3) return;
+    const goToSlide = (newIndex: number) => {
+        if (isLockedRef.current) return false;
+        if (newIndex === currentIndexRef.current || newIndex < 0 || newIndex > 3) return false;
         
-        setIsAnimating(true);
-        setDirection(dir);
+        const now = Date.now();
+        if (now - lastChangeTime.current < 800) return false;
         
-        const startTime = performance.now();
-        const duration = 600;
+        isLockedRef.current = true;
+        lastChangeTime.current = now;
+        currentIndexRef.current = newIndex;
+        setCurrentIndex(newIndex);
         
-        const animate = (time: number) => {
-            const elapsed = time - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            
-            setAnimProgress(eased);
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                setCurrentIndex(newIndex);
-                setAnimProgress(0);
-                setIsAnimating(false);
-                accumulatedDelta.current = 0;
+        setTimeout(() => {
+            isLockedRef.current = false;
+        }, 900);
+        
+        return true;
+    };
+
+    // Snap to section when it enters viewport - prevents skipping
+    // Only activate after user has scrolled from the top
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+
+        let hasUserScrolled = false;
+        let observer: IntersectionObserver | null = null;
+
+        // Wait for user to start scrolling before enabling snap
+        const handleFirstScroll = () => {
+            // Only consider it a real scroll if we've moved away from the top
+            if (window.scrollY > 100) {
+                hasUserScrolled = true;
             }
         };
-        
-        requestAnimationFrame(animate);
-    };
+
+        // Delayed setup to avoid triggering on page load
+        const setupTimer = setTimeout(() => {
+            observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        // Only snap if user has scrolled and we haven't snapped yet
+                        if (entry.isIntersecting && !hasSnappedRef.current && hasUserScrolled) {
+                            const rect = section.getBoundingClientRect();
+                            // Only snap if we're scrolling into it from above
+                            if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
+                                hasSnappedRef.current = true;
+                                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                        // Reset snap flag when leaving section completely
+                        if (!entry.isIntersecting) {
+                            const rect = section.getBoundingClientRect();
+                            if (rect.bottom < 0) {
+                                hasSnappedRef.current = false;
+                            }
+                        }
+                    });
+                },
+                { threshold: [0.1, 0.2, 0.3] }
+            );
+
+            observer.observe(section);
+        }, 500); // Wait 500ms before enabling
+
+        window.addEventListener('scroll', handleFirstScroll, { passive: true });
+
+        return () => {
+            clearTimeout(setupTimer);
+            window.removeEventListener('scroll', handleFirstScroll);
+            if (observer) observer.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         const section = sectionRef.current;
@@ -532,89 +593,93 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
         const handleWheel = (e: WheelEvent) => {
             const rect = section.getBoundingClientRect();
-            const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight - 100;
+            // Wider catch zone - section is "in view" if any part is visible
+            const isEntering = rect.top > 0 && rect.top < window.innerHeight;
+            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
             
-            if (!isInView) return;
-            
-            // Prevent default only when we're in the section and can scroll
-            const canScrollDown = currentIndex < 3;
-            const canScrollUp = currentIndex > 0;
-            const scrollingDown = e.deltaY > 0;
-            const scrollingUp = e.deltaY < 0;
-            
-            if ((scrollingDown && canScrollDown) || (scrollingUp && canScrollUp)) {
+            // If entering the section from above while scrolling down, snap to it
+            if (isEntering && e.deltaY > 0 && !hasSnappedRef.current) {
                 e.preventDefault();
-            } else {
-                return; // Let normal scroll happen
-            }
-            
-            if (isAnimating) return;
-            
-            // Throttle: require minimum time between slides
-            const now = Date.now();
-            if (now - lastScrollTime.current < 100) {
+                hasSnappedRef.current = true;
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 return;
             }
             
-            // Accumulate scroll delta for consistent behavior
-            accumulatedDelta.current += e.deltaY;
+            if (!isInView) return;
             
-            // Threshold for triggering slide change (adjust for device sensitivity)
-            const threshold = 80;
+            const idx = currentIndexRef.current;
+            const canScrollDown = idx < 3;
+            const canScrollUp = idx > 0;
+            const scrollingDown = e.deltaY > 0;
             
-            if (Math.abs(accumulatedDelta.current) >= threshold) {
-                lastScrollTime.current = now;
+            if ((scrollingDown && canScrollDown) || (!scrollingDown && canScrollUp)) {
+                e.preventDefault();
+                e.stopPropagation();
                 
-                if (accumulatedDelta.current > 0 && currentIndex < 3) {
-                    goToSlide(currentIndex + 1, 'forward');
-                } else if (accumulatedDelta.current < 0 && currentIndex > 0) {
-                    goToSlide(currentIndex - 1, 'backward');
+                if (!isLockedRef.current) {
+                    goToSlide(scrollingDown ? idx + 1 : idx - 1);
                 }
-                
-                accumulatedDelta.current = 0;
             }
         };
 
-        // Touch support for mobile
         const handleTouchStart = (e: TouchEvent) => {
             touchStartY.current = e.touches[0].clientY;
+            touchProcessedRef.current = false;
         };
 
-        const handleTouchEnd = (e: TouchEvent) => {
+        const handleTouchMove = (e: TouchEvent) => {
             const rect = section.getBoundingClientRect();
-            const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight - 100;
+            const isEntering = rect.top > 0 && rect.top < window.innerHeight;
+            const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
             
-            if (!isInView || isAnimating) return;
+            const deltaY = touchStartY.current - e.touches[0].clientY;
             
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaY = touchStartY.current - touchEndY;
+            // If entering the section from above while swiping down, snap to it
+            if (isEntering && deltaY > 30 && !hasSnappedRef.current) {
+                e.preventDefault();
+                hasSnappedRef.current = true;
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
             
-            // Minimum swipe distance
-            if (Math.abs(deltaY) < 50) return;
+            if (!isInView) return;
+
+            const idx = currentIndexRef.current;
+            const canScrollDown = idx < 3;
+            const canScrollUp = idx > 0;
             
-            if (deltaY > 0 && currentIndex < 3) {
-                goToSlide(currentIndex + 1, 'forward');
-            } else if (deltaY < 0 && currentIndex > 0) {
-                goToSlide(currentIndex - 1, 'backward');
+            if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+                e.preventDefault();
+                
+                if (!touchProcessedRef.current && !isLockedRef.current && Math.abs(deltaY) > 60) {
+                    touchProcessedRef.current = true;
+                    
+                    if (deltaY > 0 && canScrollDown) {
+                        goToSlide(idx + 1);
+                    } else if (deltaY < 0 && canScrollUp) {
+                        goToSlide(idx - 1);
+                    }
+                }
             }
         };
 
-        section.addEventListener('wheel', handleWheel, { passive: false });
-        section.addEventListener('touchstart', handleTouchStart, { passive: true });
-        section.addEventListener('touchend', handleTouchEnd, { passive: true });
+        const handleTouchEnd = () => {
+            touchProcessedRef.current = false;
+        };
+
+        // Use window-level listeners to catch scroll before it happens
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
         return () => {
-            section.removeEventListener('wheel', handleWheel);
-            section.removeEventListener('touchstart', handleTouchStart);
-            section.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [currentIndex, isAnimating]);
-
-    // Determine animation state
-    const goingForward = direction === 'forward';
-    const exitingIndex = isAnimating ? currentIndex : null;
-    const enteringIndex = isAnimating ? (goingForward ? currentIndex + 1 : currentIndex - 1) : null;
-    const activeIndex = currentIndex;
+    }, []);
 
     return (
         <section
@@ -645,11 +710,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             key={index}
                             feature={feature}
                             index={index}
-                            activeIndex={activeIndex}
-                            exitingIndex={exitingIndex}
-                            enteringIndex={enteringIndex}
-                            animProgress={animProgress}
-                            goingForward={goingForward}
+                            currentIndex={currentIndex}
                         />
                     ))}
                 </div>
@@ -662,67 +723,25 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 function FeatureContent({
     feature,
     index,
-    activeIndex,
-    exitingIndex,
-    enteringIndex,
-    animProgress,
-    goingForward
+    currentIndex,
 }: {
     feature: typeof features[0];
     index: number;
-    activeIndex: number;
-    exitingIndex: number | null;
-    enteringIndex: number | null;
-    animProgress: number;
-    goingForward: boolean;
+    currentIndex: number;
 }) {
-    const isActive = activeIndex === index && exitingIndex === null;
-    const isExiting = exitingIndex === index;
-    const isEntering = enteringIndex === index;
-
-    let opacity = 0;
-    let translateX = 0;
-    let scale = 1;
-    let blur = 0;
-
-    if (isActive) {
-        // Current slide, fully visible
-        opacity = 1;
-        translateX = 0;
-        scale = 1;
-        blur = 0;
-    } else if (isExiting) {
-        // Exiting slide - fade out and slide left (or right if going backward)
-        opacity = 1 - animProgress;
-        translateX = goingForward ? -animProgress * 150 : animProgress * 150;
-        scale = 1 - animProgress * 0.1;
-        blur = animProgress * 12;
-    } else if (isEntering) {
-        // Entering slide - fade in and slide from right (or left if going backward)
-        opacity = animProgress;
-        translateX = goingForward ? 150 - animProgress * 150 : -150 + animProgress * 150;
-        scale = 0.9 + animProgress * 0.1;
-        blur = (1 - animProgress) * 12;
-    } else {
-        // Hidden
-        opacity = 0;
-        translateX = index > activeIndex ? 150 : -150;
-        scale = 0.9;
-        blur = 12;
-    }
-
-    const isVisible = opacity > 0.01;
+    const isActive = currentIndex === index;
+    const isPast = index < currentIndex;
+    const isFuture = index > currentIndex;
 
     return (
         <div
             className="absolute inset-0 flex items-center justify-center px-8 md:px-16 lg:px-24 pt-20"
             style={{
-                opacity,
-                transform: `translateX(${translateX}px) scale(${scale})`,
-                filter: `blur(${blur}px)`,
+                opacity: isActive ? 1 : 0,
+                transform: `translateX(${isPast ? -80 : isFuture ? 80 : 0}px) scale(${isActive ? 1 : 0.95})`,
                 pointerEvents: isActive ? "auto" : "none",
-                visibility: isVisible ? "visible" : "hidden",
-                willChange: "transform, opacity, filter",
+                transition: 'all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                willChange: 'transform, opacity',
             }}
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full max-w-[1400px]">
