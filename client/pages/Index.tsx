@@ -480,7 +480,7 @@ const features = [
     {
         step: "01",
         title: "Confess Anonymously",
-        description: "Share your feelings without revealing your identity. Your confession stays completely private until there's a mutual match.",
+        description: "Pour out the real feelings for your crush, Don't worry no peeks until it's reciprocated. If your dream crush confesses for you, we reveal the shared feelings.",
         image: "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
@@ -492,7 +492,7 @@ const features = [
     {
         step: "03",
         title: "Reveal & Connect",
-        description: "Both parties are instantly notified when there's a mutual confession. Start your conversation with confidence.",
+        description: "Souls within a common locality, just share your feeling anonymously. Our flagship AI will wait for both the confession to happen and match if its mutual.",
         image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
@@ -830,28 +830,28 @@ const testimonials = [
     {
         name: "Sarah M.",
         role: "Found her soulmate",
-        content: "I was skeptical at first, but the anonymous confession feature made it so easy to express myself. We've been dating for 6 months now!",
+        content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "James L.",
         role: "Matched with his crush",
-        content: "The smart matching algorithm is incredible. It felt like magic when we both matched. Highly recommend!",
+        content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Emily R.",
         role: "In a relationship",
-        content: "Finally, a dating app that focuses on genuine connections. The experience is seamless and heartfelt.",
+        content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
         avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Michael K.",
         role: "Engaged!",
-        content: "I love how privacy-focused this app is. It gave me the confidence to reach out to my crush. Now we're engaged!",
+        content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
