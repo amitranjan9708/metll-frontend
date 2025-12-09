@@ -84,6 +84,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 export default function Index() {
     const [isDarkNavbar, setIsDarkNavbar] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const heroRef = useRef<HTMLElement>(null);
     const featuresRef = useRef<HTMLElement>(null);
     const testimonialsRef = useRef<HTMLElement>(null);
     const loginRef = useRef<HTMLElement>(null);
@@ -147,8 +148,19 @@ export default function Index() {
             </AnimatePresence>
 
             <div className="w-full bg-[#A4B8E7] relative pt-14">
-                <Header isDark={isDarkNavbar} />
-                <HeroSection />
+                <Header 
+                    isDark={isDarkNavbar} 
+                    onHomeClick={() => {
+                        heroRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onAboutClick={() => {
+                        featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onContactClick={() => {
+                        footerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                />
+                <HeroSection ref={heroRef} />
                 <FeaturesSection ref={featuresRef} />
                 <TestimonialsSection ref={testimonialsRef} />
                 <LoginSection ref={loginRef} />
@@ -256,7 +268,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 });
 
 
-function Header({ isDark }: { isDark: boolean }) {
+function Header({ isDark, onHomeClick, onAboutClick, onContactClick }: { isDark: boolean; onHomeClick: () => void; onAboutClick: () => void; onContactClick: () => void }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
@@ -275,17 +287,17 @@ function Header({ isDark }: { isDark: boolean }) {
 
                 <nav
                     className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
-                    style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
-                    <Link to="/" className="hover:opacity-70 transition-opacity">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onHomeClick(); }} className="hover:opacity-70 transition-opacity">
                         Home
-                    </Link>
-                    <Link to="/about" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onAboutClick(); }} className="hover:opacity-70 transition-opacity">
                         About
-                    </Link>
-                    <Link to="/contact" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onContactClick(); }} className="hover:opacity-70 transition-opacity">
                         Contact Us
-                    </Link>
+                    </a>
                 </nav>
 
                 <div className="flex items-center gap-3">
@@ -315,16 +327,16 @@ function Header({ isDark }: { isDark: boolean }) {
             {/* Mobile dropdown menu */}
             {mobileMenuOpen && (
                 <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
-                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
-                        <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onHomeClick(); setMobileMenuOpen(false); }}>
                             Home
-                        </Link>
-                        <Link to="/about" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onAboutClick(); setMobileMenuOpen(false); }}>
                             About
-                        </Link>
-                        <Link to="/contact" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onContactClick(); setMobileMenuOpen(false); }}>
                             Contact Us
-                        </Link>
+                        </a>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
                             className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark ? 'border-white bg-white text-black' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'}`}
@@ -338,9 +350,9 @@ function Header({ isDark }: { isDark: boolean }) {
     );
 }
 
-function HeroSection() {
+const HeroSection = forwardRef<HTMLElement>((_, ref) => {
     return (
-        <section className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden">
+        <section ref={ref} className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
 
@@ -414,7 +426,7 @@ function HeroSection() {
                         Confess. Connect. Date.
                     </h1>
 
-                    <p className="text-sm sm:text-base font-normal text-white text-center mt-3 max-w-[300px] drop-shadow-md" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                    <p className="text-sm sm:text-base font-normal text-white text-center mt-3 max-w-[300px] drop-shadow-md" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         Confess Anonymously, we match when its mutual.
                     </p>
 
@@ -434,7 +446,7 @@ function HeroSection() {
                     Confess. Connect. Date.
                 </h1>
 
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Confess Anomously , we match when its mutual.
                 </p>
 
@@ -462,7 +474,7 @@ function HeroSection() {
             </div>
         </section>
     );
-}
+});
 
 const features = [
     {
@@ -895,13 +907,23 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         };
     }, []);
 
-    const handleProgressClick = (index: number) => {
+    const handleProgressClick = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
         setActiveIndex(index);
         setProgress(0);
     };
 
+    const handleTestimonialClick = () => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+        setProgress(0);
+    };
+
     return (
-        <section ref={sectionRef} className="py-24 md:py-32 bg-[#A4B8E7] relative overflow-hidden">
+        <section 
+            ref={sectionRef} 
+            className="py-24 md:py-16 lg:py-20 bg-[#A4B8E7] relative overflow-hidden cursor-default md:min-h-screen md:flex md:items-center"
+            onClick={handleTestimonialClick}
+        >
             {/* Subtle background gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#A4B8E7] via-[#B5C7EF] to-[#A4B8E7]" />
 
@@ -917,20 +939,21 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                 className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
             />
 
-            <div className="max-w-5xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
                 {/* Section header */}
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-16"
+                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     What Our Users Say
                 </motion.p>
 
                 {/* Testimonial content */}
-                <div className="min-h-[300px] md:min-h-[350px] relative">
+                <div className="min-h-[300px] md:min-h-[220px] relative">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeIndex}
@@ -941,9 +964,9 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             className="absolute inset-0"
                         >
                             {/* Quote icon */}
-                            <div className="mb-8">
+                            <div className="mb-4">
                                 <svg
-                                    className="w-12 h-12 md:w-16 md:h-16 text-[#311717]/80"
+                                    className="w-10 h-10 md:w-12 md:h-12 text-[#311717]/80"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
                                 >
@@ -953,26 +976,26 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
                             {/* Testimonial text */}
                             <p
-                                className="text-[#311717] text-2xl md:text-3xl lg:text-4xl font-medium leading-relaxed mb-10"
-                                style={{ fontFamily: "Georgia, serif" }}
+                                className="text-[#311717] text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed mb-4 text-left"
+                                style={{ fontFamily: "'Crimson Pro', serif" }}
                             >
                                 {testimonials[activeIndex].content}
                             </p>
 
                             {/* Author name */}
-                            <p className="text-[#311717]/80 text-base md:text-lg font-medium">
-                                {testimonials[activeIndex].name}
+                            <p className="text-[#311717]/80 text-base md:text-lg font-medium italic text-left" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                                ~ {testimonials[activeIndex].name}
                             </p>
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
                 {/* Progress bars */}
-                <div className="flex gap-3 md:gap-4 mt-16">
+                <div className="flex gap-3 md:gap-4 mt-8">
                     {testimonials.map((_, index) => (
                         <button
                             key={index}
-                            onClick={() => handleProgressClick(index)}
+                            onClick={(e) => handleProgressClick(e, index)}
                             className="flex-1 h-1 bg-[#311717]/20 rounded-full overflow-hidden cursor-pointer hover:bg-[#311717]/30 transition-colors"
                             aria-label={`Go to testimonial ${index + 1}`}
                         >

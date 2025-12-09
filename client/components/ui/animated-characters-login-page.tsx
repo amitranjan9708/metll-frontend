@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
+import { SuccessDialog } from "@/components/ui/success-dialog";
+import type { WaitlistRequest, WaitlistResponse } from "@shared/api";
 
 interface PupilProps {
   size?: number;
@@ -161,6 +163,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [mouseX, setMouseX] = useState<number>(0);
   const [mouseY, setMouseY] = useState<number>(0);
   const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
@@ -272,18 +275,40 @@ function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    // Mock waitlist signup
-    if (email && email.includes("@")) {
-      console.log("✅ Waitlist signup successful!");
-      alert("You're on the waitlist! We'll notify you when we launch.");
-      setEmail("");
-    } else {
-      setError("Please enter a valid email address.");
-      console.log("❌ Signup failed");
+
+    try {
+      const requestBody: WaitlistRequest = {
+        name: name.trim(),
+        email: email.trim(),
+        suggestion: suggestion.trim() || undefined,
+      };
+
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data: WaitlistResponse = await response.json();
+
+      if (data.success) {
+        // Show success dialog
+        setShowSuccessDialog(true);
+        // Reset form
+        setName("");
+        setEmail("");
+        setSuggestion("");
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error submitting waitlist:", err);
+      setError("Failed to connect to server. Please check your connection and try again.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -493,13 +518,13 @@ function LoginPage() {
           </div>
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Join the Waitlist</h1>
-            <p className="text-muted-foreground text-sm">Be the first to know when we launch. Get early access!</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Join the Waitlist</h1>
+            <p className="text-muted-foreground text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>Be the first to know when we launch. Get early access!</p>
           </div>
           {/* Waitlist Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -514,7 +539,7 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -529,7 +554,7 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="suggestion" className="text-sm font-medium">
+              <Label htmlFor="suggestion" className="text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Suggestion <span className="text-muted-foreground font-normal">(optional)</span>
               </Label>
               <textarea
@@ -558,7 +583,7 @@ function LoginPage() {
             </Button>
           </form>
           {/* Benefits */}
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 space-y-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-primary text-xs">✓</span>
@@ -579,11 +604,17 @@ function LoginPage() {
             </div>
           </div>
           {/* Privacy note */}
-          <div className="text-center text-xs text-muted-foreground mt-8">
+          <div className="text-center text-xs text-muted-foreground mt-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             We respect your privacy. Unsubscribe at any time.
           </div>
         </div>
       </div>
+      {/* Success Dialog */}
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        name={name}
+      />
     </div>
   );
 }
