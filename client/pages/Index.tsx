@@ -84,6 +84,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 export default function Index() {
     const [isDarkNavbar, setIsDarkNavbar] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const heroRef = useRef<HTMLElement>(null);
     const featuresRef = useRef<HTMLElement>(null);
     const testimonialsRef = useRef<HTMLElement>(null);
     const loginRef = useRef<HTMLElement>(null);
@@ -147,8 +148,19 @@ export default function Index() {
             </AnimatePresence>
 
             <div className="w-full bg-[#A4B8E7] relative pt-14">
-                <Header isDark={isDarkNavbar} />
-                <HeroSection />
+                <Header 
+                    isDark={isDarkNavbar} 
+                    onHomeClick={() => {
+                        heroRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onAboutClick={() => {
+                        featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onContactClick={() => {
+                        footerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                />
+                <HeroSection ref={heroRef} />
                 <FeaturesSection ref={featuresRef} />
                 <TestimonialsSection ref={testimonialsRef} />
                 <LoginSection ref={loginRef} />
@@ -256,7 +268,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 });
 
 
-function Header({ isDark }: { isDark: boolean }) {
+function Header({ isDark, onHomeClick, onAboutClick, onContactClick }: { isDark: boolean; onHomeClick: () => void; onAboutClick: () => void; onContactClick: () => void }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
@@ -275,17 +287,17 @@ function Header({ isDark }: { isDark: boolean }) {
 
                 <nav
                     className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isDark ? 'text-white' : 'text-[#311717]'}`}
-                    style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
-                    <Link to="/" className="hover:opacity-70 transition-opacity">
+                    <a href="#" onClick={(e) => { e.preventDefault(); onHomeClick(); }} className="hover:opacity-70 transition-opacity">
                         Home
-                    </Link>
-                    <Link to="/about" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onAboutClick(); }} className="hover:opacity-70 transition-opacity">
                         About
-                    </Link>
-                    <Link to="/contact" className="hover:opacity-70 transition-opacity">
+                    </a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onContactClick(); }} className="hover:opacity-70 transition-opacity">
                         Contact Us
-                    </Link>
+                    </a>
                 </nav>
 
                 <div className="flex items-center gap-3">
@@ -315,16 +327,16 @@ function Header({ isDark }: { isDark: boolean }) {
             {/* Mobile dropdown menu */}
             {mobileMenuOpen && (
                 <div className={`md:hidden absolute top-full left-0 right-0 py-4 px-4 shadow-lg transition-all ${isDark ? 'bg-black/95' : 'bg-white/95'}`}>
-                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`}>
-                        <Link to="/" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                    <nav className={`flex flex-col gap-4 ${isDark ? 'text-white' : 'text-[#311717]'}`} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onHomeClick(); setMobileMenuOpen(false); }}>
                             Home
-                        </Link>
-                        <Link to="/about" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onAboutClick(); setMobileMenuOpen(false); }}>
                             About
-                        </Link>
-                        <Link to="/contact" className="py-2 hover:opacity-70 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                        </a>
+                        <a href="#" className="py-2 hover:opacity-70 transition-opacity" onClick={(e) => { e.preventDefault(); onContactClick(); setMobileMenuOpen(false); }}>
                             Contact Us
-                        </Link>
+                        </a>
                         <button
                             onClick={() => { scrollToWaitlist(); setMobileMenuOpen(false); }}
                             className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-sm font-medium transition-all ${isDark ? 'border-white bg-white text-black' : 'border-[#5A6FA3] bg-[#5A6FA3] text-white'}`}
@@ -338,9 +350,9 @@ function Header({ isDark }: { isDark: boolean }) {
     );
 }
 
-function HeroSection() {
+const HeroSection = forwardRef<HTMLElement>((_, ref) => {
     return (
-        <section className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden">
+        <section ref={ref} className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
 
@@ -414,16 +426,22 @@ function HeroSection() {
                         Confess. Connect. Date.
                     </h1>
 
-                    <p className="text-sm sm:text-base font-normal text-white text-center mt-3 max-w-[300px] drop-shadow-md" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                    <p className="text-sm sm:text-base font-normal text-white text-center mt-3 max-w-[300px] drop-shadow-md" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         Confess Anonymously, we match when its mutual.
                     </p>
 
                     <button
                         onClick={scrollToWaitlist}
-                        className="mt-6 px-8 py-3 bg-white text-[#311717] rounded-full font-semibold text-sm shadow-2xl transition-all"
-                        style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
+                        className="mt-8 px-10 py-4 bg-white text-[#311717] rounded-full font-bold text-base tracking-wide border-2 border-white/50 backdrop-blur-sm transition-all duration-300 active:scale-95 flex items-center gap-3"
+                        style={{ 
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5)',
+                            fontFamily: "'Novaklasse', sans-serif"
+                        }}
                     >
                         JOIN THE WAITLIST
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -434,7 +452,7 @@ function HeroSection() {
                     Confess. Connect. Date.
                 </h1>
 
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Confess Anomously , we match when its mutual.
                 </p>
 
@@ -462,13 +480,13 @@ function HeroSection() {
             </div>
         </section>
     );
-}
+});
 
 const features = [
     {
         step: "01",
         title: "Confess Anonymously",
-        description: "Share your feelings without revealing your identity. Your confession stays completely private until there's a mutual match.",
+        description: "Pour out the real feelings for your crush, Don't worry no peeks until it's reciprocated. If your dream crush confesses for you, we reveal the shared feelings.",
         image: "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
@@ -480,7 +498,7 @@ const features = [
     {
         step: "03",
         title: "Reveal & Connect",
-        description: "Both parties are instantly notified when there's a mutual confession. Start your conversation with confidence.",
+        description: "Souls within a common locality, just share your feeling anonymously. Our flagship AI will wait for both the confession to happen and match if its mutual.",
         image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
@@ -818,28 +836,28 @@ const testimonials = [
     {
         name: "Sarah M.",
         role: "Found her soulmate",
-        content: "I was skeptical at first, but the anonymous confession feature made it so easy to express myself. We've been dating for 6 months now!",
+        content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "James L.",
         role: "Matched with his crush",
-        content: "The smart matching algorithm is incredible. It felt like magic when we both matched. Highly recommend!",
+        content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Emily R.",
         role: "In a relationship",
-        content: "Finally, a dating app that focuses on genuine connections. The experience is seamless and heartfelt.",
+        content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
         avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
     {
         name: "Michael K.",
         role: "Engaged!",
-        content: "I love how privacy-focused this app is. It gave me the confidence to reach out to my crush. Now we're engaged!",
+        content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
         rating: 5,
     },
@@ -895,13 +913,23 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         };
     }, []);
 
-    const handleProgressClick = (index: number) => {
+    const handleProgressClick = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
         setActiveIndex(index);
         setProgress(0);
     };
 
+    const handleTestimonialClick = () => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+        setProgress(0);
+    };
+
     return (
-        <section ref={sectionRef} className="py-24 md:py-32 bg-[#A4B8E7] relative overflow-hidden">
+        <section 
+            ref={sectionRef} 
+            className="py-24 md:py-16 lg:py-20 bg-[#A4B8E7] relative overflow-hidden cursor-default md:min-h-screen md:flex md:items-center"
+            onClick={handleTestimonialClick}
+        >
             {/* Subtle background gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#A4B8E7] via-[#B5C7EF] to-[#A4B8E7]" />
 
@@ -917,20 +945,21 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                 className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
             />
 
-            <div className="max-w-5xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+            <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
                 {/* Section header */}
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-16"
+                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
                 >
                     What Our Users Say
                 </motion.p>
 
                 {/* Testimonial content */}
-                <div className="min-h-[300px] md:min-h-[350px] relative">
+                <div className="min-h-[300px] md:min-h-[220px] relative">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeIndex}
@@ -941,9 +970,9 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
                             className="absolute inset-0"
                         >
                             {/* Quote icon */}
-                            <div className="mb-8">
+                            <div className="mb-4">
                                 <svg
-                                    className="w-12 h-12 md:w-16 md:h-16 text-[#311717]/80"
+                                    className="w-10 h-10 md:w-12 md:h-12 text-[#311717]/80"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
                                 >
@@ -953,26 +982,26 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
                             {/* Testimonial text */}
                             <p
-                                className="text-[#311717] text-2xl md:text-3xl lg:text-4xl font-medium leading-relaxed mb-10"
-                                style={{ fontFamily: "Georgia, serif" }}
+                                className="text-[#311717] text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed mb-4 text-left"
+                                style={{ fontFamily: "'Crimson Pro', serif" }}
                             >
                                 {testimonials[activeIndex].content}
                             </p>
 
                             {/* Author name */}
-                            <p className="text-[#311717]/80 text-base md:text-lg font-medium">
-                                {testimonials[activeIndex].name}
+                            <p className="text-[#311717]/80 text-base md:text-lg font-medium italic text-left" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                                ~ {testimonials[activeIndex].name}
                             </p>
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
                 {/* Progress bars */}
-                <div className="flex gap-3 md:gap-4 mt-16">
+                <div className="flex gap-3 md:gap-4 mt-8">
                     {testimonials.map((_, index) => (
                         <button
                             key={index}
-                            onClick={() => handleProgressClick(index)}
+                            onClick={(e) => handleProgressClick(e, index)}
                             className="flex-1 h-1 bg-[#311717]/20 rounded-full overflow-hidden cursor-pointer hover:bg-[#311717]/30 transition-colors"
                             aria-label={`Go to testimonial ${index + 1}`}
                         >
