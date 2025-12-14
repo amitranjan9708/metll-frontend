@@ -245,7 +245,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
                                 <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Company</h4>
                                 <ul className="space-y-3">
                                     <li><a href="/about" className="text-white/70 hover:text-white transition-colors text-sm">About us</a></li>
-                                    <li><a href="#" className="text-white/70 hover:text-white transition-colors text-sm">Blog</a></li>
+                                    <li><a href="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">Privacy</a></li>
                                     <li><a href="/contact" className="text-white/70 hover:text-white transition-colors text-sm">Contact</a></li>
                                 </ul>
                             </div>
