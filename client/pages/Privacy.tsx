@@ -4,29 +4,6 @@ import { motion } from "framer-motion";
 export default function Privacy() {
   return (
     <div className="min-h-screen w-full bg-white relative overflow-hidden">
-      {/* Blue Cloud Decorations */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Ellipse 30.svg"
-          alt=""
-          className="absolute top-[-10%] right-[-15%] w-[300px] md:w-[500px] lg:w-[700px] h-auto opacity-40 pointer-events-none"
-        />
-        <img
-          src="/Ellipse 31.svg"
-          alt=""
-          className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-40 pointer-events-none"
-        />
-        <img
-          src="/Ellipse 30.svg"
-          alt=""
-          className="absolute top-[30%] left-[-10%] w-[250px] md:w-[400px] lg:w-[500px] h-auto opacity-30 pointer-events-none"
-        />
-        <img
-          src="/Ellipse 31.svg"
-          alt=""
-          className="absolute bottom-[20%] right-[-10%] w-[300px] md:w-[450px] lg:w-[600px] h-auto opacity-30 pointer-events-none"
-        />
-      </div>
 
       {/* Header - Floating Black Navbar */}
       <header className="fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-3 md:py-4 z-50 bg-black/95 backdrop-blur-md shadow-lg">
