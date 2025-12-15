@@ -17,15 +17,25 @@ export function createServer() {
   });
 
   // Lazy-load routes to avoid importing Prisma at config time
-  app.get("/api/demo", async (req, res) => {
-    const { handleDemo } = await import("./routes/demo");
-    return handleDemo(req, res);
+  app.get("/api/demo", async (req, res, next) => {
+    try {
+      const { handleDemo } = await import("./routes/demo");
+      return handleDemo(req, res, next);
+    } catch (error) {
+      console.error("Failed to load demo route:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
 
   // Waitlist API route
-  app.post("/api/waitlist", async (req, res) => {
-    const { handleWaitlist } = await import("./routes/waitlist");
-    return handleWaitlist(req, res);
+  app.post("/api/waitlist", async (req, res, next) => {
+    try {
+      const { handleWaitlist } = await import("./routes/waitlist");
+      return handleWaitlist(req, res, next);
+    } catch (error) {
+      console.error("Failed to load waitlist route:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
 
   return app;

@@ -9,12 +9,11 @@
   node_bundler = "esbuild"
   
 [[redirects]]
-  force = true
   from = "/api/*"
-  status = 200
   to = "http://13.60.83.206:3000/api/:splat"
-
-# SPA fallback - serve index.html for all non-API routes
+  status = 200
+  force = true
+# SPA Fallback (Keep this one below the API redirect)
 [[redirects]]
   from = "/*"
   to = "/index.html"
