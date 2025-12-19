@@ -486,19 +486,19 @@ const features = [
     {
         step: "01",
         title: "Confess Anonymously",
-        description: "Pour out the real feelings for your crush, Don't worry no peeks until it's reciprocated. If your dream crush confesses for you, we reveal the shared feelings.",
+        description: "Pour out the real feelings for your crush, can be either in school, college, office, or any other place. If your dream crush confesses for you, we reveal the shared feelings.",
         image: "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
         step: "02",
         title: "Smart Matching",
-        description: "Our intelligent algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
+        description: "Our intelligent AI algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
         image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
         step: "03",
-        title: "Reveal & Connect",
-        description: "Souls within a common locality, just share your feeling anonymously. Our flagship AI will wait for both the confession to happen and match if its mutual.",
+        title: "Crushes at a loacality",
+        description: "When you're at the same location, anonymously confess to your crush. If they confess back while nearby. MetLL will match.",
         image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww"
     },
     {
