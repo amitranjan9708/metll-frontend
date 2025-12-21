@@ -16,4 +16,4 @@ User-agent: *
 Allow: /
 
 # Sitemap - UPDATE THIS TO YOUR PRODUCTION DOMAIN
-Sitemap: https://metll.com/sitemap.xml
+Sitemap: https://metll.in/sitemap.xml
