@@ -10,12 +10,10 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
-        // Start exit animation after 2 seconds
         const timer = setTimeout(() => {
             setIsExiting(true);
         }, 2000);
 
-        // Complete after exit animation
         const completeTimer = setTimeout(() => {
             onComplete();
         }, 2800);
