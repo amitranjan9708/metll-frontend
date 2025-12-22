@@ -550,16 +550,6 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
         </p>
       </div>
 
-      {/* Mobile version of the text */}
-      <div className="md:hidden absolute left-4 top-[15%] z-20">
-        <p
-          className="text-[#311717] text-base font-semibold"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Your crush is waiting for you.
-        </p>
-      </div>
-
       {/* Ellipse behind Eiffel Tower */}
       <div className="absolute left-[-50%] lg:left-[0%] bottom-[-20%] z-[5] pointer-events-none">
         <img
