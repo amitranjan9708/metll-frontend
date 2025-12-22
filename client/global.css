@@ -148,3 +148,15 @@
     white-space: pre;
   }
 }
+
+@layer utilities {
+  .font-dm-sans-mobile {
+    font-family: 'DM Sans', sans-serif;
+  }
+  
+  @media (min-width: 768px) {
+    .font-dm-sans-mobile {
+      font-family: inherit;
+    }
+  }
+}

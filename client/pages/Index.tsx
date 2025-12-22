@@ -541,12 +541,22 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
         />
       </div>
 
-      <div className="absolute left-0 md:left-4 lg:left-8 top-[20%] md:top-[30%] h-[300px] md:h-[428px] w-full max-w-[60px] md:max-w-[80px] lg:max-w-[100px] bg-white hidden md:flex items-center justify-center overflow-hidden">
+      <div className="absolute left-0 md:left-4 lg:left-8 top-[20%] md:top-[30%] h-[300px] md:h-[428px] w-full max-w-[50px] md:max-w-[65px] lg:max-w-[80px] bg-white hidden md:flex items-center justify-center overflow-hidden">
         <p
-          className="text-[#311717] text-[20px] md:text-[23px] lg:text-[26px] whitespace-nowrap -rotate-90"
-          style={{ fontFamily: "'Novaklasse', sans-serif" }}
+          className="text-[#311717] text-[14px] md:text-[16px] lg:text-[19px] whitespace-nowrap -rotate-90"
+          style={{ fontFamily: "'Novaklasse', sans-serif", fontWeight: "600" }}
         >
-          Your single life is over.
+          Your crush is waiting for you....
+        </p>
+      </div>
+
+      {/* Mobile version of the text */}
+      <div className="md:hidden absolute left-4 top-[15%] z-20">
+        <p
+          className="text-[#311717] text-base font-semibold"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Your crush is waiting for you.
         </p>
       </div>
 
@@ -625,7 +635,7 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
               JOIN THE WAITLIST
             </span>
             <span
-              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${showMembershipText ? "opacity-100" : "opacity-0"}`}
+              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 font-dm-sans-mobile text-lg md:text-base font-bold ${showMembershipText ? "opacity-100" : "opacity-0"}`}
             >
               Get Free Membership
             </span>
@@ -686,7 +696,7 @@ const features = [
   },
   {
     step: "02",
-    title: "Smart Matching",
+    title: "Memory Match",
     description:
       "Our intelligent AI algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
     image:
@@ -695,7 +705,7 @@ const features = [
   },
   {
     step: "03",
-    title: "Crushes at a loacality",
+    title: "Crushes at a locality",
     description:
       "When you're at the same location, anonymously confess to your crush. If they confess back while nearby. MetLL will match.",
     image:
@@ -1020,10 +1030,10 @@ function FeatureContent({
             {feature.description}
           </p>
 
-          {/* CTA Button */}
+          {/* CTA Button - hidden on mobile for step 2 and step 4 */}
           <button
             onClick={scrollToWaitlist}
-            className="group inline-flex flex-wrap items-center gap-2 md:gap-3 px-6 py-3 rounded-full bg-[#5A6FA3] text-white font-medium text-sm md:text-base hover:bg-[#4A5E96] hover:gap-4 shadow-lg shadow-[#5A6FA3]/20 transition-all duration-300"
+            className={`group inline-flex flex-wrap items-center gap-2 md:gap-3 px-6 py-3 rounded-full bg-[#5A6FA3] text-white font-medium text-sm md:text-base hover:bg-[#4A5E96] hover:gap-4 shadow-lg shadow-[#5A6FA3]/20 transition-all duration-300 ${feature.step === "02" || feature.step === "04" ? "hidden md:inline-flex" : ""}`}
           >
             <span>Get Started</span>
             {/* <span className="text-[10px] md:text-xs font-normal">
