@@ -1173,60 +1173,48 @@ function FeatureContent({
 
 // Testimonials data
 const testimonials = [
-  {
-    name: "Sarah M.",
-    role: "Found her soulmate",
-    content:
-      "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
-  {
-    name: "James L.",
-    role: "Matched with his crush",
-    content:
-      "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
-  {
-    name: "Emily R.",
-    role: "In a relationship",
-    content:
-      "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
-  {
-    name: "Michael K.",
-    role: "Engaged!",
-    content:
-      "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
-  {
-    name: "Jessica T.",
-    role: "Happily married",
-    content:
-      "MetLL changed my life. I found my soulmate here. Thank you for creating such a wonderful platform.",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
-  {
-    name: "David W.",
-    role: "Dating for 1 year",
-    content:
-      "The anonymous confession feature took away all the pressure. Best decision I ever made was using MetLL!",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-  },
+    {
+        name: "Lavanya",
+        role: "Found her soulmate",
+        content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
+    {
+        name: "Harsh agarwal",
+        role: "Matched with his crush",
+        content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
+    {
+        name: "Jitender Kumar",
+        role: "In a relationship",
+        content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
+    {
+        name: "Vani sharma.",
+        role: "Engaged!",
+        content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
+    {
+        name: "Amrit",
+        role: "Happily married",
+        content: "MetLL changed my life. I found my soulmate here. Thank you for creating such a wonderful platform.",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
+    {
+        name: "Sujal jain",
+        role: "Dating for 1 year",
+        content: "The anonymous confession feature took away all the pressure. Best decision I ever made was using MetLL!",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+        rating: 5,
+    },
 ];
 
 const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
@@ -1302,18 +1290,18 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
       />
 
-      <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
-        {/* Section header */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
-          style={{ fontFamily: "'Novaklasse', sans-serif" }}
-        >
-          What Our Users Say
-        </motion.p>
+            <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
+                {/* Section header */}
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
+                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                >
+                    What Our Early Access Users Say
+                </motion.p>
 
         {/* Testimonial content */}
         <div className="min-h-[300px] md:min-h-[220px] relative">
