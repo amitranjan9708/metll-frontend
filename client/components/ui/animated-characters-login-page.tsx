@@ -312,20 +312,9 @@ function LoginPage() {
     }
 
     try {
-<<<<<<< Updated upstream
-      const requestBody: WaitlistRequest = {
-        name: name.trim(),
-        email: email.trim(),
-        suggestion: suggestion.trim() || undefined,
-      };
-
-      const response = await fetch(getApiUrl("/api/waitlist"), {
-=======
-
       // Use keepalive to ensure request continues even if page unloads
       // This is crucial for cold start servers like Render
       const response = await fetch(apiUrl, {
->>>>>>> Stashed changes
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -347,12 +336,6 @@ function LoginPage() {
         setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
-<<<<<<< Updated upstream
-      console.error("Error submitting waitlist:", err);
-      setError(
-        "Failed to connect to server. Please check your connection and try again.",
-      );
-=======
       console.error("❌ Error submitting waitlist:", err);
       
       // If SendBeacon was used, the data might still be sent
@@ -384,7 +367,6 @@ function LoginPage() {
           "Failed to connect to server. Please check your connection and try again.",
         );
       }
->>>>>>> Stashed changes
     } finally {
       setIsLoading(false);
     }
