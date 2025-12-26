@@ -3,8 +3,31 @@
  * Centralized configuration for API base URL
  */
 
-// Use localhost backend server for both dev and production
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+// Determine API base URL based on environment
+// - Development: Use localhost backend
+// - Production: Use Render backend
+// - Can be overridden with VITE_API_BASE_URL environment variable
+const getDefaultApiUrl = () => {
+  // Check if explicitly set via environment variable
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Use production backend in production mode, localhost in development
+  if (import.meta.env.PROD) {
+    return "https://metll-backend.onrender.com";
+  }
+  
+  // Development mode - use localhost
+  return "http://localhost:3001";
+};
+
+export const API_BASE_URL = getDefaultApiUrl();
+
+// Log API URL in development for debugging
+if (import.meta.env.DEV) {
+  console.log(`🔗 API Base URL: ${API_BASE_URL}`);
+}
 
 /**
  * Get the full API URL for an endpoint
