@@ -8,12 +8,13 @@
   external_node_modules = ["express"]
   node_bundler = "esbuild"
   
-[[redirects]]
-  from = "/api/*"
-  to = "http://13.51.196.113:3000/api/:splat"
-  status = 200
-  force = true
-# SPA Fallback (Keep this one below the API redirect)
+# API redirect removed - using localhost:3001 backend server
+# [[redirects]]
+#   from = "/api/*"
+#   to = "http://13.51.196.113:3000/api/:splat"
+#   status = 200
+#   force = true
+# SPA Fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
 import { SuccessDialog } from "@/components/ui/success-dialog";
 import type { WaitlistRequest, WaitlistResponse } from "@shared/api";
+import { getApiUrl } from "@/lib/api-config";
 
 interface PupilProps {
   size?: number;
@@ -292,7 +293,7 @@ function LoginPage() {
         suggestion: suggestion.trim() || undefined,
       };
 
-      const response = await fetch("/api/waitlist", {
+      const response = await fetch(getApiUrl("/api/waitlist"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
