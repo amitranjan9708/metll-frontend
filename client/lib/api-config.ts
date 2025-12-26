@@ -24,10 +24,9 @@ const getDefaultApiUrl = () => {
 
 export const API_BASE_URL = getDefaultApiUrl();
 
-// Log API URL in development for debugging
-if (import.meta.env.DEV) {
-  console.log(`🔗 API Base URL: ${API_BASE_URL}`);
-}
+// Log API URL for debugging (both environments)
+console.log(`🔗 API Base URL: ${API_BASE_URL}`);
+console.log(`🌍 Mode: ${import.meta.env.PROD ? "PRODUCTION" : "DEVELOPMENT"}`);
 
 /**
  * Get the full API URL for an endpoint

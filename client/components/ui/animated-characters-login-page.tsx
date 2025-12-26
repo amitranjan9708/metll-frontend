@@ -293,7 +293,10 @@ function LoginPage() {
         suggestion: suggestion.trim() || undefined,
       };
 
-      const response = await fetch(getApiUrl("/api/waitlist"), {
+      const apiUrl = getApiUrl("/api/waitlist");
+      console.log("📤 Submitting to:", apiUrl);
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -301,7 +304,16 @@ function LoginPage() {
         body: JSON.stringify(requestBody),
       });
 
+      console.log("📥 Response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Response error:", response.status, errorText);
+        throw new Error(`Server returned ${response.status}: ${errorText || response.statusText}`);
+      }
+
       const data: WaitlistResponse = await response.json();
+      console.log("✅ Response:", data);
 
       if (data.success) {
         // Show success dialog
@@ -314,10 +326,24 @@ function LoginPage() {
         setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
-      console.error("Error submitting waitlist:", err);
-      setError(
-        "Failed to connect to server. Please check your connection and try again.",
-      );
+      console.error("❌ Error submitting waitlist:", err);
+      
+      // Check for CORS or network errors
+      if (err instanceof TypeError) {
+        if (err.message.includes("fetch")) {
+          setError(
+            "Network error: Cannot reach server. This might be a CORS issue. Check console for details.",
+          );
+        } else {
+          setError(err.message);
+        }
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Failed to connect to server. Please check your connection and try again.",
+        );
+      }
     } finally {
       setIsLoading(false);
     }
