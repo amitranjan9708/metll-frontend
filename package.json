@@ -16,6 +16,8 @@
     "build:client": "vite build",
     "build:server": "vite build --config vite.config.server.ts",
     "start": "node dist/server/node-build.mjs",
+    "backend": "tsx backend/index.ts",
+    "backend:dev": "tsx watch backend/index.ts",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
