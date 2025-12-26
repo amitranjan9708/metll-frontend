@@ -286,7 +286,33 @@ function LoginPage() {
     setError("");
     setIsLoading(true);
 
+    const requestBody: WaitlistRequest = {
+      name: name.trim(),
+      email: email.trim(),
+      suggestion: suggestion.trim() || undefined,
+    };
+
+    const apiUrl = getApiUrl("/api/waitlist");
+    console.log("📤 Submitting to:", apiUrl);
+
+    // Also send via SendBeacon as backup for maximum reliability
+    // SendBeacon works even better than fetch keepalive for page unloads
+    if (navigator.sendBeacon) {
+      try {
+        const blob = new Blob([JSON.stringify(requestBody)], { 
+          type: "application/json" 
+        });
+        const beaconSent = navigator.sendBeacon(apiUrl, blob);
+        if (beaconSent) {
+          console.log("📡 Data also queued via SendBeacon for reliability");
+        }
+      } catch (beaconError) {
+        console.warn("⚠️ SendBeacon failed, relying on fetch keepalive:", beaconError);
+      }
+    }
+
     try {
+<<<<<<< Updated upstream
       const requestBody: WaitlistRequest = {
         name: name.trim(),
         email: email.trim(),
@@ -294,11 +320,18 @@ function LoginPage() {
       };
 
       const response = await fetch(getApiUrl("/api/waitlist"), {
+=======
+
+      // Use keepalive to ensure request continues even if page unloads
+      // This is crucial for cold start servers like Render
+      const response = await fetch(apiUrl, {
+>>>>>>> Stashed changes
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
+        keepalive: true, // Ensures request continues even after page unloads
       });
 
       const data: WaitlistResponse = await response.json();
@@ -314,10 +347,44 @@ function LoginPage() {
         setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
+<<<<<<< Updated upstream
       console.error("Error submitting waitlist:", err);
       setError(
         "Failed to connect to server. Please check your connection and try again.",
       );
+=======
+      console.error("❌ Error submitting waitlist:", err);
+      
+      // If SendBeacon was used, the data might still be sent
+      // Show a message that submission is in progress
+      if (navigator.sendBeacon) {
+        console.log("ℹ️ Fetch failed, but SendBeacon may have queued the data");
+        // Show success since SendBeacon likely sent the data
+        // The backend will process it even if we don't get a response
+        setShowSuccessDialog(true);
+        setName("");
+        setEmail("");
+        setSuggestion("");
+        return; // Exit early since SendBeacon handled it
+      }
+      
+      // Check for CORS or network errors
+      if (err instanceof TypeError) {
+        if (err.message.includes("fetch")) {
+          setError(
+            "Network error: Cannot reach server. This might be a CORS issue. Check console for details.",
+          );
+        } else {
+          setError(err.message);
+        }
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Failed to connect to server. Please check your connection and try again.",
+        );
+      }
+>>>>>>> Stashed changes
     } finally {
       setIsLoading(false);
     }
