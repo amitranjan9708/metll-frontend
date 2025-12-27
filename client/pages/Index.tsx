@@ -680,35 +680,37 @@ const features = [
     step: "01",
     title: "Confess Anonymously",
     description:
-      "Pour out the real feelings for your crush, can be either in school, college, office, or any other place. If your dream crush confesses for you, we reveal the shared feelings.",
+      "Pour out your real feelings for your crush from school, college, office, or anywhere. Share details about them and let the magic begin.",
     image:
       "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlfGVufDB8fDB8fHww",
   },
   {
     step: "02",
-    title: "Memory Match",
+    title: "Two User Match",
     description:
-      "Our intelligent AI algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
+      "Enter details about your crush (school, college, or office). Get an image related to that person. If you recognize them, select and confess. If it's mutual, you match!",
     image:
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cGVvcGxlfGVufDB8fDB8fHww",
     isSpecialLayout: true,
+    isTwoUserMatch: true,
   },
   {
     step: "03",
-    title: "Crushes at a locality",
+    title: "Live Matching",
     description:
-      "When you're at the same location, anonymously confess to your crush. If they confess back while nearby. MetLL will match.",
+      "In public places like metro, café, library, or anywhere - confess about people you see live! Open the app to see everyone in 100m radius with photos on the map. Tap to confess about anyone you like.",
     image:
       "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVvcGxlfGVufDB8fDB8fHww",
+    isSpecialLayout: true,
+    isLiveMatching: true,
   },
   {
     step: "04",
-    title: "Our Hero Feature",
+    title: "Instant Connection",
     description:
-      "Spot someone at a café, on the train, or anywhere in public. Instantly confess your feelings on Metll right there — no awkward approaches needed.",
+      "When both confess about each other, the match happens instantly. No waiting, no guessing - just real connections happening in real-time.",
     image:
       "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D",
-    isSpecialLayout: true,
   },
 ];
 
@@ -956,6 +958,256 @@ const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
   );
 });
 
+// Two User Match Visual Component
+function TwoUserMatchVisual({ isActive }: { isActive: boolean }) {
+  const [step, setStep] = useState(0);
+  const steps = [
+    { icon: "✍️", title: "Enter Details", desc: "School, College, or Office" },
+    { icon: "🖼️", title: "Get Image", desc: "See related person" },
+    { icon: "👁️", title: "Recognize", desc: "If you know them" },
+    { icon: "✅", title: "Select & Confess", desc: "Choose and express" },
+    { icon: "💕", title: "Match!", desc: "If mutual" },
+  ];
+
+  useEffect(() => {
+    if (!isActive) {
+      setStep(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % steps.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isActive]);
+
+  return (
+    <div className="relative w-full max-w-[600px] mx-auto">
+      {/* Animated flow visualization */}
+      <div className="relative bg-gradient-to-br from-[#A4B8E7]/10 to-[#5A6FA3]/10 rounded-2xl p-6 md:p-8 border border-[#A4B8E7]/30">
+        {/* Flow steps */}
+        <div className="flex flex-col gap-4">
+          {steps.map((s, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{
+                opacity: step >= idx ? 1 : 0.3,
+                x: step >= idx ? 0 : -20,
+                scale: step === idx ? 1.05 : 1,
+              }}
+              transition={{ duration: 0.5 }}
+              className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                step === idx
+                  ? "bg-[#5A6FA3]/20 border-2 border-[#5A6FA3]/40 shadow-lg"
+                  : "bg-white/50 border border-[#A4B8E7]/20"
+              }`}
+            >
+              <div
+                className={`text-3xl md:text-4xl transition-transform ${
+                  step === idx ? "scale-110" : ""
+                }`}
+              >
+                {s.icon}
+              </div>
+              <div className="flex-1">
+                <h4
+                  className="text-lg md:text-xl font-bold text-[#311717]"
+                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                >
+                  {s.title}
+                </h4>
+                <p className="text-sm md:text-base text-[#311717]/70">
+                  {s.desc}
+                </p>
+              </div>
+              {step > idx && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-6 h-6 rounded-full bg-[#5A6FA3] flex items-center justify-center"
+                >
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Connection lines */}
+        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#A4B8E7] to-[#5A6FA3] opacity-30 hidden md:block" />
+      </div>
+
+      {/* Visual representation */}
+      <div className="mt-6 grid grid-cols-2 gap-4">
+        <motion.div
+          animate={{
+            scale: step >= 1 ? [1, 1.1, 1] : 1,
+          }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl p-4 border border-[#A4B8E7]/30 text-center"
+        >
+          <div className="text-4xl mb-2">👤</div>
+          <p className="text-sm text-[#311717]/70">You</p>
+        </motion.div>
+        <motion.div
+          animate={{
+            scale: step >= 4 ? [1, 1.1, 1] : 1,
+          }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="bg-gradient-to-br from-[#5A6FA3]/20 to-[#A4B8E7]/10 rounded-xl p-4 border border-[#5A6FA3]/30 text-center"
+        >
+          <div className="text-4xl mb-2">💕</div>
+          <p className="text-sm text-[#311717]/70">Match!</p>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// Live Matching Visual Component
+function LiveMatchingVisual({ isActive }: { isActive: boolean }) {
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+  const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => setShowMap(true), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setShowMap(false);
+      setSelectedPerson(null);
+    }
+  }, [isActive]);
+
+  // Simulated people on map
+  const people = [
+    { id: 1, x: 20, y: 30, emoji: "👨" },
+    { id: 2, x: 60, y: 20, emoji: "👩" },
+    { id: 3, x: 40, y: 60, emoji: "🧑" },
+    { id: 4, x: 80, y: 50, emoji: "👤" },
+  ];
+
+  return (
+    <div className="relative w-full max-w-[600px] mx-auto">
+      {/* Map visualization */}
+      <div className="relative bg-gradient-to-br from-[#A4B8E7]/10 to-[#5A6FA3]/10 rounded-2xl p-6 md:p-8 border border-[#A4B8E7]/30 overflow-hidden">
+        {/* Map background */}
+        <div className="relative bg-white/50 rounded-xl h-[400px] md:h-[500px] border-2 border-dashed border-[#A4B8E7]/40">
+          {/* Grid pattern */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "linear-gradient(#5A6FA3 1px, transparent 1px), linear-gradient(90deg, #5A6FA3 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
+
+          {/* Radius circle */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={showMap ? { scale: 1, opacity: 0.2 } : {}}
+            transition={{ duration: 0.8 }}
+            className="absolute top-1/2 left-1/2 w-[80%] h-[80%] rounded-full border-4 border-[#5A6FA3]"
+            style={{
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+
+          {/* Center indicator (You) */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={showMap ? { scale: 1 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="absolute top-1/2 left-1/2 w-16 h-16 bg-[#5A6FA3] rounded-full flex items-center justify-center text-2xl shadow-lg border-4 border-white transform -translate-x-1/2 -translate-y-1/2 z-10"
+          >
+            👤
+          </motion.div>
+
+          {/* People on map */}
+          {people.map((person, idx) => (
+            <motion.button
+              key={person.id}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={
+                showMap
+                  ? {
+                      scale: selectedPerson === person.id ? 1.3 : 1,
+                      opacity: 1,
+                      x: `${person.x}%`,
+                      y: `${person.y}%`,
+                    }
+                  : {}
+              }
+              transition={{
+                duration: 0.5,
+                delay: 0.5 + idx * 0.1,
+                type: "spring",
+              }}
+              onClick={() => setSelectedPerson(person.id)}
+              className={`absolute w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg border-2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all ${
+                selectedPerson === person.id
+                  ? "border-[#5A6FA3] ring-4 ring-[#5A6FA3]/30"
+                  : "border-[#A4B8E7] hover:border-[#5A6FA3]"
+              }`}
+              style={{
+                left: `${person.x}%`,
+                top: `${person.y}%`,
+              }}
+            >
+              {person.emoji}
+            </motion.button>
+          ))}
+
+          {/* Tap to confess indicator */}
+          {selectedPerson && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-[#5A6FA3] text-white px-6 py-3 rounded-full shadow-lg"
+            >
+              <span className="text-sm font-medium">Tap to Confess!</span>
+            </motion.div>
+          )}
+
+          {/* 100m radius label */}
+          <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-[#311717] border border-[#A4B8E7]">
+            100m radius
+          </div>
+        </div>
+
+        {/* Feature highlights */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="bg-white/50 rounded-lg p-3 text-center border border-[#A4B8E7]/20">
+            <div className="text-2xl mb-1">📍</div>
+            <p className="text-xs text-[#311717]/70">Live Location</p>
+          </div>
+          <div className="bg-white/50 rounded-lg p-3 text-center border border-[#A4B8E7]/20">
+            <div className="text-2xl mb-1">👥</div>
+            <p className="text-xs text-[#311717]/70">See Nearby</p>
+          </div>
+          <div className="bg-white/50 rounded-lg p-3 text-center border border-[#A4B8E7]/20">
+            <div className="text-2xl mb-1">💬</div>
+            <p className="text-xs text-[#311717]/70">Instant Confess</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FeatureContent({
   feature,
   index,
@@ -1047,112 +1299,11 @@ function FeatureContent({
 
         {/* Image or Special Layout */}
         {feature.isSpecialLayout ? (
-          feature.step === "02" ? (
-            <div className="relative w-full space-y-4 sm:space-y-6 md:space-y-8">
-              {/* Two-column layout for Step 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                {/* LEFT SIDE - Step 2.1 */}
-                <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#A4B8E7]/30">
-                  <h4
-                    className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                  >
-                    Confess About Your Crush
-                  </h4>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Share what you remember about them — college name, their
-                    name, personality traits, shared moments, or any identifying
-                    details.
-                  </p>
-                </div>
-
-                {/* RIGHT SIDE - Step 2.2 */}
-                <div className="bg-gradient-to-br from-[#5A6FA3]/20 to-[#A4B8E7]/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#5A6FA3]/30">
-                  <h4
-                    className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                  >
-                    AI Matching Engine
-                  </h4>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Metll's semantic AI analyzes your confession against
-                    existing confessions in real-time to find potential matches.
-                  </p>
-                </div>
-              </div>
-
-              {/* Step 2.3 - Full width below */}
-              <div className="bg-gradient-to-r from-[#A4B8E7]/20 via-[#5A6FA3]/20 to-[#A4B8E7]/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#A4B8E7]/30">
-                <h4
-                  className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  Instant Match or Wait
-                </h4>
-                <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  <p>Both confessed? Mutual match revealed instantly</p>
-                  <p>
-                    Only you so far? Confession stored securely until they
-                    confess back.
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Step 4 Special Layout - 3 Blocks */
-            <div className="relative w-full space-y-4 sm:space-y-5 md:space-y-6">
-              {/* Step 4.1 - LEFT SIDE */}
-              <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#A4B8E7]/30 md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  The Moment Matters
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  See someone you like at a café, train, mall, or anywhere.
-                  Instantly confess anonymously on Metll right there. - no
-                  awkward approaches needed.
-                </p>
-              </div>
-
-              {/* Step 4.2 - RIGHT SIDE */}
-              <div className="bg-gradient-to-br from-[#5A6FA3]/20 to-[#A4B8E7]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#5A6FA3]/30 md:ml-auto md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  They Confess Back
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  If they also write a confession about you that moment, Metll's
-                  AI detects the mutual match instantly.
-                </p>
-              </div>
-
-              {/* Step 4.3 - LEFT SIDE */}
-              <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#A4B8E7]/30 md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  Real Connection Unlocked
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed mb-3 sm:mb-4">
-                  Both revealed immediately. What started as a glance becomes a
-                  real connection, anywhere, anytime.
-                </p>
-                <div className="pt-3 sm:pt-4 border-t border-[#A4B8E7]/30">
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed font-semibold mb-1 sm:mb-2">
-                    Works Everywhere:
-                  </p>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Cafés • Trains • Malls • Campus • Events
-                  </p>
-                </div>
-              </div>
-            </div>
-          )
+          feature.isTwoUserMatch ? (
+            <TwoUserMatchVisual isActive={isActive} />
+          ) : feature.isLiveMatching ? (
+            <LiveMatchingVisual isActive={isActive} />
+          ) : null
         ) : (
           <div className="relative flex items-center justify-center">
             {/* Background decoration */}
