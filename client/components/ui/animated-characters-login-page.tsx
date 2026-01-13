@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { SuccessDialog } from "@/components/ui/success-dialog";
+import type { WaitlistRequest, WaitlistResponse } from "@shared/api";
+import { getApiUrl } from "@/lib/api-config";
 
 interface PupilProps {
   size?: number;
@@ -157,17 +159,13 @@ const EyeBall = ({
   );
 };
 
-function AuthPage() {
-  const navigate = useNavigate();
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [suggestion, setSuggestion] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [mouseX, setMouseX] = useState<number>(0);
   const [mouseY, setMouseY] = useState<number>(0);
   const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
@@ -233,8 +231,9 @@ function AuthPage() {
     }
   }, [isTyping]);
 
+  // Purple sneaky peeking animation when typing
   useEffect(() => {
-    if (password.length > 0 && showPassword) {
+    if (isTyping) {
       const schedulePeek = () => {
         const peekInterval = setTimeout(
           () => {
@@ -252,7 +251,7 @@ function AuthPage() {
     } else {
       setIsPurplePeeking(false);
     }
-  }, [password, showPassword, isPurplePeeking]);
+  }, [isTyping]);
 
   const calculatePosition = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (!ref.current) return { faceX: 0, faceY: 0, bodySkew: 0 };
@@ -275,38 +274,43 @@ function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (!isLoginMode && password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      // Simulate auth delay - replace with actual auth logic
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const requestBody: WaitlistRequest = {
+        name: name.trim(),
+        email: email.trim(),
+        suggestion: suggestion.trim() || undefined,
+      };
 
-      if (!isLoginMode) {
-        // For signup, redirect to onboarding
-        navigate("/onboarding");
+      const response = await fetch(getApiUrl("/api/waitlist"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data: WaitlistResponse = await response.json();
+
+      if (data.success) {
+        // Show success dialog
+        setShowSuccessDialog(true);
+        // Reset form
+        setName("");
+        setEmail("");
+        setSuggestion("");
       } else {
-        // For login, redirect to home or dashboard
-        navigate("/");
+        setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
-      console.error("Auth error:", err);
-      setError("Authentication failed. Please try again.");
+      console.error("Error submitting waitlist:", err);
+      setError(
+        "Failed to connect to server. Please check your connection and try again.",
+      );
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const toggleMode = () => {
-    setIsLoginMode(!isLoginMode);
-    setError("");
-    setPassword("");
-    setConfirmPassword("");
   };
 
   return (
@@ -332,19 +336,13 @@ function AuthPage() {
               style={{
                 left: "70px",
                 width: "180px",
-                height:
-                  isTyping || (password.length > 0 && !showPassword)
-                    ? "440px"
-                    : "400px",
+                height: isTyping ? "440px" : "400px",
                 backgroundColor: "#6C3FF5",
                 borderRadius: "10px 10px 0 0",
                 zIndex: 1,
-                transform:
-                  password.length > 0 && showPassword
-                    ? `skewX(0deg)`
-                    : isTyping || (password.length > 0 && !showPassword)
-                      ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
-                      : `skewX(${purplePos.bodySkew || 0}deg)`,
+                transform: isTyping
+                  ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`
+                  : `skewX(${purplePos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
               }}
             >
@@ -352,18 +350,12 @@ function AuthPage() {
               <div
                 className="absolute flex gap-8 transition-all duration-700 ease-in-out"
                 style={{
-                  left:
-                    password.length > 0 && showPassword
-                      ? `${20}px`
-                      : isLookingAtEachOther
-                        ? `${55}px`
-                        : `${45 + purplePos.faceX}px`,
-                  top:
-                    password.length > 0 && showPassword
-                      ? `${35}px`
-                      : isLookingAtEachOther
-                        ? `${65}px`
-                        : `${40 + purplePos.faceY}px`,
+                  left: isLookingAtEachOther
+                    ? `${55}px`
+                    : `${45 + purplePos.faceX}px`,
+                  top: isLookingAtEachOther
+                    ? `${65}px`
+                    : `${40 + purplePos.faceY}px`,
                 }}
               >
                 <EyeBall
@@ -374,22 +366,10 @@ function AuthPage() {
                   pupilColor="#2D2D2D"
                   isBlinking={isPurpleBlinking}
                   forceLookX={
-                    password.length > 0 && showPassword
-                      ? isPurplePeeking
-                        ? 4
-                        : -4
-                      : isLookingAtEachOther
-                        ? 3
-                        : undefined
+                    isLookingAtEachOther ? 3 : undefined
                   }
                   forceLookY={
-                    password.length > 0 && showPassword
-                      ? isPurplePeeking
-                        ? 5
-                        : -4
-                      : isLookingAtEachOther
-                        ? 4
-                        : undefined
+                    isLookingAtEachOther ? 4 : undefined
                   }
                 />
                 <EyeBall
@@ -400,22 +380,10 @@ function AuthPage() {
                   pupilColor="#2D2D2D"
                   isBlinking={isPurpleBlinking}
                   forceLookX={
-                    password.length > 0 && showPassword
-                      ? isPurplePeeking
-                        ? 4
-                        : -4
-                      : isLookingAtEachOther
-                        ? 3
-                        : undefined
+                    isLookingAtEachOther ? 3 : undefined
                   }
                   forceLookY={
-                    password.length > 0 && showPassword
-                      ? isPurplePeeking
-                        ? 5
-                        : -4
-                      : isLookingAtEachOther
-                        ? 4
-                        : undefined
+                    isLookingAtEachOther ? 4 : undefined
                   }
                 />
               </div>
@@ -431,14 +399,11 @@ function AuthPage() {
                 backgroundColor: "#2D2D2D",
                 borderRadius: "8px 8px 0 0",
                 zIndex: 2,
-                transform:
-                  password.length > 0 && showPassword
-                    ? `skewX(0deg)`
-                    : isLookingAtEachOther
-                      ? `skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
-                      : isTyping || (password.length > 0 && !showPassword)
-                        ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
-                        : `skewX(${blackPos.bodySkew || 0}deg)`,
+                transform: isLookingAtEachOther
+                  ? `skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`
+                  : isTyping
+                    ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
+                    : `skewX(${blackPos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
               }}
             >
@@ -446,18 +411,12 @@ function AuthPage() {
               <div
                 className="absolute flex gap-6 transition-all duration-700 ease-in-out"
                 style={{
-                  left:
-                    password.length > 0 && showPassword
-                      ? `${10}px`
-                      : isLookingAtEachOther
-                        ? `${32}px`
-                        : `${26 + blackPos.faceX}px`,
-                  top:
-                    password.length > 0 && showPassword
-                      ? `${28}px`
-                      : isLookingAtEachOther
-                        ? `${12}px`
-                        : `${32 + blackPos.faceY}px`,
+                  left: isLookingAtEachOther
+                    ? `${32}px`
+                    : `${26 + blackPos.faceX}px`,
+                  top: isLookingAtEachOther
+                    ? `${12}px`
+                    : `${32 + blackPos.faceY}px`,
                 }}
               >
                 <EyeBall
@@ -468,18 +427,10 @@ function AuthPage() {
                   pupilColor="#2D2D2D"
                   isBlinking={isBlackBlinking}
                   forceLookX={
-                    password.length > 0 && showPassword
-                      ? -4
-                      : isLookingAtEachOther
-                        ? 0
-                        : undefined
+                    isLookingAtEachOther ? 0 : undefined
                   }
                   forceLookY={
-                    password.length > 0 && showPassword
-                      ? -4
-                      : isLookingAtEachOther
-                        ? -4
-                        : undefined
+                    isLookingAtEachOther ? -4 : undefined
                   }
                 />
                 <EyeBall
@@ -490,18 +441,10 @@ function AuthPage() {
                   pupilColor="#2D2D2D"
                   isBlinking={isBlackBlinking}
                   forceLookX={
-                    password.length > 0 && showPassword
-                      ? -4
-                      : isLookingAtEachOther
-                        ? 0
-                        : undefined
+                    isLookingAtEachOther ? 0 : undefined
                   }
                   forceLookY={
-                    password.length > 0 && showPassword
-                      ? -4
-                      : isLookingAtEachOther
-                        ? -4
-                        : undefined
+                    isLookingAtEachOther ? -4 : undefined
                   }
                 />
               </div>
@@ -517,10 +460,7 @@ function AuthPage() {
                 zIndex: 3,
                 backgroundColor: "#FF9B6B",
                 borderRadius: "120px 120px 0 0",
-                transform:
-                  password.length > 0 && showPassword
-                    ? `skewX(0deg)`
-                    : `skewX(${orangePos.bodySkew || 0}deg)`,
+                transform: `skewX(${orangePos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
               }}
             >
@@ -528,37 +468,19 @@ function AuthPage() {
               <div
                 className="absolute flex gap-8 transition-all duration-200 ease-out"
                 style={{
-                  left:
-                    password.length > 0 && showPassword
-                      ? `${50}px`
-                      : `${82 + (orangePos.faceX || 0)}px`,
-                  top:
-                    password.length > 0 && showPassword
-                      ? `${85}px`
-                      : `${90 + (orangePos.faceY || 0)}px`,
+                  left: `${82 + (orangePos.faceX || 0)}px`,
+                  top: `${90 + (orangePos.faceY || 0)}px`,
                 }}
               >
                 <Pupil
                   size={12}
                   maxDistance={5}
                   pupilColor="#2D2D2D"
-                  forceLookX={
-                    password.length > 0 && showPassword ? -5 : undefined
-                  }
-                  forceLookY={
-                    password.length > 0 && showPassword ? -4 : undefined
-                  }
                 />
                 <Pupil
                   size={12}
                   maxDistance={5}
                   pupilColor="#2D2D2D"
-                  forceLookX={
-                    password.length > 0 && showPassword ? -5 : undefined
-                  }
-                  forceLookY={
-                    password.length > 0 && showPassword ? -4 : undefined
-                  }
                 />
               </div>
             </div>
@@ -573,10 +495,7 @@ function AuthPage() {
                 backgroundColor: "#E8D754",
                 borderRadius: "70px 70px 0 0",
                 zIndex: 4,
-                transform:
-                  password.length > 0 && showPassword
-                    ? `skewX(0deg)`
-                    : `skewX(${yellowPos.bodySkew || 0}deg)`,
+                transform: `skewX(${yellowPos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
               }}
             >
@@ -584,51 +503,27 @@ function AuthPage() {
               <div
                 className="absolute flex gap-6 transition-all duration-200 ease-out"
                 style={{
-                  left:
-                    password.length > 0 && showPassword
-                      ? `${20}px`
-                      : `${52 + (yellowPos.faceX || 0)}px`,
-                  top:
-                    password.length > 0 && showPassword
-                      ? `${35}px`
-                      : `${40 + (yellowPos.faceY || 0)}px`,
+                  left: `${52 + (yellowPos.faceX || 0)}px`,
+                  top: `${40 + (yellowPos.faceY || 0)}px`,
                 }}
               >
                 <Pupil
                   size={12}
                   maxDistance={5}
                   pupilColor="#2D2D2D"
-                  forceLookX={
-                    password.length > 0 && showPassword ? -5 : undefined
-                  }
-                  forceLookY={
-                    password.length > 0 && showPassword ? -4 : undefined
-                  }
                 />
                 <Pupil
                   size={12}
                   maxDistance={5}
                   pupilColor="#2D2D2D"
-                  forceLookX={
-                    password.length > 0 && showPassword ? -5 : undefined
-                  }
-                  forceLookY={
-                    password.length > 0 && showPassword ? -4 : undefined
-                  }
                 />
               </div>
               {/* Horizontal line for mouth */}
               <div
                 className="absolute w-20 h-[4px] bg-[#2D2D2D] rounded-full transition-all duration-200 ease-out"
                 style={{
-                  left:
-                    password.length > 0 && showPassword
-                      ? `${10}px`
-                      : `${40 + (yellowPos.faceX || 0)}px`,
-                  top:
-                    password.length > 0 && showPassword
-                      ? `${88}px`
-                      : `${88 + (yellowPos.faceY || 0)}px`,
+                  left: `${40 + (yellowPos.faceX || 0)}px`,
+                  top: `${88 + (yellowPos.faceY || 0)}px`,
                 }}
               />
             </div>
@@ -677,15 +572,13 @@ function AuthPage() {
               className="text-3xl font-bold tracking-tight mb-2"
               style={{ fontFamily: "'Novaklasse', sans-serif" }}
             >
-              {isLoginMode ? "Welcome Back" : "Create Account"}
+              Join the Waitlist
             </h1>
             <p
               className="text-muted-foreground text-sm"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              {isLoginMode
-                ? "Sign in to continue your journey"
-                : "Join MetLL and find your match"}
+              Be among the first to experience MetLL
             </p>
           </div>
 
@@ -695,32 +588,27 @@ function AuthPage() {
             className="space-y-4"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            {/* Name field - only for signup */}
-            {!isLoginMode && (
-              <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-medium"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  autoComplete="name"
-                  onChange={(e) => setName(e.target.value)}
-                  onFocus={() => setIsTyping(true)}
-                  onBlur={() => setIsTyping(false)}
-                  required
-                  className="h-12 bg-background border-border/60 focus:border-primary"
-                />
-              </div>
-            )}
-
-            {/* Email field */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="name"
+                className="text-sm font-medium"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Name
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                autoComplete="off"
+                onChange={(e) => setName(e.target.value)}
+                onFocus={() => setIsTyping(true)}
+                onBlur={() => setIsTyping(false)}
+                required
+                className="h-12 bg-background border-border/60 focus:border-primary"
+              />
+            </div>
             <div className="space-y-2">
               <Label
                 htmlFor="email"
@@ -734,7 +622,7 @@ function AuthPage() {
                 type="email"
                 placeholder="your@email.com"
                 value={email}
-                autoComplete="email"
+                autoComplete="off"
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
@@ -742,93 +630,27 @@ function AuthPage() {
                 className="h-12 bg-background border-border/60 focus:border-primary"
               />
             </div>
-
-            {/* Password field */}
             <div className="space-y-2">
               <Label
-                htmlFor="password"
+                htmlFor="suggestion"
                 className="text-sm font-medium"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Password
+                Suggestion{" "}
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
               </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  autoComplete={isLoginMode ? "current-password" : "new-password"}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setIsTyping(true)}
-                  onBlur={() => setIsTyping(false)}
-                  required
-                  className="h-12 bg-background border-border/60 focus:border-primary pr-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="size-5" />
-                  ) : (
-                    <Eye className="size-5" />
-                  )}
-                </button>
-              </div>
+              <textarea
+                id="suggestion"
+                placeholder="Any features you'd love to see?"
+                value={suggestion}
+                onChange={(e) => setSuggestion(e.target.value)}
+                onFocus={() => setIsTyping(true)}
+                onBlur={() => setIsTyping(false)}
+                className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+              />
             </div>
-
-            {/* Confirm Password field - only for signup */}
-            {!isLoginMode && (
-              <div className="space-y-2">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-medium"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    autoComplete="new-password"
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onFocus={() => setIsTyping(true)}
-                    onBlur={() => setIsTyping(false)}
-                    required
-                    className="h-12 bg-background border-border/60 focus:border-primary pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="size-5" />
-                    ) : (
-                      <Eye className="size-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Forgot Password link - only for login */}
-            {isLoginMode && (
-              <div className="text-right">
-                <a
-                  href="#"
-                  className="text-sm text-primary hover:underline"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Forgot password?
-                </a>
-              </div>
-            )}
 
             {/* Error message */}
             {error && (
@@ -837,7 +659,11 @@ function AuthPage() {
               </div>
             )}
 
-            {/* Submit button */}
+            {error && (
+              <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
+                {error}
+              </div>
+            )}
             <Button
               type="submit"
               className="w-full max-w-[400px] mx-auto h-auto min-h-[56px] py-4 px-8 text-base font-medium text-[#311717] hover:opacity-90 flex flex-col items-center justify-center gap-1"
@@ -846,48 +672,52 @@ function AuthPage() {
               disabled={isLoading}
             >
               <span className="font-semibold">
-                {isLoading
-                  ? isLoginMode
-                    ? "Signing in..."
-                    : "Creating account..."
-                  : isLoginMode
-                    ? "Sign In"
-                    : "Create Account"}
+                {isLoading ? "Joining..." : "Join Waitlist"}
               </span>
             </Button>
           </form>
-
-          {/* Toggle between Login/Signup */}
+          {/* Benefits */}
           <div
-            className="mt-8 text-center text-sm"
+            className="mt-8 space-y-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            <span className="text-muted-foreground">
-              {isLoginMode
-                ? "Don't have an account? "
-                : "Already have an account? "}
-            </span>
-            <button
-              type="button"
-              onClick={toggleMode}
-              className="text-primary font-medium hover:underline"
-            >
-              {isLoginMode ? "Sign up" : "Sign in"}
-            </button>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-xs">✓</span>
+              </div>
+              <span>Early access to the app</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-xs">✓</span>
+              </div>
+              <span>Exclusive launch discounts</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-xs">✓</span>
+              </div>
+              <span>Be part of our founding community</span>
+            </div>
           </div>
-
           {/* Privacy note */}
           <div
             className="text-center text-xs text-muted-foreground mt-8"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            By continuing, you agree to our Terms of Service and Privacy Policy.
+            We respect your privacy. Unsubscribe at any time.
           </div>
         </div>
       </div>
+      {/* Success Dialog */}
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        name={name}
+      />
     </div>
   );
 }
 
-export const Component = AuthPage;
-export default AuthPage;
+export const Component = LoginPage;
+export default LoginPage;
