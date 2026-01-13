@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
-import { SuccessDialog } from "@/components/ui/success-dialog";
-import type { WaitlistRequest, WaitlistResponse } from "@shared/api";
-import { getApiUrl } from "@/lib/api-config";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
 
 interface PupilProps {
   size?: number;
@@ -40,7 +37,6 @@ const Pupil = ({
 
   const calculatePupilPosition = () => {
     if (!pupilRef.current) return { x: 0, y: 0 };
-    // If forced look direction is provided, use that instead of mouse tracking
     if (forceLookX !== undefined && forceLookY !== undefined) {
       return { x: forceLookX, y: forceLookY };
     }
@@ -114,7 +110,6 @@ const EyeBall = ({
 
   const calculatePupilPosition = () => {
     if (!eyeRef.current) return { x: 0, y: 0 };
-    // If forced look direction is provided, use that instead of mouse tracking
     if (forceLookX !== undefined && forceLookY !== undefined) {
       return { x: forceLookX, y: forceLookY };
     }
@@ -162,15 +157,17 @@ const EyeBall = ({
   );
 };
 
-function LoginPage() {
+function AuthPage() {
+  const navigate = useNavigate();
+  const [isLoginMode, setIsLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [suggestion, setSuggestion] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [mouseX, setMouseX] = useState<number>(0);
   const [mouseY, setMouseY] = useState<number>(0);
   const [isPurpleBlinking, setIsPurpleBlinking] = useState(false);
@@ -192,16 +189,15 @@ function LoginPage() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Blinking effect for purple character
   useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000; // Random between 3-7 seconds
+    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
     const scheduleBlink = () => {
       const blinkTimeout = setTimeout(() => {
         setIsPurpleBlinking(true);
         setTimeout(() => {
           setIsPurpleBlinking(false);
           scheduleBlink();
-        }, 150); // Blink duration 150ms
+        }, 150);
       }, getRandomBlinkInterval());
       return blinkTimeout;
     };
@@ -209,16 +205,15 @@ function LoginPage() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Blinking effect for black character
   useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000; // Random between 3-7 seconds
+    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
     const scheduleBlink = () => {
       const blinkTimeout = setTimeout(() => {
         setIsBlackBlinking(true);
         setTimeout(() => {
           setIsBlackBlinking(false);
           scheduleBlink();
-        }, 150); // Blink duration 150ms
+        }, 150);
       }, getRandomBlinkInterval());
       return blinkTimeout;
     };
@@ -226,20 +221,18 @@ function LoginPage() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Looking at each other animation when typing starts
   useEffect(() => {
     if (isTyping) {
       setIsLookingAtEachOther(true);
       const timer = setTimeout(() => {
         setIsLookingAtEachOther(false);
-      }, 800); // Look at each other for 1.5 seconds, then back to tracking mouse
+      }, 800);
       return () => clearTimeout(timer);
     } else {
       setIsLookingAtEachOther(false);
     }
   }, [isTyping]);
 
-  // Purple sneaky peeking animation when typing password and it's visible
   useEffect(() => {
     if (password.length > 0 && showPassword) {
       const schedulePeek = () => {
@@ -248,10 +241,10 @@ function LoginPage() {
             setIsPurplePeeking(true);
             setTimeout(() => {
               setIsPurplePeeking(false);
-            }, 800); // Peek for 800ms
+            }, 800);
           },
           Math.random() * 3000 + 2000,
-        ); // Random peek every 2-5 seconds
+        );
         return peekInterval;
       };
       const firstPeek = schedulePeek();
@@ -265,13 +258,11 @@ function LoginPage() {
     if (!ref.current) return { faceX: 0, faceY: 0, bodySkew: 0 };
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 3; // Focus on head area
+    const centerY = rect.top + rect.height / 3;
     const deltaX = mouseX - centerX;
     const deltaY = mouseY - centerY;
-    // Face movement (limited range)
     const faceX = Math.max(-15, Math.min(15, deltaX / 20));
     const faceY = Math.max(-10, Math.min(10, deltaY / 30));
-    // Body lean (skew for lean while keeping bottom straight) - negative to lean towards mouse
     const bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
     return { faceX, faceY, bodySkew };
   };
@@ -284,48 +275,43 @@ function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!isLoginMode && password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const requestBody: WaitlistRequest = {
-        name: name.trim(),
-        email: email.trim(),
-        suggestion: suggestion.trim() || undefined,
-      };
+      // Simulate auth delay - replace with actual auth logic
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const response = await fetch(getApiUrl("/api/waitlist"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const data: WaitlistResponse = await response.json();
-
-      if (data.success) {
-        // Show success dialog
-        setShowSuccessDialog(true);
-        // Reset form
-        setName("");
-        setEmail("");
-        setSuggestion("");
+      if (!isLoginMode) {
+        // For signup, redirect to onboarding
+        navigate("/onboarding");
       } else {
-        setError(data.error || "Something went wrong. Please try again.");
+        // For login, redirect to home or dashboard
+        navigate("/");
       }
     } catch (err) {
-      console.error("Error submitting waitlist:", err);
-      setError(
-        "Failed to connect to server. Please check your connection and try again.",
-      );
+      console.error("Auth error:", err);
+      setError("Authentication failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const toggleMode = () => {
+    setIsLoginMode(!isLoginMode);
+    setError("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left Content Section */}
+      {/* Left Content Section - Animated Characters */}
       <div
         className="relative hidden lg:flex flex-col justify-between p-12 text-primary-foreground"
         style={{ backgroundColor: "#ffffff" }}
@@ -333,9 +319,7 @@ function LoginPage() {
         <div className="relative z-20">
           <div className="flex items-center gap-2 text-lg font-semibold">
             <div className="size-8 rounded-lg bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center">
-              {/* <Sparkles className="size-4" /> */}
             </div>
-            {/* <span>YourBrand</span> */}
           </div>
         </div>
         <div className="relative z-20 flex items-end justify-center h-[500px]">
@@ -652,7 +636,7 @@ function LoginPage() {
         </div>
         <div className="relative z-20 flex items-center gap-8 text-sm text-primary-foreground/60">
           <a
-            href="#"
+            href="/privacy"
             className="hover:text-primary-foreground transition-colors"
           >
             Privacy Policy
@@ -664,7 +648,7 @@ function LoginPage() {
             Terms of Service
           </a>
           <a
-            href="#"
+            href="/contact"
             className="hover:text-primary-foreground transition-colors"
           >
             Contact
@@ -675,7 +659,8 @@ function LoginPage() {
         <div className="absolute top-1/4 right-1/4 size-64 bg-primary-foreground/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 size-96 bg-primary-foreground/5 rounded-full blur-3xl" />
       </div>
-      {/* Right Waitlist Section */}
+
+      {/* Right Auth Form Section */}
       <div className="flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-[420px]">
           {/* Mobile Logo */}
@@ -685,48 +670,57 @@ function LoginPage() {
             </div>
             <span>MetLL</span>
           </div>
+
           {/* Header */}
           <div className="text-center mb-10">
             <h1
               className="text-3xl font-bold tracking-tight mb-2"
               style={{ fontFamily: "'Novaklasse', sans-serif" }}
             >
-              Join the Waitlist
+              {isLoginMode ? "Welcome Back" : "Create Account"}
             </h1>
             <p
               className="text-muted-foreground text-sm"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Be the first to know when we launch. Get early access!
+              {isLoginMode
+                ? "Sign in to continue your journey"
+                : "Join MetLL and find your match"}
             </p>
           </div>
-          {/* Waitlist Form */}
+
+          {/* Auth Form */}
           <form
             onSubmit={handleSubmit}
             className="space-y-4"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="text-sm font-medium"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                autoComplete="off"
-                onChange={(e) => setName(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                required
-                className="h-12 bg-background border-border/60 focus:border-primary"
-              />
-            </div>
+            {/* Name field - only for signup */}
+            {!isLoginMode && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="name"
+                  className="text-sm font-medium"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  autoComplete="name"
+                  onChange={(e) => setName(e.target.value)}
+                  onFocus={() => setIsTyping(true)}
+                  onBlur={() => setIsTyping(false)}
+                  required
+                  className="h-12 bg-background border-border/60 focus:border-primary"
+                />
+              </div>
+            )}
+
+            {/* Email field */}
             <div className="space-y-2">
               <Label
                 htmlFor="email"
@@ -740,7 +734,7 @@ function LoginPage() {
                 type="email"
                 placeholder="your@email.com"
                 value={email}
-                autoComplete="off"
+                autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
@@ -748,32 +742,102 @@ function LoginPage() {
                 className="h-12 bg-background border-border/60 focus:border-primary"
               />
             </div>
+
+            {/* Password field */}
             <div className="space-y-2">
               <Label
-                htmlFor="suggestion"
+                htmlFor="password"
                 className="text-sm font-medium"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Suggestion{" "}
-                <span className="text-muted-foreground font-normal">
-                  (optional)
-                </span>
+                Password
               </Label>
-              <textarea
-                id="suggestion"
-                placeholder="Any features you'd love to see?"
-                value={suggestion}
-                onChange={(e) => setSuggestion(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  autoComplete={isLoginMode ? "current-password" : "new-password"}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setIsTyping(true)}
+                  onBlur={() => setIsTyping(false)}
+                  required
+                  className="h-12 bg-background border-border/60 focus:border-primary pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-5" />
+                  ) : (
+                    <Eye className="size-5" />
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* Confirm Password field - only for signup */}
+            {!isLoginMode && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    autoComplete="new-password"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
+                    required
+                    className="h-12 bg-background border-border/60 focus:border-primary pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="size-5" />
+                    ) : (
+                      <Eye className="size-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Forgot Password link - only for login */}
+            {isLoginMode && (
+              <div className="text-right">
+                <a
+                  href="#"
+                  className="text-sm text-primary hover:underline"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Forgot password?
+                </a>
+              </div>
+            )}
+
+            {/* Error message */}
             {error && (
               <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
                 {error}
               </div>
             )}
+
+            {/* Submit button */}
             <Button
               type="submit"
               className="w-full max-w-[400px] mx-auto h-auto min-h-[56px] py-4 px-8 text-base font-medium text-[#311717] hover:opacity-90 flex flex-col items-center justify-center gap-1"
@@ -782,53 +846,48 @@ function LoginPage() {
               disabled={isLoading}
             >
               <span className="font-semibold">
-                {isLoading ? "Joining..." : "Join Waitlist"}
+                {isLoading
+                  ? isLoginMode
+                    ? "Signing in..."
+                    : "Creating account..."
+                  : isLoginMode
+                    ? "Sign In"
+                    : "Create Account"}
               </span>
-              {/* <span className="text-xs font-normal"></span> */}
             </Button>
           </form>
-          {/* Benefits */}
+
+          {/* Toggle between Login/Signup */}
           <div
-            className="mt-8 space-y-3"
+            className="mt-8 text-center text-sm"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Early access to the app</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Exclusive launch discounts</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xs">✓</span>
-              </div>
-              <span>Be part of our founding community</span>
-            </div>
+            <span className="text-muted-foreground">
+              {isLoginMode
+                ? "Don't have an account? "
+                : "Already have an account? "}
+            </span>
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-primary font-medium hover:underline"
+            >
+              {isLoginMode ? "Sign up" : "Sign in"}
+            </button>
           </div>
+
           {/* Privacy note */}
           <div
             className="text-center text-xs text-muted-foreground mt-8"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            We respect your privacy. Unsubscribe at any time.
+            By continuing, you agree to our Terms of Service and Privacy Policy.
           </div>
         </div>
       </div>
-      {/* Success Dialog */}
-      <SuccessDialog
-        open={showSuccessDialog}
-        onOpenChange={setShowSuccessDialog}
-        name={name}
-      />
     </div>
   );
 }
 
-export const Component = LoginPage;
-export default LoginPage;
+export const Component = AuthPage;
+export default AuthPage;

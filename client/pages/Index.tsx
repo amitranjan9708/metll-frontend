@@ -3,7 +3,13 @@ import { useEffect, useRef, useState, forwardRef } from "react";
 import AnimatedCharactersLoginPage from "@/components/ui/animated-characters-login-page";
 import { ConicGradientButton } from "@/components/ui/conic-gradient-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, HelpCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // Preloader Component
 function Preloader({ onComplete }: { onComplete: () => void }) {
@@ -85,6 +91,7 @@ export default function Index() {
   const heroRef = useRef<HTMLElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
   const testimonialsRef = useRef<HTMLElement>(null);
+  const faqRef = useRef<HTMLElement>(null);
   const loginRef = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLElement>(null);
 
@@ -108,6 +115,8 @@ export default function Index() {
       const featuresTop = featuresRef.current?.offsetTop ?? Infinity;
       const featuresBottom =
         featuresTop + (featuresRef.current?.offsetHeight ?? 0);
+      const faqTop = faqRef.current?.offsetTop ?? Infinity;
+      const faqBottom = faqTop + (faqRef.current?.offsetHeight ?? 0);
       const loginTop = loginRef.current?.offsetTop ?? Infinity;
       const footerTop = footerRef.current?.offsetTop ?? Infinity;
 
@@ -115,6 +124,7 @@ export default function Index() {
 
       // Dark navbar (black bg) when over:
       // - Features section (white bg)
+      // - FAQ section (white bg)
       // - Login section (white right side)
       // Light navbar (white bg) when over:
       // - Hero section (blue bg)
@@ -123,10 +133,12 @@ export default function Index() {
 
       const isOverFeatures =
         currentPosition >= featuresTop && currentPosition < featuresBottom;
+      const isOverFaq =
+        currentPosition >= faqTop && currentPosition < faqBottom;
       const isOverLogin =
         currentPosition >= loginTop && currentPosition < footerTop;
 
-      setIsDarkNavbar(isOverFeatures || isOverLogin);
+      setIsDarkNavbar(isOverFeatures || isOverFaq || isOverLogin);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -162,25 +174,217 @@ export default function Index() {
         <HeroSection ref={heroRef} />
         <FeaturesSection ref={featuresRef} />
         <TestimonialsSection ref={testimonialsRef} />
-        <LoginSection ref={loginRef} />
+        <FAQSection ref={faqRef} />
+        <AuthSection ref={loginRef} />
         <FooterSection ref={footerRef} />
       </div>
     </>
   );
 }
 
-const LoginSection = forwardRef<HTMLElement>((_, ref) => {
+// FAQ Data
+const faqData = [
+  {
+    question: "How to confess anonymously and date?",
+    answer:
+      "MetLL allows you to confess your feelings anonymously to your crush. Simply provide details about your crush (school, college, office, or location-based). When both parties confess about each other, our AI-powered matching system detects the mutual feelings and reveals the match instantly, allowing you to connect and date.",
+  },
+  {
+    question: "What is MetLL anonymous confession app?",
+    answer:
+      "MetLL is an anonymous confession and matchmaking app where you can confess your secret crush from school, college, office, or any location. Our revolutionary platform uses AI-powered matching to detect mutual feelings. When both parties confess about each other, we reveal the match, enabling genuine connections and dating.",
+  },
+  {
+    question: "How to confess anonymously to your crush?",
+    answer:
+      "On MetLL, you can confess anonymously by providing details about your crush such as their school, college, office, or location. You can also include personality traits, shared moments, or any identifying details. The confession is stored securely. If your crush also confesses about you, we instantly reveal the mutual match, allowing you to connect and date.",
+  },
+  {
+    question: "Is there an app to confess anonymously and get matched?",
+    answer:
+      "Yes, MetLL is the anonymous confession app that matches you when mutual feelings are detected. Confess your secret crush from school, college, office, or anywhere. Our AI algorithm analyzes confessions in real-time. When both parties confess, we reveal the match instantly. Join the waitlist for free early access to the best anonymous confession app for dating.",
+  },
+  {
+    question: "How does anonymous confession and dating work?",
+    answer:
+      "MetLL works by allowing you to anonymously confess about your crush. Our intelligent AI algorithm analyzes all confessions in real-time. When someone confesses about you too, we detect the mutual match and reveal it to both parties instantly. This enables you to connect and date without the awkwardness of direct approaches.",
+  },
+  {
+    question: "Can I confess my crush anonymously and find out if they like me?",
+    answer:
+      "Yes! MetLL lets you confess anonymously about your crush. If your crush also confesses about you, our AI matching system detects the mutual feelings and reveals the match instantly. This way, you can find out if they like you back without the risk of rejection, allowing you to connect and date when feelings are mutual.",
+  },
+  {
+    question: "What is the best anonymous confession app for dating?",
+    answer:
+      "MetLL is the revolutionary anonymous confession app for dating. It allows you to confess your secret crush from school, college, office, or any location. Our AI-powered matching system detects mutual feelings instantly. When both parties confess, we reveal the match, enabling genuine connections and dating. Join the waitlist for free early access to experience the best anonymous confession platform.",
+  },
+  {
+    question: "Is my confession really anonymous?",
+    answer:
+      "Yes, your confession is completely anonymous until a mutual match is detected. We store your confession securely and only reveal it when your crush also confesses about you. Until then, your identity remains completely private. This allows you to express your feelings without fear of rejection or awkwardness.",
+  },
+  {
+    question: "What happens if my crush doesn't confess back?",
+    answer:
+      "If your crush doesn't confess back, your confession remains stored securely and anonymously. There's no pressure or awkwardness - they'll never know unless they also confess about you. You can always update your confession or confess about someone else. The beauty of MetLL is that it only reveals matches when feelings are mutual.",
+  },
+  {
+    question: "Can I use MetLL for school, college, or office crushes?",
+    answer:
+      "Absolutely! MetLL is designed for all types of crushes - school crushes, college crushes, office crushes, and even location-based crushes. Simply provide the relevant details (school name, college name, office name, or location) when making your confession. Our AI matching system works across all these categories to find mutual matches.",
+  },
+];
+
+// FAQ Section Component
+const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Combine refs
+  useEffect(() => {
+    if (
+      forwardedRef &&
+      typeof forwardedRef === "object" &&
+      sectionRef.current
+    ) {
+      (forwardedRef as React.MutableRefObject<HTMLElement | null>).current =
+        sectionRef.current;
+    }
+  }, [forwardedRef]);
+
   return (
-    <section ref={ref} id="waitlist" className="relative z-30">
+    <section
+      ref={sectionRef}
+      className="relative bg-white py-24 md:py-32 lg:py-40 overflow-hidden"
+    >
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-[#A4B8E7]/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-[#5A6FA3]/10 to-transparent rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12 md:mb-16"
+        >
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <HelpCircle className="w-8 h-8 md:w-10 md:h-10 text-[#5A6FA3]" />
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-[#5A6FA3] text-sm md:text-base font-medium tracking-[0.2em] uppercase"
+              style={{ fontFamily: "'Novaklasse', sans-serif" }}
+            >
+              Frequently Asked Questions
+            </motion.p>
+          </div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#311717] mb-4"
+            style={{ fontFamily: "'Novaklasse', sans-serif" }}
+          >
+            Got Questions? We've Got Answers
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="text-lg md:text-xl text-[#311717]/70 max-w-2xl mx-auto"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Everything you need to know about confessing anonymously and finding your match
+          </motion.p>
+        </motion.div>
+
+        {/* FAQ Accordion */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            {faqData.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
+              >
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="border border-[#A4B8E7]/30 rounded-xl px-6 py-2 bg-gradient-to-r from-white to-[#A4B8E7]/5 hover:from-[#A4B8E7]/10 hover:to-[#5A6FA3]/10 transition-all duration-300 shadow-sm hover:shadow-md"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline py-6">
+                    <span
+                      className="text-lg md:text-xl font-semibold text-[#311717] pr-4"
+                      style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                    >
+                      {faq.question}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-[#311717]/80 text-base md:text-lg leading-relaxed pb-6 pt-2">
+                    <p style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {faq.answer}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          className="mt-12 md:mt-16 text-center"
+        >
+          <p
+            className="text-lg md:text-xl text-[#311717]/70 mb-6"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Still have questions?
+          </p>
+          <button
+            onClick={scrollToAuth}
+            className="px-8 md:px-12 py-4 md:py-5 rounded-full bg-gradient-to-r from-[#5A6FA3] to-[#A4B8E7] text-white font-semibold text-base md:text-lg shadow-lg shadow-[#5A6FA3]/30 hover:shadow-xl hover:shadow-[#5A6FA3]/40 transition-all duration-300 hover:scale-105"
+            style={{ fontFamily: "'Novaklasse', sans-serif" }}
+          >
+            Join the Waitlist
+          </button>
+        </motion.div>
+      </div>
+    </section>
+  );
+});
+
+const AuthSection = forwardRef<HTMLElement>((_, ref) => {
+  return (
+    <section ref={ref} id="auth" className="relative z-30">
       <AnimatedCharactersLoginPage />
     </section>
   );
 });
 
-const scrollToWaitlist = () => {
-  const waitlistSection = document.getElementById("waitlist");
-  if (waitlistSection) {
-    waitlistSection.scrollIntoView({ behavior: "smooth" });
+const scrollToAuth = () => {
+  const authSection = document.getElementById("auth");
+  if (authSection) {
+    authSection.scrollIntoView({ behavior: "smooth" });
   }
 };
 
@@ -335,9 +539,8 @@ function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${
-        isDark ? "bg-black/95" : "bg-white/95"
-      }`}
+      className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? "bg-black/95" : "bg-white/95"
+        }`}
     >
       <div className="max-w-[1500px] mx-auto flex items-center justify-between">
         <Link
@@ -386,14 +589,14 @@ function Header({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={scrollToWaitlist}
+            onClick={scrollToAuth}
             className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all duration-300 shadow-md overflow-hidden relative group ${isDark ? "border-white bg-white text-black hover:bg-gray-200" : "border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]"}`}
           >
             <span className="block transition-opacity duration-300 group-hover:opacity-0">
-              JOIN THE WAITLIST
+              GET STARTED
             </span>
             <span className="absolute inset-0 flex items-center justify-center text-[10px] md:text-xs font-normal opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              get free membership
+              Login / Sign up
             </span>
           </button>
 
@@ -472,14 +675,14 @@ function Header({
             </a>
             <button
               onClick={() => {
-                scrollToWaitlist();
+                scrollToAuth();
                 setMobileMenuOpen(false);
               }}
               className={`sm:hidden mt-2 px-4 py-3 rounded-full border-2 text-xs font-medium transition-all text-center ${isDark ? "border-white bg-white text-black" : "border-[#5A6FA3] bg-[#5A6FA3] text-white"}`}
             >
-              <span className="block">JOIN THE WAITLIST</span>
+              <span className="block">GET STARTED</span>
               <span className="text-[10px] font-normal">
-                get free membership
+                Login / Sign up
               </span>
             </button>
           </nav>
@@ -611,7 +814,7 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
           </p>
 
           <button
-            onClick={scrollToWaitlist}
+            onClick={scrollToAuth}
             className="mt-8 px-6 md:px-10 py-4 bg-white text-[#311717] rounded-full font-bold text-sm md:text-base tracking-wide border-2 border-white/50 backdrop-blur-sm transition-all duration-300 active:scale-95 text-center relative overflow-hidden"
             style={{
               boxShadow:
@@ -622,12 +825,12 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
             <span
               className={`block transition-opacity duration-500 ${showMembershipText ? "opacity-0" : "opacity-100"}`}
             >
-              JOIN THE WAITLIST
+              GET STARTED
             </span>
             <span
               className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 font-dm-sans-mobile text-lg md:text-base font-bold ${showMembershipText ? "opacity-100" : "opacity-0"}`}
             >
-              Get Free Membership
+              Login / Sign up
             </span>
           </button>
         </div>
@@ -657,9 +860,9 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
           duration={6}
           blurAmount={4}
           className="mt-6 md:mt-8 h-auto text-sm md:text-base"
-          onClick={scrollToWaitlist}
+          onClick={scrollToAuth}
         >
-          JOIN THE WAITLIST
+          GET STARTED
         </ConicGradientButton>
       </div>
 
@@ -1022,7 +1225,7 @@ function FeatureContent({
 
           {/* CTA Button - hidden on mobile for step 2 and step 4 */}
           <button
-            onClick={scrollToWaitlist}
+            onClick={scrollToAuth}
             className={`group inline-flex flex-wrap items-center gap-2 md:gap-3 px-6 py-3 rounded-full bg-[#5A6FA3] text-white font-medium text-sm md:text-base hover:bg-[#4A5E96] hover:gap-4 shadow-lg shadow-[#5A6FA3]/20 transition-all duration-300 ${feature.step === "02" || feature.step === "04" ? "hidden md:inline-flex" : ""}`}
           >
             <span>Get Started</span>
@@ -1173,48 +1376,48 @@ function FeatureContent({
 
 // Testimonials data
 const testimonials = [
-    {
-        name: "Lavanya",
-        role: "Found her soulmate",
-        content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
-    {
-        name: "Harsh agarwal",
-        role: "Matched with his crush",
-        content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
-    {
-        name: "Jitender Kumar",
-        role: "In a relationship",
-        content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
-    {
-        name: "Vani sharma.",
-        role: "Engaged!",
-        content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
-    {
-        name: "Amrit",
-        role: "Happily married",
-        content: "MetLL changed my life. I found my soulmate here. Thank you for creating such a wonderful platform.",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
-    {
-        name: "Sujal jain",
-        role: "Dating for 1 year",
-        content: "The anonymous confession feature took away all the pressure. Best decision I ever made was using MetLL!",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-        rating: 5,
-    },
+  {
+    name: "Lavanya",
+    role: "Found her soulmate",
+    content: "OMG!! We were in the same class and I have a lowkey crush, but but but introvert me, I can't express him. By chance I posted the confession on Metll and boom we are together now.",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
+  {
+    name: "Harsh agarwal",
+    role: "Matched with his crush",
+    content: "Met on a group trip to Himalayas. She was my trekmate and I liked her in first glance, and wrote a confession for her, next day she also wrote one for me and the rest is history",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
+  {
+    name: "Jitender Kumar",
+    role: "In a relationship",
+    content: "Tired of swiping left and right on other dating apps, remembered my crush of college and he already has a confession for me. Now we are together forever...",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
+  {
+    name: "Vani sharma.",
+    role: "Engaged!",
+    content: "he used to come daily morning for jogging in near by park, finally gathered the courage to express on METLL, and the confession was already waiting for me...",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
+  {
+    name: "Amrit",
+    role: "Happily married",
+    content: "MetLL changed my life. I found my soulmate here. Thank you for creating such a wonderful platform.",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
+  {
+    name: "Sujal jain",
+    role: "Dating for 1 year",
+    content: "The anonymous confession feature took away all the pressure. Best decision I ever made was using MetLL!",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    rating: 5,
+  },
 ];
 
 const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
@@ -1290,18 +1493,18 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         className="absolute bottom-[-15%] left-[-10%] w-[350px] md:w-[550px] lg:w-[750px] h-auto opacity-60 pointer-events-none"
       />
 
-            <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
-                {/* Section header */}
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                    What Our Early Access Users Say
-                </motion.p>
+      <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
+        {/* Section header */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-[#311717] text-sm md:text-base font-medium tracking-[0.15em] uppercase mb-12 md:mb-16 text-left"
+          style={{ fontFamily: "'Novaklasse', sans-serif" }}
+        >
+          What Our Early Access Users Say
+        </motion.p>
 
         {/* Testimonial content */}
         <div className="min-h-[300px] md:min-h-[220px] relative">
