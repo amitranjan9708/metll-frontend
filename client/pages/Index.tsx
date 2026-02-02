@@ -164,9 +164,6 @@ export default function Index() {
           onHomeClick={() => {
             heroRef.current?.scrollIntoView({ behavior: "smooth" });
           }}
-          onAboutClick={() => {
-            featuresRef.current?.scrollIntoView({ behavior: "smooth" });
-          }}
           onContactClick={() => {
             footerRef.current?.scrollIntoView({ behavior: "smooth" });
           }}
@@ -527,12 +524,10 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 function Header({
   isDark,
   onHomeClick,
-  onAboutClick,
   onContactClick,
 }: {
   isDark: boolean;
   onHomeClick: () => void;
-  onAboutClick: () => void;
   onContactClick: () => void;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -565,16 +560,12 @@ function Header({
           >
             Home
           </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              onAboutClick();
-            }}
+          <Link
+            to="/about"
             className="hover:opacity-70 transition-opacity"
           >
             About
-          </a>
+          </Link>
           <a
             href="#"
             onClick={(e) => {
@@ -651,17 +642,13 @@ function Header({
             >
               Home
             </a>
-            <a
-              href="#"
+            <Link
+              to="/about"
               className="py-2 hover:opacity-70 transition-opacity"
-              onClick={(e) => {
-                e.preventDefault();
-                onAboutClick();
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => setMobileMenuOpen(false)}
             >
               About
-            </a>
+            </Link>
             <a
               href="#"
               className="py-2 hover:opacity-70 transition-opacity"
