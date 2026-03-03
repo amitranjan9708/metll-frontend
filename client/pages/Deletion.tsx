@@ -440,6 +440,7 @@ export default function Deletion() {
                                     <ul className="space-y-3">
                                         <li><Link to="/about" className="text-white/70 hover:text-white transition-colors text-sm">About us</Link></li>
                                         <li><Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">Privacy</Link></li>
+                                        <li><Link to="/safety-standards" className="text-white/70 hover:text-white transition-colors text-sm">Child Safety Standards</Link></li>
                                         <li><Link to="/contact" className="text-white/70 hover:text-white transition-colors text-sm">Contact</Link></li>
                                     </ul>
                                 </div>
