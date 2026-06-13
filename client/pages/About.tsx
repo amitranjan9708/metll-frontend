@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function About() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#B8C6E8] via-[#A8B8E0] to-[#98AAD8]">
+      <SEOHead 
+        title="About Us | MetLL - Anonymous Matchmaking"
+        description="Learn about the mission behind MetLL, the revolutionary anonymous confession app changing how we connect and find love."
+        canonicalUrl="https://metll.in/about"
+      />
       <header className="w-full px-4 md:px-8 lg:px-12 py-3 md:py-4 relative z-20">
         <div className="max-w-[1500px] mx-auto flex items-center justify-between">
           <Link to="/" className="text-black text-3xl md:text-4xl font-normal" style={{ fontFamily: "'Lucida Console', Monaco, monospace" }}>

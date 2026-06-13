@@ -3,7 +3,8 @@ import { useEffect, useRef, useState, forwardRef } from "react";
 import AnimatedCharactersLoginPage from "@/components/ui/animated-characters-login-page";
 import { ConicGradientButton } from "@/components/ui/conic-gradient-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Quote, HelpCircle } from "lucide-react";
+import { Star, Quote, HelpCircle, Heart, X, Sparkles } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 import {
   Accordion,
   AccordionContent,
@@ -85,8 +86,190 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+// SIMULATION WIDGET COMPONENT
+function SimulationWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  return (
+    <>
+      {/* Peek Tab & Card Container */}
+      <motion.div 
+        initial={{ x: "100%" }}
+        animate={{ x: isOpen ? "0%" : ["100%", "88%", "100%", "100%"] }}
+        transition={
+          isOpen 
+            ? { type: "spring", stiffness: 300, damping: 30 } 
+            : { duration: 6, repeat: Infinity, ease: "easeInOut", times: [0, 0.1, 0.2, 1] }
+        }
+        className="fixed top-1/2 -translate-y-1/2 right-0 z-40"
+      >
+        {/* The Peek Tab (visible when closed) */}
+        <div 
+          onClick={() => setIsOpen(true)}
+          className={`absolute -left-12 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/30 border-r-0 rounded-l-xl p-2 cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-opacity duration-300 ${isOpen ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-white/20"}`}
+        >
+          <div className="writing-vertical-rl flex items-center justify-center gap-2 text-white font-bold tracking-widest text-sm py-4">
+            <Heart className="w-4 h-4 fill-rose-500 text-rose-500 animate-pulse" />
+            <span style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>TEST MAGIC</span>
+          </div>
+        </div>
+
+        {/* The Glassmorphism Card (adapted from user's snippet to match vibe) */}
+        <div className="w-[340px] bg-white/10 backdrop-blur-xl border-l border-y border-white/30 rounded-l-3xl p-6 shadow-[-10px_10px_30px_rgba(0,0,0,0.2)] flex flex-col relative mr-[-2px]">
+          
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Floating Badges adapted to glass */}
+          <div className="absolute -top-4 -left-6 z-20 bg-gradient-to-r from-orange-400 to-rose-500 text-white px-4 py-1.5 rounded-lg font-bold text-xs shadow-lg rotate-[-6deg]">
+            AI Powered
+          </div>
+          
+          <div className="bg-white/20 rounded-2xl p-4 border border-white/20 text-center mb-4 mt-2">
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="relative shrink-0">
+                <img 
+                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop" 
+                  alt="Avatar" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
+                />
+                <span className="absolute -bottom-1 -right-1 bg-rose-500 rounded-full p-1 shadow-sm">
+                  <Heart className="w-3 h-3 fill-white text-white" />
+                </span>
+              </div>
+              <div className="text-left">
+                <p className="text-[9px] font-mono font-bold uppercase tracking-wider text-rose-300 mb-0.5">Top Confessor</p>
+                <h4 className="text-sm font-black text-white">Amit Kumar</h4>
+                <span className="inline-block bg-white/30 text-white text-[8px] font-mono px-1.5 py-0.5 rounded-full backdrop-blur-sm mt-1">
+                  VERIFIED MATCHED
+                </span>
+              </div>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-white/20 text-left">
+              <p className="text-[11px] font-medium italic text-white/90 leading-relaxed">
+                "I used MetLL to tell my campus crush Tanya. We matched in minutes without any awkwardness!"
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white/5 border border-white/20 rounded-2xl p-4 w-full text-center shadow-inner relative overflow-hidden group">
+            <Heart className="w-6 h-6 text-rose-400 fill-rose-400 mx-auto animate-bounce mb-2" />
+            <span className="block text-sm font-black text-white leading-tight">
+              Want to test the magic?
+            </span>
+            <p className="text-[11px] text-white/70 leading-snug mt-1.5 mb-4">
+              Try writing a secret. Click below to summon an immediate mutual match.
+            </p>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setModalOpen(true);
+              }}
+              className="w-full bg-white hover:bg-gray-100 text-[#311717] text-xs font-bold py-3 px-4 rounded-full transition-all shadow-[0_4px_15px_rgba(255,255,255,0.3)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.4)] hover:-translate-y-0.5"
+            >
+              Simulate Mutual Match! 💖
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Simulation Modal */}
+      <AnimatePresence>
+        {modalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              onClick={() => setModalOpen(false)}
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-gradient-to-b from-[#1A0B1B] to-[#311717] rounded-3xl p-8 shadow-2xl border border-white/10 text-center overflow-hidden"
+            >
+              <button 
+                onClick={() => setModalOpen(false)}
+                className="absolute top-4 right-4 text-white/50 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-rose-500/20 to-transparent pointer-events-none" />
+
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.2 }}
+                className="w-20 h-20 mx-auto bg-gradient-to-br from-rose-400 to-pink-600 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(225,29,72,0.5)]"
+              >
+                <Sparkles className="w-10 h-10 text-white" />
+              </motion.div>
+
+              <motion.h2 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-3xl font-black text-white mb-2"
+                style={{ fontFamily: "'Novaklasse', sans-serif" }}
+              >
+                It's a Match!
+              </motion.h2>
+
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-white/70 mb-8"
+              >
+                You and Tanya from BMS dept both confessed to each other.
+              </motion.p>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left mb-6"
+              >
+                <p className="text-xs text-rose-300 font-bold mb-1 uppercase tracking-wider">The Memory</p>
+                <p className="text-sm text-white/90 italic">
+                  "We were looking for the same macroeconomics textbook on Wednesday. You giggled because both our hands grabbed the book simultaneously. I was wearing red headphones."
+                </p>
+                <p className="text-xs text-white/40 mt-3 flex items-center gap-1">
+                  📍 St. Patrick's College - Library Corridor
+                </p>
+              </motion.div>
+
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                onClick={() => setModalOpen(false)}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold shadow-[0_4px_15px_rgba(225,29,72,0.4)] hover:shadow-[0_6px_25px_rgba(225,29,72,0.6)] transition-all hover:-translate-y-0.5"
+              >
+                Start Chatting Now
+              </motion.button>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 export default function Index() {
   const [isDarkNavbar, setIsDarkNavbar] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const heroRef = useRef<HTMLElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
@@ -99,6 +282,8 @@ export default function Index() {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const navbarHeight = 60;
+
+      setIsAtTop(scrollY < 50);
 
       // If at the very top of the page, always use light navbar
       if (scrollY < 50) {
@@ -158,9 +343,18 @@ export default function Index() {
         {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
       </AnimatePresence>
 
-      <div className="w-full bg-[#A4B8E7] relative pt-14">
+      <SEOHead 
+        title="MetLL - Confess Anonymously & Date | Anonymous Confession App"
+        description="Confess your secret crush anonymously from school, college, office, or anywhere. When mutual feelings are detected, we reveal the match so you can connect and date."
+        keywords="anonymous confession, dating app, secret crush, matchmaking, love, mutual feelings, crush finder"
+      />
+
+      <SimulationWidget />
+
+      <div className="w-full bg-[#A4B8E7] relative pt-0">
         <Header
           isDark={isDarkNavbar}
+          isAtTop={isAtTop}
           onHomeClick={() => {
             heroRef.current?.scrollIntoView({ behavior: "smooth" });
           }}
@@ -523,10 +717,12 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
 
 function Header({
   isDark,
+  isAtTop,
   onHomeClick,
   onContactClick,
 }: {
   isDark: boolean;
+  isAtTop?: boolean;
   onHomeClick: () => void;
   onContactClick: () => void;
 }) {
@@ -534,20 +730,23 @@ function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 backdrop-blur-md shadow-sm transition-all duration-700 ease-in-out ${isDark ? "bg-black/95" : "bg-white/95"
-        }`}
+      className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 transition-all duration-700 ease-in-out ${
+        isAtTop 
+          ? "bg-transparent shadow-none" 
+          : `backdrop-blur-md shadow-sm ${isDark ? "bg-black/95" : "bg-white/95"}`
+      }`}
     >
       <div className="max-w-[1500px] mx-auto flex items-center justify-between">
         <Link
           to="/"
-          className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${isDark ? "text-white" : "text-[#311717]"}`}
+          className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${isAtTop || isDark ? "text-white" : "text-[#311717]"}`}
           style={{ fontFamily: "'Novaklasse', sans-serif" }}
         >
           MetLL
         </Link>
 
         <nav
-          className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isDark ? "text-white" : "text-[#311717]"}`}
+          className={`hidden md:flex items-center gap-6 lg:gap-10 text-base lg:text-lg font-normal transition-colors duration-700 ${isAtTop || isDark ? "text-white drop-shadow-md" : "text-[#311717]"}`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <a
@@ -581,7 +780,13 @@ function Header({
         <div className="flex items-center gap-3">
           <button
             onClick={scrollToAuth}
-            className={`hidden sm:block px-4 md:px-6 py-2 rounded-full border-2 text-xs md:text-sm font-medium transition-all duration-300 shadow-md overflow-hidden relative group ${isDark ? "border-white bg-white text-black hover:bg-gray-200" : "border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96]"}`}
+            className={`hidden sm:block px-4 md:px-6 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 overflow-hidden relative group ${
+              isAtTop 
+                ? "border border-white/30 bg-white/10 backdrop-blur-md text-white shadow-md hover:bg-white/20 hover:border-white/50 hover:-translate-y-0.5" 
+                : isDark 
+                  ? "border-2 border-white bg-white text-black hover:bg-gray-200 shadow-md" 
+                  : "border-2 border-[#5A6FA3] bg-[#5A6FA3] text-white hover:bg-[#4A5E96] shadow-md"
+            }`}
           >
             <span className="block transition-opacity duration-300 group-hover:opacity-0">
               GET STARTED
@@ -591,9 +796,9 @@ function Header({
             </span>
           </button>
 
-          {/* Mobile hamburger menu */}
+          {/* Mobile Menu Toggle Button */}
           <button
-            className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? "text-white hover:bg-white/10" : "text-[#311717] hover:bg-black/5"}`}
+            className={`md:hidden p-2 transition-colors duration-700 ${isAtTop || isDark ? "text-white" : "text-[#311717]"}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <svg
@@ -693,84 +898,19 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
   return (
     <section
       ref={ref}
-      className="relative w-full min-h-0 md:min-h-[63rem] flex flex-col md:flex-row items-start justify-center px-4 md:px-8 lg:px-12 pt-0 md:pt-28 lg:pt-32 pb-0 md:pb-12 overflow-hidden"
+      className="relative w-full min-h-0 md:min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-0"
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute left-[-5%] bottom-[10%] w-[500px] h-[500px] md:w-[835px] md:h-[795px] "></div>
-
-        <div className="absolute right-[5%] top-[15%] w-[400px] h-[400px] md:w-[812px] md:h-[695px]   "></div>
-
-        <svg
-          className="absolute left-[5%] md:left-[7%] top-[15%] w-[800px] md:w-[1319px] h-[60px] md:h-[96px] opacity-55 blur-[20px] hidden md:block"
-          viewBox="0 0 1399 176"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M1126.94 89.1665C852.119 115.067 960.588 136 679.196 136C236.082 86.3281 40 162.481 40 120.744C263.873 107.261 112.566 31.6891 549.504 45.1714C1165.54 21.0451 1671.96 89.1665 1126.94 89.1665Z"
-            fill="#CAE1FE"
-          />
-        </svg>
-
+      {/* DESKTOP ONLY: Light Immersive Background Image */}
+      <div className="hidden md:block absolute inset-0 z-0">
         <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/21e7f575e0ad819c60cd1414087041c754c0922f?width=484"
-          alt=""
-          className="absolute left-[5%] md:left-[7%] top-[25%] md:top-[30%] w-[120px] md:w-[242px] h-[120px] md:h-[242px] rotate-[-14deg] hidden md:block"
-        />
-
-        <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
-          alt=""
-          className="absolute left-[15%] md:left-[20%] top-[40%] md:top-[42%] w-[130px] md:w-[260px] h-[130px] md:h-[260px] hidden md:block"
-        />
-
-        <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/7af30a2a8d500ada144f554e62b4d84cd6010267?width=519"
-          alt=""
-          className="absolute left-[8%] md:left-[11%] top-[-2%] w-[130px] md:w-[260px] h-[130px] md:h-[260px] hidden md:block"
-        />
-      </div>
-
-      <div className="absolute left-0 md:left-4 lg:left-8 top-[20%] md:top-[30%] h-[300px] md:h-[428px] w-full max-w-[50px] md:max-w-[65px] lg:max-w-[80px] bg-white hidden md:flex items-center justify-center overflow-hidden">
-        <p
-          className="text-[#311717] text-[14px] md:text-[16px] lg:text-[19px] whitespace-nowrap -rotate-90"
-          style={{ fontFamily: "'Novaklasse', sans-serif", fontWeight: "600" }}
-        >
-          Your crush is waiting for you....
-        </p>
-      </div>
-
-      {/* Ellipse behind Eiffel Tower */}
-      <div className="absolute left-[-50%] lg:left-[0%] bottom-[-20%] z-[5] pointer-events-none">
-        <img
-          src="/Ellipse 31.svg"
-          alt=""
-          className="w-[400px] md:w-[700px] lg:w-[900px] h-auto"
-        />
-      </div>
-
-      {/* Eiffel Tower - hidden on mobile, shown on desktop */}
-      <div
-        className="hidden md:block absolute left-[-20%] lg:left-[-10%] top-[17%] md:top-[15%] z-10 md:z-20 pointer-events-none"
-        style={{ transform: "translateY(calc(-25% + 80px))" }}
-      >
-        <img
-          src="https://api.builder.io/api/v1/image/assets/TEMP/eb89dd7aca05fa3afa46375542789c2eadeb70ea?width=2070"
-          alt="Eiffel Tower illustration"
-          className="w-auto h-[600px] md:h-[1035px] lg:h-[1035px]"
+          src="/sst.jpg"
+          alt="Couple connecting"
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Mobile-only images - Component 8 and Component 9 stacked */}
-      <div
-        className="md:hidden relative z-10 flex flex-col overflow-hidden"
-        style={{
-          width: "100vw",
-          marginLeft: "-50vw",
-          left: "50%",
-          position: "relative",
-        }}
-      >
+      <div className="md:hidden relative z-10 flex flex-col overflow-hidden w-full">
         <img
           src="/Rectangle 21.png"
           alt=""
@@ -823,43 +963,48 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
         </div>
       </div>
 
-      {/* Main content area - desktop only */}
-      <div className="hidden md:flex max-w-[1500px] w-full mx-auto relative z-20 flex-col items-center pt-4 md:-mt-8 lg:-mt-16 px-4">
-        <h1
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[70px] font-semibold leading-tight text-[#311717] text-center"
-          style={{ fontFamily: "'Novaklasse', sans-serif" }}
+      {/* DESKTOP ONLY: Main Content Area */}
+      <div className="hidden md:flex relative z-20 flex-col items-center justify-center text-center max-w-4xl mx-auto px-4 mt-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          Confess. Connect. Date.
-        </h1>
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight drop-shadow-2xl"
+            style={{ fontFamily: "'Novaklasse', sans-serif" }}
+          >
+            Confess. Connect. Date.
+          </h1>
+        </motion.div>
 
-        <p
-          className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white text-center mt-4 md:mt-6 max-w-[600px]"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
-          Confess Anomously , we match when its mutual.
-        </p>
+          <p
+            className="text-base sm:text-lg md:text-xl font-medium text-white/95 mt-6 max-w-2xl mx-auto leading-relaxed drop-shadow-lg"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Confess Anonymously, we match when it's mutual.
+          </p>
+        </motion.div>
 
-        {/* Desktop ConicGradientButton */}
-        <ConicGradientButton
-          lightColor="#ffffff"
-          backgroundColor="rgba(200, 215, 245, 0.5)"
-          borderWidth={2}
-          duration={6}
-          blurAmount={4}
-          className="mt-6 md:mt-8 h-auto text-sm md:text-base"
-          onClick={scrollToAuth}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="mt-10 md:mt-12 w-full flex justify-center"
         >
-          GET STARTED
-        </ConicGradientButton>
-      </div>
-
-      {/* Images container - hidden on mobile, positioned at bottom-right, BEHIND text */}
-      <div className="hidden md:block absolute right-[5%] bottom-[5%] z-[1] pointer-events-none">
-        <img
-          src="/Component 8.svg"
-          alt=""
-          className="w-[500px] lg:w-[650px] xl:w-[800px] 2xl:w-[900px] h-auto scale-[1.4]"
-        />
+          <button
+            onClick={scrollToAuth}
+            className="px-10 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white rounded-full font-bold text-sm md:text-base tracking-widest shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:bg-white/20 hover:border-white/50 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            GET STARTED
+          </button>
+        </motion.div>
       </div>
     </section>
   );

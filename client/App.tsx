@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -15,30 +16,36 @@ import SafetyStandards from "./pages/SafetyStandards";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import Confession from "./pages/Confession";
+import BlogListing from "./pages/BlogListing";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/deletion" element={<Deletion />} />
-          <Route path="/safety-standards" element={<SafetyStandards />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/confess" element={<Confession />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/deletion" element={<Deletion />} />
+            <Route path="/safety-standards" element={<SafetyStandards />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/confess" element={<Confession />} />
+            <Route path="/blog" element={<BlogListing />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 createRoot(document.getElementById("root")!).render(<App />);
