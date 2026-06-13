@@ -297,13 +297,21 @@ export default function Index() {
         return;
       }
 
-      const featuresTop = featuresRef.current?.offsetTop ?? Infinity;
+      const getAbsoluteTop = (element: HTMLElement | null) => {
+        if (!element) return Infinity;
+        return element.getBoundingClientRect().top + window.scrollY;
+      };
+
+      const featuresTop = getAbsoluteTop(featuresRef.current);
       const featuresBottom =
         featuresTop + (featuresRef.current?.offsetHeight ?? 0);
-      const faqTop = faqRef.current?.offsetTop ?? Infinity;
+      const testimonialsTop = getAbsoluteTop(testimonialsRef.current);
+      const testimonialsBottom =
+        testimonialsTop + (testimonialsRef.current?.offsetHeight ?? 0);
+      const faqTop = getAbsoluteTop(faqRef.current);
       const faqBottom = faqTop + (faqRef.current?.offsetHeight ?? 0);
-      const loginTop = loginRef.current?.offsetTop ?? Infinity;
-      const footerTop = footerRef.current?.offsetTop ?? Infinity;
+      const loginTop = getAbsoluteTop(loginRef.current);
+      const footerTop = getAbsoluteTop(footerRef.current);
 
       const currentPosition = scrollY + navbarHeight;
 
@@ -318,12 +326,17 @@ export default function Index() {
 
       const isOverFeatures =
         currentPosition >= featuresTop && currentPosition < featuresBottom;
+      const isOverTestimonials =
+        currentPosition >= testimonialsTop && currentPosition < testimonialsBottom;
       const isOverFaq =
         currentPosition >= faqTop && currentPosition < faqBottom;
       const isOverLogin =
         currentPosition >= loginTop && currentPosition < footerTop;
 
-      setIsDarkNavbar(isOverFeatures || isOverFaq || isOverLogin);
+      // Keep navbar transparent while over Hero or Features sections
+      setIsAtTop(scrollY < 50 || currentPosition < featuresBottom);
+      
+      setIsDarkNavbar(isOverLogin);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -351,7 +364,7 @@ export default function Index() {
 
       <SimulationWidget />
 
-      <div className="w-full bg-[#A4B8E7] relative pt-0">
+      <div className="w-full bg-white relative pt-0">
         <Header
           isDark={isDarkNavbar}
           isAtTop={isAtTop}
@@ -362,8 +375,15 @@ export default function Index() {
             footerRef.current?.scrollIntoView({ behavior: "smooth" });
           }}
         />
-        <HeroSection ref={heroRef} />
-        <FeaturesSection ref={featuresRef} />
+        {/* Sticky Parallax Wrapper for Hero and Features */}
+        <div className="relative z-0">
+          <div className="sticky top-0 overflow-hidden -z-10">
+            <HeroSection ref={heroRef} />
+          </div>
+          <div className="relative z-10 bg-transparent">
+            <FeaturesSection ref={featuresRef} />
+          </div>
+        </div>
         <TestimonialsSection ref={testimonialsRef} />
         <FAQSection ref={faqRef} />
         <AuthSection ref={loginRef} />
@@ -446,15 +466,15 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-white py-24 md:py-32 lg:py-40 overflow-hidden"
+      className="relative bg-[#A4B8E7] py-24 md:py-32 lg:py-40 overflow-hidden"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-[#A4B8E7]/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-[#5A6FA3]/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#5A6FA3]/20 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 xl:px-24 relative z-10">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -464,13 +484,13 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
           className="text-center mb-12 md:mb-16"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <HelpCircle className="w-8 h-8 md:w-10 md:h-10 text-[#5A6FA3]" />
+            <HelpCircle className="w-8 h-8 md:w-10 md:h-10 text-[#311717]" />
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-[#5A6FA3] text-sm md:text-base font-medium tracking-[0.2em] uppercase"
+              className="text-[#311717]/80 text-sm md:text-base font-medium tracking-[0.2em] uppercase"
               style={{ fontFamily: "'Novaklasse', sans-serif" }}
             >
               Frequently Asked Questions
@@ -505,7 +525,7 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
             {faqData.map((faq, index) => (
               <motion.div
                 key={index}
@@ -516,12 +536,12 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
               >
                 <AccordionItem
                   value={`item-${index}`}
-                  className="border border-[#A4B8E7]/30 rounded-xl px-6 py-2 bg-gradient-to-r from-white to-[#A4B8E7]/5 hover:from-[#A4B8E7]/10 hover:to-[#5A6FA3]/10 transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="border border-white/40 rounded-xl px-6 py-2 bg-white/30 backdrop-blur-xl hover:bg-white/40 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
                 >
                   <AccordionTrigger className="text-left hover:no-underline py-6">
                     <span
-                      className="text-lg md:text-xl font-semibold text-[#311717] pr-4"
-                      style={{ fontFamily: "'Novaklasse', sans-serif" }}
+                      className="text-lg md:text-xl font-bold tracking-wide text-[#311717] pr-4"
+                      style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {faq.question}
                     </span>
@@ -553,8 +573,8 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
           </p>
           <button
             onClick={scrollToAuth}
-            className="px-8 md:px-12 py-4 md:py-5 rounded-full bg-gradient-to-r from-[#5A6FA3] to-[#A4B8E7] text-white font-semibold text-base md:text-lg shadow-lg shadow-[#5A6FA3]/30 hover:shadow-xl hover:shadow-[#5A6FA3]/40 transition-all duration-300 hover:scale-105"
-            style={{ fontFamily: "'Novaklasse', sans-serif" }}
+            className="px-8 md:px-12 py-4 md:py-5 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-[#311717] font-bold text-lg md:text-base tracking-wide shadow-[0_8px_32px_rgba(0,0,0,0.1)] hover:bg-white/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             Join the Waitlist
           </button>
@@ -732,14 +752,18 @@ function Header({
     <header
       className={`fixed top-0 left-0 right-0 w-full px-4 md:px-8 lg:px-12 py-2 z-50 transition-all duration-700 ease-in-out ${
         isAtTop 
-          ? "bg-transparent shadow-none" 
+          ? "bg-white/95 md:bg-transparent shadow-sm md:shadow-none backdrop-blur-md md:backdrop-blur-none" 
           : `backdrop-blur-md shadow-sm ${isDark ? "bg-black/95" : "bg-white/95"}`
       }`}
     >
       <div className="max-w-[1500px] mx-auto flex items-center justify-between">
         <Link
           to="/"
-          className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${isAtTop || isDark ? "text-white" : "text-[#311717]"}`}
+          className={`text-2xl sm:text-3xl md:text-4xl font-semibold transition-colors duration-700 ${
+            isAtTop 
+              ? "text-[#311717] md:text-white" 
+              : (isDark ? "text-white" : "text-[#311717]")
+          }`}
           style={{ fontFamily: "'Novaklasse', sans-serif" }}
         >
           MetLL
@@ -798,7 +822,11 @@ function Header({
 
           {/* Mobile Menu Toggle Button */}
           <button
-            className={`md:hidden p-2 transition-colors duration-700 ${isAtTop || isDark ? "text-white" : "text-[#311717]"}`}
+            className={`md:hidden p-2 transition-colors duration-700 ${
+              isAtTop 
+                ? "text-[#311717]" 
+                : (isDark ? "text-white" : "text-[#311717]")
+            }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <svg
@@ -898,7 +926,7 @@ const HeroSection = forwardRef<HTMLElement>((_, ref) => {
   return (
     <section
       ref={ref}
-      className="relative w-full min-h-0 md:min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-0"
+      className="relative w-full min-h-0 md:min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-[48px] md:pt-0 bg-[#A4B8E7]"
     >
       {/* DESKTOP ONLY: Light Immersive Background Image */}
       <div className="hidden md:block absolute inset-0 z-0">
@@ -1048,463 +1076,108 @@ const features = [
 ];
 
 const FeaturesSection = forwardRef<HTMLElement>((_, forwardedRef) => {
-  const sectionRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const isLockedRef = useRef(false);
-  const touchStartY = useRef(0);
-  const currentIndexRef = useRef(0);
-  const touchProcessedRef = useRef(false);
-  const lastChangeTime = useRef(0);
-  const hasSnappedRef = useRef(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Keep ref in sync with state
   useEffect(() => {
-    currentIndexRef.current = currentIndex;
-  }, [currentIndex]);
-
-  // Combine refs for both internal use and forwarding
-  useEffect(() => {
-    if (
-      forwardedRef &&
-      typeof forwardedRef === "object" &&
-      sectionRef.current
-    ) {
-      (forwardedRef as React.MutableRefObject<HTMLElement | null>).current =
-        sectionRef.current;
+    let interval: NodeJS.Timeout;
+    if (isAutoPlaying) {
+      interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % features.length);
+      }, 3000);
     }
-  }, [forwardedRef]);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, currentIndex]);
 
-  const goToSlide = (newIndex: number) => {
-    if (isLockedRef.current) return false;
-    if (newIndex === currentIndexRef.current || newIndex < 0 || newIndex > 3)
-      return false;
+  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % features.length);
+  const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + features.length) % features.length);
+  const toggleAutoPlay = () => setIsAutoPlaying(!isAutoPlaying);
 
-    const now = Date.now();
-    if (now - lastChangeTime.current < 800) return false;
-
-    isLockedRef.current = true;
-    lastChangeTime.current = now;
-    currentIndexRef.current = newIndex;
-    setCurrentIndex(newIndex);
-
-    setTimeout(() => {
-      isLockedRef.current = false;
-    }, 900);
-
-    return true;
-  };
-
-  // Snap to section when it enters viewport - prevents skipping
-  // Only activate after user has scrolled from the top
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    let hasUserScrolled = false;
-    let observer: IntersectionObserver | null = null;
-
-    // Wait for user to start scrolling before enabling snap
-    const handleFirstScroll = () => {
-      // Only consider it a real scroll if we've moved away from the top
-      if (window.scrollY > 100) {
-        hasUserScrolled = true;
-      }
-    };
-
-    // Delayed setup to avoid triggering on page load
-    const setupTimer = setTimeout(() => {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            // Only snap if user has scrolled and we haven't snapped yet
-            if (
-              entry.isIntersecting &&
-              !hasSnappedRef.current &&
-              hasUserScrolled
-            ) {
-              const rect = section.getBoundingClientRect();
-              // Only snap if we're scrolling into it from above
-              if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
-                hasSnappedRef.current = true;
-                section.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            }
-            // Reset snap flag when leaving section completely
-            if (!entry.isIntersecting) {
-              const rect = section.getBoundingClientRect();
-              if (rect.bottom < 0) {
-                hasSnappedRef.current = false;
-              }
-            }
-          });
-        },
-        { threshold: [0.1, 0.2, 0.3] },
-      );
-
-      observer.observe(section);
-    }, 500); // Wait 500ms before enabling
-
-    window.addEventListener("scroll", handleFirstScroll, { passive: true });
-
-    return () => {
-      clearTimeout(setupTimer);
-      window.removeEventListener("scroll", handleFirstScroll);
-      if (observer) observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      const rect = section.getBoundingClientRect();
-      // Wider catch zone - section is "in view" if any part is visible
-      const isEntering = rect.top > 0 && rect.top < window.innerHeight;
-      const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
-
-      // If entering the section from above while scrolling down, snap to it
-      if (isEntering && e.deltaY > 0 && !hasSnappedRef.current) {
-        e.preventDefault();
-        hasSnappedRef.current = true;
-        section.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-
-      if (!isInView) return;
-
-      const idx = currentIndexRef.current;
-      const canScrollDown = idx < 3;
-      const canScrollUp = idx > 0;
-      const scrollingDown = e.deltaY > 0;
-
-      if ((scrollingDown && canScrollDown) || (!scrollingDown && canScrollUp)) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!isLockedRef.current) {
-          goToSlide(scrollingDown ? idx + 1 : idx - 1);
-        }
-      }
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
-      touchProcessedRef.current = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const rect = section.getBoundingClientRect();
-      const isEntering = rect.top > 0 && rect.top < window.innerHeight;
-      const isInView = rect.top <= 50 && rect.bottom >= window.innerHeight - 50;
-
-      const deltaY = touchStartY.current - e.touches[0].clientY;
-
-      // If entering the section from above while swiping down, snap to it
-      if (isEntering && deltaY > 30 && !hasSnappedRef.current) {
-        e.preventDefault();
-        hasSnappedRef.current = true;
-        section.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-
-      if (!isInView) return;
-
-      const idx = currentIndexRef.current;
-      const canScrollDown = idx < 3;
-      const canScrollUp = idx > 0;
-
-      if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
-        e.preventDefault();
-
-        if (
-          !touchProcessedRef.current &&
-          !isLockedRef.current &&
-          Math.abs(deltaY) > 60
-        ) {
-          touchProcessedRef.current = true;
-
-          if (deltaY > 0 && canScrollDown) {
-            goToSlide(idx + 1);
-          } else if (deltaY < 0 && canScrollUp) {
-            goToSlide(idx - 1);
-          }
-        }
-      }
-    };
-
-    const handleTouchEnd = () => {
-      touchProcessedRef.current = false;
-    };
-
-    // Use window-level listeners to catch scroll before it happens
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
+  const feature = features[currentIndex];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative"
-      style={{ height: "300vh", backgroundColor: "#ffffff" }}
-    >
-      {/* Sticky container - single viewport */}
-      <div
-        className="sticky top-0 h-screen w-full overflow-hidden"
-        style={{ backgroundColor: "#ffffff" }}
-      >
-        {/* Section header - hidden on mobile to avoid overlap */}
-        <div className="absolute top-24 md:top-28 left-8 md:left-16 lg:left-24 z-20 hidden md:block">
-          <p className="text-[#5A6FA3] text-sm md:text-base font-medium tracking-[0.2em] uppercase mb-2">
-            How It Works
-          </p>
-          <h2
-            className="text-2xl md:text-3xl font-bold text-[#311717]"
-            style={{ fontFamily: "'Novaklasse', sans-serif" }}
-          >
-            Simple Steps to Love
-          </h2>
-        </div>
+    <section ref={forwardedRef as any} className="relative min-h-screen py-24 flex items-center justify-center bg-transparent">
+      {/* Background removed to allow Hero section to show through during parallax scroll */}
+      
+      <div className="w-full max-w-[1400px] px-4 md:px-8 xl:px-16 mx-auto">
+        {/* The Glassmorphism Card */}
+        <div className="w-full bg-white/60 backdrop-blur-2xl border border-white/60 rounded-[2.5rem] p-6 sm:p-10 md:p-16 shadow-[0_8px_32px_rgba(0,0,0,0.04)] relative overflow-hidden">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6 relative z-20">
+            <div>
+              <p className="text-[#5A6FA3] text-sm font-bold tracking-[0.2em] uppercase mb-3">How It Works</p>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#311717]" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Simple Steps to Love</h2>
+            </div>
+            
+            {/* Controls */}
+            <div className="flex items-center gap-3">
+              <button onClick={prevSlide} className="p-4 rounded-full bg-white hover:bg-gray-50 border border-black/5 text-[#311717] transition-all shadow-sm">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button onClick={toggleAutoPlay} className="p-4 rounded-full bg-white hover:bg-gray-50 border border-black/5 text-[#311717] transition-all shadow-sm min-w-[54px] flex items-center justify-center">
+                {isAutoPlaying ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 9v6m4-6v6" /></svg>
+                ) : (
+                  <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                )}
+              </button>
+              <button onClick={nextSlide} className="p-4 rounded-full bg-white hover:bg-gray-50 border border-black/5 text-[#311717] transition-all shadow-sm">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          </div>
 
-        {/* Content area */}
-        <div className="relative h-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24 flex items-center">
-          {features.map((feature, index) => (
-            <FeatureContent
-              key={index}
-              feature={feature}
-              index={index}
-              currentIndex={currentIndex}
-            />
-          ))}
+          <div className="relative min-h-[500px] md:min-h-[450px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center w-full h-full"
+              >
+                {/* Text Side */}
+                <div className="space-y-6 md:space-y-8 flex flex-col justify-center h-full">
+                  <div className="flex items-center gap-5">
+                    <span className="text-7xl md:text-8xl lg:text-9xl font-black text-[#A4B8E7]/50" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
+                      {feature.step}
+                    </span>
+                    <div className="h-[3px] flex-1 max-w-[120px] bg-gradient-to-r from-[#A4B8E7] to-transparent rounded-full" />
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#311717] leading-[1.15]" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
+                    {feature.title}
+                  </h3>
+                  
+                  <p className="text-lg md:text-xl text-[#311717]/70 leading-relaxed max-w-lg">
+                    {feature.description}
+                  </p>
+
+                  <div className="pt-4">
+                    <button
+                      onClick={scrollToAuth}
+                      className="group inline-flex flex-wrap items-center gap-3 px-8 py-4 rounded-full bg-[#311717] text-white font-bold text-sm md:text-base hover:bg-black hover:gap-4 shadow-xl shadow-black/10 transition-all duration-300"
+                    >
+                      <span>Get Started</span>
+                      <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Media Side */}
+                <div className="w-full h-[250px] md:h-[450px] bg-black/5 rounded-[2rem] overflow-hidden relative border border-white/50 shadow-inner group">
+                  <img src={feature.image} alt={feature.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
         </div>
       </div>
     </section>
   );
 });
-
-function FeatureContent({
-  feature,
-  index,
-  currentIndex,
-}: {
-  feature: (typeof features)[0];
-  index: number;
-  currentIndex: number;
-}) {
-  const isActive = currentIndex === index;
-  const isPast = index < currentIndex;
-  const isFuture = index > currentIndex;
-
-  return (
-    <div
-      className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24 pt-16 sm:pt-20"
-      style={{
-        opacity: isActive ? 1 : 0,
-        transform: `translateX(${isPast ? -80 : isFuture ? 80 : 0}px) scale(${isActive ? 1 : 0.95})`,
-        pointerEvents: isActive ? "auto" : "none",
-        transition: "all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)",
-        willChange: "transform, opacity",
-      }}
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center w-full max-w-[1400px]">
-        {/* Text content */}
-        <div className="space-y-5 md:space-y-6">
-          {/* Mobile header - shown inline with content */}
-          <div className="md:hidden mb-4">
-            <p className="text-[#5A6FA3] text-xs font-medium tracking-[0.2em] uppercase mb-1">
-              How It Works
-            </p>
-            <h2
-              className="text-xl font-bold text-[#311717]"
-              style={{ fontFamily: "'Novaklasse', sans-serif" }}
-            >
-              Simple Steps to Love
-            </h2>
-          </div>
-
-          {/* Large step number */}
-          <div className="flex items-center gap-4">
-            <span
-              className="text-6xl md:text-7xl lg:text-8xl font-bold text-[#A4B8E7]"
-              style={{ fontFamily: "'Novaklasse', sans-serif" }}
-            >
-              {feature.step}
-            </span>
-            <div className="h-[2px] flex-1 max-w-[100px] bg-gradient-to-r from-[#A4B8E7] to-transparent" />
-          </div>
-
-          {/* Title */}
-          <h3
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#311717] leading-[1.15]"
-            style={{ fontFamily: "'Novaklasse', sans-serif" }}
-          >
-            {feature.title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-base md:text-lg text-[#311717]/70 leading-relaxed max-w-[480px]">
-            {feature.description}
-          </p>
-
-          {/* CTA Button - hidden on mobile for step 2 and step 4 */}
-          <button
-            onClick={scrollToAuth}
-            className={`group inline-flex flex-wrap items-center gap-2 md:gap-3 px-6 py-3 rounded-full bg-[#5A6FA3] text-white font-medium text-sm md:text-base hover:bg-[#4A5E96] hover:gap-4 shadow-lg shadow-[#5A6FA3]/20 transition-all duration-300 ${feature.step === "02" || feature.step === "04" ? "hidden md:inline-flex" : ""}`}
-          >
-            <span>Get Started</span>
-            {/* <span className="text-[10px] md:text-xs font-normal">
-              get free membership
-            </span> */}
-            <svg
-              className="w-5 h-5 transition-transform group-hover:translate-x-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Image or Special Layout */}
-        {feature.isSpecialLayout ? (
-          feature.step === "02" ? (
-            <div className="relative w-full space-y-4 sm:space-y-6 md:space-y-8">
-              {/* Two-column layout for Step 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                {/* LEFT SIDE - Step 2.1 */}
-                <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#A4B8E7]/30">
-                  <h4
-                    className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                  >
-                    Confess About Your Crush
-                  </h4>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Share what you remember about them — college name, their
-                    name, personality traits, shared moments, or any identifying
-                    details.
-                  </p>
-                </div>
-
-                {/* RIGHT SIDE - Step 2.2 */}
-                <div className="bg-gradient-to-br from-[#5A6FA3]/20 to-[#A4B8E7]/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#5A6FA3]/30">
-                  <h4
-                    className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                  >
-                    AI Matching Engine
-                  </h4>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Metll's semantic AI analyzes your confession against
-                    existing confessions in real-time to find potential matches.
-                  </p>
-                </div>
-              </div>
-
-              {/* Step 2.3 - Full width below */}
-              <div className="bg-gradient-to-r from-[#A4B8E7]/20 via-[#5A6FA3]/20 to-[#A4B8E7]/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-[#A4B8E7]/30">
-                <h4
-                  className="text-lg sm:text-xl md:text-2xl font-bold text-[#311717] mb-3 sm:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  Instant Match or Wait
-                </h4>
-                <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  <p>Both confessed? Mutual match revealed instantly</p>
-                  <p>
-                    Only you so far? Confession stored securely until they
-                    confess back.
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Step 4 Special Layout - 3 Blocks */
-            <div className="relative w-full space-y-4 sm:space-y-5 md:space-y-6">
-              {/* Step 4.1 - LEFT SIDE */}
-              <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#A4B8E7]/30 md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  The Moment Matters
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  See someone you like at a café, train, mall, or anywhere.
-                  Instantly confess anonymously on Metll right there. - no
-                  awkward approaches needed.
-                </p>
-              </div>
-
-              {/* Step 4.2 - RIGHT SIDE */}
-              <div className="bg-gradient-to-br from-[#5A6FA3]/20 to-[#A4B8E7]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#5A6FA3]/30 md:ml-auto md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  They Confess Back
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                  If they also write a confession about you that moment, Metll's
-                  AI detects the mutual match instantly.
-                </p>
-              </div>
-
-              {/* Step 4.3 - LEFT SIDE */}
-              <div className="bg-gradient-to-br from-[#A4B8E7]/20 to-[#5A6FA3]/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 lg:p-8 border border-[#A4B8E7]/30 md:max-w-[80%] lg:max-w-[75%]">
-                <h4
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#311717] mb-2 sm:mb-3 md:mb-4"
-                  style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                  Real Connection Unlocked
-                </h4>
-                <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed mb-3 sm:mb-4">
-                  Both revealed immediately. What started as a glance becomes a
-                  real connection, anywhere, anytime.
-                </p>
-                <div className="pt-3 sm:pt-4 border-t border-[#A4B8E7]/30">
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed font-semibold mb-1 sm:mb-2">
-                    Works Everywhere:
-                  </p>
-                  <p className="text-xs sm:text-sm md:text-base text-[#311717]/80 leading-relaxed">
-                    Cafés • Trains • Malls • Campus • Events
-                  </p>
-                </div>
-              </div>
-            </div>
-          )
-        ) : (
-          <div className="relative flex items-center justify-center">
-            {/* Background decoration */}
-            <div className="absolute w-[90%] h-[90%] bg-gradient-to-br from-[#A4B8E7]/30 to-[#5A6FA3]/10 rounded-[2rem] -rotate-3" />
-            <div className="absolute w-[85%] h-[85%] bg-white/50 rounded-[2rem] rotate-2 shadow-xl" />
-
-            <img
-              src={feature.image}
-              alt={feature.title}
-              className="relative w-full max-w-[380px] lg:max-w-[450px] h-auto aspect-square object-cover rounded-[1.5rem] shadow-2xl"
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 // Testimonials data
 const testimonials = [
@@ -1607,11 +1280,10 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
   return (
     <section
       ref={sectionRef}
-      className="py-24 md:py-16 lg:py-20 bg-[#A4B8E7] relative overflow-hidden cursor-default md:min-h-screen md:flex md:items-center"
+      className="py-24 md:py-16 lg:py-20 bg-white relative overflow-hidden cursor-default md:min-h-screen md:flex md:items-center"
       onClick={handleTestimonialClick}
     >
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#A4B8E7] via-[#B5C7EF] to-[#A4B8E7]" />
+      {/* Subtle background gradient removed */}
 
       {/* Decorative Ellipses */}
       <img
@@ -1626,8 +1298,10 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
       />
 
       <div className="max-w-5xl mx-auto md:mr-auto md:ml-12 lg:ml-16 px-6 md:px-12 lg:px-16 relative z-10 w-full">
-        {/* Section header */}
-        <motion.p
+        {/* Glass Card Wrapper */}
+        <div className="w-full bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2rem] p-8 md:p-12 lg:p-16 shadow-[0_8px_32px_rgba(0,0,0,0.05)] relative overflow-hidden">
+          {/* Section header */}
+          <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -1703,6 +1377,7 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
               />
             </button>
           ))}
+        </div>
         </div>
       </div>
     </section>

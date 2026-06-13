@@ -606,7 +606,7 @@ function LoginPage() {
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 required
-                className="h-12 bg-background border-border/60 focus:border-primary"
+                className="h-12 bg-white/50 border-white/80 focus:border-primary backdrop-blur-sm shadow-inner transition-all hover:bg-white/70"
               />
             </div>
             <div className="space-y-2">
@@ -627,7 +627,7 @@ function LoginPage() {
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 required
-                className="h-12 bg-background border-border/60 focus:border-primary"
+                className="h-12 bg-white/50 border-white/80 focus:border-primary backdrop-blur-sm shadow-inner transition-all hover:bg-white/70"
               />
             </div>
             <div className="space-y-2">
@@ -648,19 +648,12 @@ function LoginPage() {
                 onChange={(e) => setSuggestion(e.target.value)}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
-                className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border/60 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                className="w-full min-h-[80px] px-3 py-2 text-sm bg-white/50 border border-white/80 rounded-md focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none backdrop-blur-sm shadow-inner transition-all hover:bg-white/70"
               />
             </div>
 
-            {/* Error message */}
             {error && (
-              <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
-                {error}
-              </div>
-            )}
-
-            {error && (
-              <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">
+              <div className="p-3 text-sm text-red-600 bg-red-100/50 backdrop-blur-md border border-red-200 rounded-lg">
                 {error}
               </div>
             )}
