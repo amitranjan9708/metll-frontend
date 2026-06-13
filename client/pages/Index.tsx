@@ -4,6 +4,7 @@ import AnimatedCharactersLoginPage from "@/components/ui/animated-characters-log
 import { ConicGradientButton } from "@/components/ui/conic-gradient-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, HelpCircle, Heart, X, Sparkles } from "lucide-react";
+import MatchCelebration from "@/components/ui/match-celebration";
 import { SEOHead } from "@/components/SEOHead";
 import {
   Accordion,
@@ -183,89 +184,14 @@ function SimulationWidget() {
       </motion.div>
 
       {/* Simulation Modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-              onClick={() => setModalOpen(false)}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-gradient-to-b from-[#1A0B1B] to-[#311717] rounded-3xl p-8 shadow-2xl border border-white/10 text-center overflow-hidden"
-            >
-              <button
-                onClick={() => setModalOpen(false)}
-                className="absolute top-4 right-4 text-white/50 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-rose-500/20 to-transparent pointer-events-none" />
-
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className="w-20 h-20 mx-auto bg-gradient-to-br from-rose-400 to-pink-600 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(225,29,72,0.5)]"
-              >
-                <Sparkles className="w-10 h-10 text-white" />
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-3xl font-black text-white mb-2"
-                style={{ fontFamily: "'Novaklasse', sans-serif" }}
-              >
-                It's a Match!
-              </motion.h2>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="text-white/70 mb-8"
-              >
-                You and Tanya from BMS dept both confessed to each other.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left mb-6"
-              >
-                <p className="text-xs text-rose-300 font-bold mb-1 uppercase tracking-wider">The Memory</p>
-                <p className="text-sm text-white/90 italic">
-                  "We were looking for the same macroeconomics textbook on Wednesday. You giggled because both our hands grabbed the book simultaneously. I was wearing red headphones."
-                </p>
-                <p className="text-xs text-white/40 mt-3 flex items-center gap-1">
-                  📍 St. Patrick's College - Library Corridor
-                </p>
-              </motion.div>
-
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                onClick={() => setModalOpen(false)}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold shadow-[0_4px_15px_rgba(225,29,72,0.4)] hover:shadow-[0_6px_25px_rgba(225,29,72,0.6)] transition-all hover:-translate-y-0.5"
-              >
-                Start Chatting Now
-              </motion.button>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <MatchCelebration
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        yourName="Amit Kumar"
+        crushName="Tanya"
+        location="Library, Section B"
+        memory="We were looking for the same macroeconomics textbook on Wednesday. You giggled because both our hands grabbed the book simultaneously. I was wearing red headphones."
+      />
     </>
   );
 }
