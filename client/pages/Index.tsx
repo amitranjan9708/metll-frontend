@@ -225,11 +225,10 @@ function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
-        mobileMenuOpen
+      className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${mobileMenuOpen
           ? "bg-[#09090b]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
           : `${navBg} ${isHero ? 'md:bg-transparent md:border-transparent' : ''} ${scrolled ? 'backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-b border-white/[0.06]' : 'border-b border-transparent'}`
-      }`}
+        }`}
       style={{ transitionTimingFunction: "cubic-bezier(0.23, 1, 0.32, 1)" }}
     >
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-3 flex items-center justify-between">
@@ -269,13 +268,12 @@ function Header({
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 active:scale-[0.97] ${
-              isHero
+            className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 active:scale-[0.97] ${isHero
                 ? "bg-white text-black hover:bg-white/90"
                 : navBg === "bg-white" || navBg === "bg-[#fafafa]"
-                ? "bg-black text-white hover:bg-black/90"
-                : "bg-white text-black hover:bg-white/90"
-            }`}
+                  ? "bg-black text-white hover:bg-black/90"
+                  : "bg-white text-black hover:bg-white/90"
+              }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -346,20 +344,20 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   return (
     <section ref={ref} data-nav-bg="bg-[#fafafa]" data-nav-text="text-black" className="relative bg-[#fafafa] py-24 md:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 space-y-24 md:space-y-32">
-        
+
         {/* Feature 1: Swipe Discover */}
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
           >
             <p className="text-teal-600 text-xs font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>Swipe & Discover</p>
             <h3 className="text-4xl md:text-5xl font-bold text-[#09090b] tracking-tight" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Discover the Spark</h3>
             <p className="text-lg text-[#09090b]/60 leading-relaxed max-w-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Prefer the classic way? Dive into our Discover section to swipe through profiles. Left, right, match—find people who vibe with you just like your favorite apps.
+              Waiting for your crush to confess? Try your luck and match with new people in our Discover section. Swipe left, swipe right, and find the spark you've been looking for.
             </p>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-end"
           >
@@ -371,7 +369,7 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
 
         {/* Feature 2: Icebreaker Chatbot */}
         <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
           >
@@ -381,7 +379,7 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
               Matched but don't know what to say? Our AI Icebreaker Chatbot jumps in with fun questions, interactive games, and shared activities to kickstart your conversation effortlessly.
             </p>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-start"
           >
@@ -393,7 +391,7 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
 
         {/* Feature 3: Coffee Dates */}
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
           >
@@ -403,7 +401,7 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
               We believe in real-world connections. Randomly selected matches from our Discover section will be gifted free coffee dates to help you take that spark offline.
             </p>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-end"
           >
