@@ -435,28 +435,28 @@ const features = [
     title: "Confess Anonymously",
     description:
       "Pour out the real feelings for your crush — school, college, office, or anywhere. Your identity stays hidden until feelings are mutual.",
-    image: "https://plus.unsplash.com/premium_photo-1663054774427-55adfb2be76f?w=900&auto=format&fit=crop&q=60",
+    image: "/step1_confess.png",
   },
   {
     step: "02",
     title: "AI Memory Match",
     description:
       "Our intelligent algorithm works behind the scenes. When someone confesses about you too, that's when the magic happens.",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60",
+    image: "/step2_match.png",
   },
   {
     step: "03",
     title: "Crushes at a Locality",
     description:
       "When you're at the same location, anonymously confess to your crush. If they confess back while nearby — instant match.",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=900&auto=format&fit=crop&q=60",
+    image: "/step3_locality.png",
   },
   {
     step: "04",
     title: "Live Confession",
     description:
       "Spot someone at a café, on the train, or anywhere in public. Confess right there — no awkward approaches needed.",
-    image: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&auto=format&fit=crop&q=60",
+    image: "/step4_live.png",
   },
 ];
 
@@ -478,7 +478,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   const feature = features[currentIndex];
 
   return (
-    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-24 md:py-32 lg:py-40 overflow-hidden">
+    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-16 md:py-20 lg:py-24 overflow-hidden">
       {/* Seamless curved separator from hero */}
       <div className="absolute -top-1 left-0 right-0 pointer-events-none z-10">
         <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full block" preserveAspectRatio="none">
@@ -488,7 +488,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 md:mb-20 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-14 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -547,7 +547,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
         </div>
 
         {/* Feature Card */}
-        <div className="relative min-h-[480px] md:min-h-[520px]">
+        <div className="relative min-h-[400px] md:min-h-[440px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -555,7 +555,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: EASE_OUT_STRONG }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
             >
               {/* Text */}
               <div className="space-y-6 md:space-y-8">
@@ -596,7 +596,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
               </div>
 
               {/* Image */}
-              <div className="w-full h-[300px] md:h-[480px] rounded-2xl overflow-hidden relative group">
+              <div className="w-full h-[280px] md:h-[400px] rounded-2xl overflow-hidden relative group">
                 <img
                   src={feature.image}
                   alt={feature.title}
