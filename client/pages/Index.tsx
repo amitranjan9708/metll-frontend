@@ -191,6 +191,7 @@ function Header({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isHero, setIsHero] = useState(true);
   const [navBg, setNavBg] = useState("bg-white");
   const [navText, setNavText] = useState("text-[#09090b]");
 
@@ -211,7 +212,8 @@ function Header({
 
       if (activeSection) {
         setNavBg(activeSection.getAttribute("data-nav-bg") || "bg-white");
-        setNavText(activeSection.getAttribute("data-nav-text") || "text-[#09090b]");
+        setNavText(activeSection.getAttribute("data-nav-text") || "text-black");
+        setIsHero(activeSection.id === "hero");
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -224,38 +226,37 @@ function Header({
       className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
         mobileMenuOpen
           ? "bg-[#09090b]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
-          : `${navBg} md:${scrolled ? "bg-[#09090b]/80" : "bg-transparent"} ${scrolled ? 'backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-b border-white/[0.06]' : 'border-b border-transparent'}`
+          : `${navBg} ${isHero ? 'md:bg-transparent md:border-transparent' : ''} ${scrolled ? 'backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-b border-white/[0.06]' : 'border-b border-transparent'}`
       }`}
       style={{ transitionTimingFunction: "cubic-bezier(0.23, 1, 0.32, 1)" }}
     >
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-3 flex items-center justify-between">
         <Link
           to="/"
-          className={`text-2xl md:text-3xl font-semibold transition-opacity duration-200 hover:opacity-80 active:scale-[0.97] ${mobileMenuOpen ? "text-white" : `${navText} md:text-white`
-            }`}
+          className={`text-2xl md:text-3xl font-semibold transition-opacity duration-200 hover:opacity-80 active:scale-[0.97] ${mobileMenuOpen ? "text-white" : `${navText} ${isHero ? 'md:text-white' : ''}`}`}
           style={{ fontFamily: "'Novaklasse', sans-serif" }}
         >
           MetLL
         </Link>
 
         <nav
-          className="hidden md:flex items-center gap-8 text-sm font-medium text-white/60"
+          className={`hidden md:flex items-center gap-8 text-sm font-medium ${navText} ${isHero ? 'md:text-white' : ''} opacity-80`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); onHomeClick(); }}
-            className="hover:text-white transition-colors duration-200"
+            className="hover:opacity-100 transition-opacity duration-200"
           >
             Home
           </a>
-          <Link to="/about" className="hover:text-white transition-colors duration-200">
+          <Link to="/about" className="hover:opacity-100 transition-opacity duration-200">
             About
           </Link>
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); onContactClick(); }}
-            className="hover:text-white transition-colors duration-200"
+            className="hover:opacity-100 transition-opacity duration-200"
           >
             Contact
           </a>
@@ -266,7 +267,13 @@ function Header({
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-white text-[#09090b] hover:bg-white/90 transition-all duration-200 active:scale-[0.97]"
+            className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 active:scale-[0.97] ${
+              isHero
+                ? "bg-white text-black hover:bg-white/90"
+                : navBg === "bg-white" || navBg === "bg-[#fafafa]"
+                ? "bg-black text-white hover:bg-black/90"
+                : "bg-white text-black hover:bg-white/90"
+            }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -336,9 +343,10 @@ function Header({
 const HeroSection = forwardRef<HTMLElement>((_, ref) => {
   return (
     <section
+      id="hero"
       ref={ref}
       data-nav-bg="bg-white"
-      data-nav-text="text-[#09090b]"
+      data-nav-text="text-black"
       className="relative w-full min-h-0 md:min-h-[100vh] flex flex-col items-center justify-center overflow-hidden pt-[48px] md:pt-0 bg-[#A4B8E7]"
     >
       {/* DESKTOP: Full-bleed background image */}
@@ -470,7 +478,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   const feature = features[currentIndex];
 
   return (
-    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-[#09090b]" className="relative bg-white py-24 md:py-32 lg:py-40 overflow-hidden">
+    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-24 md:py-32 lg:py-40 overflow-hidden">
       {/* Seamless curved separator from hero */}
       <div className="absolute -top-1 left-0 right-0 pointer-events-none z-10">
         <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full block" preserveAspectRatio="none">
@@ -822,7 +830,7 @@ const AppDownloadSection = forwardRef<HTMLElement>((_, ref) => {
   }, []);
 
   return (
-    <section ref={ref} data-nav-bg="bg-[#fafafa]" data-nav-text="text-[#09090b]" className="relative overflow-hidden py-24 md:py-32">
+    <section ref={ref} data-nav-bg="bg-[#fafafa]" data-nav-text="text-black" className="relative overflow-hidden py-24 md:py-32">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-violet-500/10 to-amber-500/10" />
       <div className="absolute inset-0 bg-[#fafafa]" style={{ opacity: 0.92 }} />
@@ -1046,7 +1054,7 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
 
 const AuthSection = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <section ref={ref} id="auth" data-nav-bg="bg-white" data-nav-text="text-[#09090b]" className="relative z-30">
+    <section ref={ref} id="auth" data-nav-bg="bg-white" data-nav-text="text-black" className="relative z-30">
       <AnimatedCharactersLoginPage />
     </section>
   );
