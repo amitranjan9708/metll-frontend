@@ -150,6 +150,7 @@ export default function Index() {
   const downloadRef = useRef<HTMLElement>(null);
   const loginRef = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLElement>(null);
+  const discoverFeaturesRef = useRef<HTMLElement>(null);
 
   return (
     <>
@@ -170,6 +171,7 @@ export default function Index() {
         />
         <HeroSection ref={heroRef} />
         <FeaturesSection ref={featuresRef} />
+        <DiscoverFeaturesSection ref={discoverFeaturesRef} />
         <TestimonialsSection ref={testimonialsRef} />
         <AppDownloadSection ref={downloadRef} />
         <FAQSection ref={faqRef} />
@@ -337,6 +339,84 @@ function Header({
     </header>
   );
 }
+
+// ─── Discover Features Section ──────────────────────────────────────────────────
+
+const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
+  return (
+    <section ref={ref} data-nav-bg="bg-[#fafafa]" data-nav-text="text-black" className="relative bg-[#fafafa] py-24 md:py-32 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 space-y-24 md:space-y-32">
+        
+        {/* Feature 1: Swipe Discover */}
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
+            className="flex-1 space-y-6"
+          >
+            <p className="text-teal-600 text-xs font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>Swipe & Discover</p>
+            <h3 className="text-4xl md:text-5xl font-bold text-[#09090b] tracking-tight" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Discover the Spark</h3>
+            <p className="text-lg text-[#09090b]/60 leading-relaxed max-w-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Prefer the classic way? Dive into our Discover section to swipe through profiles. Left, right, match—find people who vibe with you just like your favorite apps.
+            </p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
+            className="flex-1 w-full flex justify-center lg:justify-end"
+          >
+            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-teal-900/10 border border-black/5 bg-white">
+              <img src="/feature_discover.png" alt="Discover UI" className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Feature 2: Icebreaker Chatbot */}
+        <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
+            className="flex-1 space-y-6"
+          >
+            <p className="text-indigo-600 text-xs font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>AI Companion</p>
+            <h3 className="text-4xl md:text-5xl font-bold text-[#09090b] tracking-tight" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Never Run Out of Words</h3>
+            <p className="text-lg text-[#09090b]/60 leading-relaxed max-w-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              Matched but don't know what to say? Our AI Icebreaker Chatbot jumps in with fun questions, interactive games, and shared activities to kickstart your conversation effortlessly.
+            </p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
+            className="flex-1 w-full flex justify-center lg:justify-start"
+          >
+            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-900/10 border border-black/5 bg-white">
+              <img src="/feature_icebreaker.png" alt="Icebreaker Chatbot UI" className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Feature 3: Coffee Dates */}
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
+            className="flex-1 space-y-6"
+          >
+            <p className="text-rose-600 text-xs font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>MetLL Rewards</p>
+            <h3 className="text-4xl md:text-5xl font-bold text-[#09090b] tracking-tight" style={{ fontFamily: "'Novaklasse', sans-serif" }}>MetLL on Us</h3>
+            <p className="text-lg text-[#09090b]/60 leading-relaxed max-w-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              We believe in real-world connections. Randomly selected matches from our Discover section will be gifted free coffee dates to help you take that spark offline.
+            </p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
+            className="flex-1 w-full flex justify-center lg:justify-end"
+          >
+            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/10 border border-black/5 bg-white">
+              <img src="/feature_coffeedate.png" alt="Free Coffee Date UI" className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+        </div>
+
+      </div>
+    </section>
+  );
+});
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
