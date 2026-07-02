@@ -226,8 +226,8 @@ function Header({
   return (
     <header
       className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${mobileMenuOpen
-          ? "bg-[#09090b]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
-          : `${navBg} ${isHero ? 'md:bg-transparent md:border-transparent' : ''} ${scrolled ? 'backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-b border-white/[0.06]' : 'border-b border-transparent'}`
+        ? "bg-[#09090b]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+        : `${navBg} ${isHero ? 'md:bg-transparent md:border-transparent' : ''} ${scrolled ? 'backdrop-blur-xl shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-b border-white/[0.06]' : 'border-b border-transparent'}`
         }`}
       style={{ transitionTimingFunction: "cubic-bezier(0.23, 1, 0.32, 1)" }}
     >
@@ -269,10 +269,10 @@ function Header({
             target="_blank"
             rel="noopener noreferrer"
             className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 active:scale-[0.97] ${isHero
-                ? "bg-white text-black hover:bg-white/90"
-                : navBg === "bg-white" || navBg === "bg-[#fafafa]"
-                  ? "bg-black text-white hover:bg-black/90"
-                  : "bg-white text-black hover:bg-white/90"
+              ? "bg-white text-black hover:bg-white/90"
+              : navBg === "bg-white" || navBg === "bg-[#fafafa]"
+                ? "bg-black text-white hover:bg-black/90"
+                : "bg-white text-black hover:bg-white/90"
               }`}
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
@@ -342,7 +342,7 @@ function Header({
 
 const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <section ref={ref} data-nav-bg="bg-[#fafafa]" data-nav-text="text-black" className="relative bg-[#fafafa] py-24 md:py-32 overflow-hidden">
+    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-24 md:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 space-y-24 md:space-y-32">
 
         {/* Feature 1: Swipe Discover */}
@@ -405,8 +405,8 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-end"
           >
-            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-rose-900/10 border border-black/5 bg-white">
-              <img src="/feature_coffeedate.png" alt="Free Coffee Date UI" className="w-full h-full object-cover" />
+            <div className="relative  ">
+              <img src="/Cup Of Coffee Animation GIF by Golden Wolf.gif" alt="Free Coffee Date UI" className="w-full h-full object-cover" />
             </div>
           </motion.div>
         </div>
@@ -819,7 +819,10 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
         style={{ background: "radial-gradient(circle, rgba(255,107,107,0.4) 0%, transparent 70%)" }}
       />
 
-      <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-12 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+        
+        {/* Left: Testimonials Text */}
+        <div className="flex-1 w-full max-w-2xl">
         {/* Section Label */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -890,6 +893,21 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
             </button>
           ))}
         </div>
+        </div>
+        
+        {/* Right: GIF Animation */}
+        <motion.div 
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
+          className="flex-1 w-full flex justify-center lg:justify-end relative"
+        >
+          <div className="relative w-full max-w-md aspect-square">
+            <img src="/black and white dark GIF.gif" alt="Testimonials Animation" className="w-full h-full object-cover" />
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );
