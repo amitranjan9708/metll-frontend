@@ -115,15 +115,15 @@ export function SuccessDialog({ open, onOpenChange, name }: SuccessDialogProps) 
               className="text-3xl font-bold text-[#311717]"
               style={{ fontFamily: "'Novaklasse', sans-serif" }}
             >
-              You're In! 🎉
+              Message Sent! 🎉
             </DialogTitle>
             <DialogDescription className="text-base text-[#311717]/70 pt-2">
               {name ? (
                 <>
-                  Welcome to the waitlist, <strong className="text-[#4A5E96]">{name}</strong>!
+                  Thank you for your feedback, <strong className="text-[#4A5E96]">{name}</strong>!
                 </>
               ) : (
-                "Welcome to the waitlist!"
+                "Thank you for reaching out!"
               )}
             </DialogDescription>
           </motion.div>
@@ -136,7 +136,7 @@ export function SuccessDialog({ open, onOpenChange, name }: SuccessDialogProps) 
           className="mt-6 text-center space-y-4"
         >
           <p className="text-sm text-[#311717]/60" style={{ fontFamily: "Narnoor, Georgia, serif" }}>
-            We'll notify you as soon as we launch. Get ready for something amazing!
+            We've received your message and our team will review it shortly.
           </p>
           <motion.button
             onClick={() => onOpenChange(false)}

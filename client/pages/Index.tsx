@@ -1138,7 +1138,7 @@ const FAQSection = forwardRef<HTMLElement>((_, forwardedRef) => {
             className="rounded-full px-8 py-5 border-white/[0.08] bg-white/[0.03] text-white/70 hover:bg-white/[0.06] hover:text-white hover:border-white/[0.12] transition-all duration-200 active:scale-[0.97] text-sm"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Join the Waitlist
+            Write to Us
           </Button>
         </motion.div>
       </div>

@@ -572,13 +572,13 @@ function LoginPage() {
               className="text-3xl font-bold tracking-tight mb-2"
               style={{ fontFamily: "'Novaklasse', sans-serif" }}
             >
-              Join the Waitlist
+              Feedback & Write to Us
             </h1>
             <p
               className="text-muted-foreground text-sm"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Be among the first to experience MetLL
+              We'd love to hear your thoughts or answer your questions
             </p>
           </div>
 
@@ -636,14 +636,12 @@ function LoginPage() {
                 className="text-sm font-medium"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Suggestion{" "}
-                <span className="text-muted-foreground font-normal">
-                  (optional)
-                </span>
+                Message
               </Label>
               <textarea
                 id="suggestion"
-                placeholder="Any features you'd love to see?"
+                required
+                placeholder="Your message or feedback here..."
                 value={suggestion}
                 onChange={(e) => setSuggestion(e.target.value)}
                 onFocus={() => setIsTyping(true)}
@@ -665,7 +663,7 @@ function LoginPage() {
               disabled={isLoading}
             >
               <span className="font-semibold">
-                {isLoading ? "Joining..." : "Join Waitlist"}
+                {isLoading ? "Sending..." : "Send Message"}
               </span>
             </Button>
           </form>
@@ -678,19 +676,19 @@ function LoginPage() {
               <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-primary text-xs">✓</span>
               </div>
-              <span>Early access to the app</span>
+              <span>We read every message</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-primary text-xs">✓</span>
               </div>
-              <span>Exclusive launch discounts</span>
+              <span>Help us improve MetLL</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-primary text-xs">✓</span>
               </div>
-              <span>Be part of our founding community</span>
+              <span>Direct line to our team</span>
             </div>
           </div>
           {/* Privacy note */}
