@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles } from "lucide-react";
 import { SuccessDialog } from "@/components/ui/success-dialog";
-import type { WaitlistRequest, WaitlistResponse } from "@shared/api";
+
 import { getApiUrl } from "@/lib/api-config";
 
 interface PupilProps {
@@ -277,13 +277,13 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
-      const requestBody: WaitlistRequest = {
+      const requestBody = {
         name: name.trim(),
         email: email.trim(),
         suggestion: suggestion.trim() || undefined,
       };
 
-      const response = await fetch(getApiUrl("/api/waitlist"), {
+      const response = await fetch(getApiUrl("/api/feedback"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -291,7 +291,7 @@ function LoginPage() {
         body: JSON.stringify(requestBody),
       });
 
-      const data: WaitlistResponse = await response.json();
+      const data = await response.json();
 
       if (data.success) {
         // Show success dialog

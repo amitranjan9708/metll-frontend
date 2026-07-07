@@ -254,6 +254,9 @@ function Header({
           <Link to="/about" className="hover:opacity-100 transition-opacity duration-200">
             About
           </Link>
+          <Link to="/careers" className="hover:opacity-100 transition-opacity duration-200">
+            Careers
+          </Link>
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); onContactClick(); }}
@@ -316,6 +319,9 @@ function Header({
               </a>
               <Link to="/about" className="py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-white transition-all duration-200" onClick={() => setMobileMenuOpen(false)}>
                 About
+              </Link>
+              <Link to="/careers" className="py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-white transition-all duration-200" onClick={() => setMobileMenuOpen(false)}>
+                Careers
               </Link>
               <a href="#" className="py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-white transition-all duration-200" onClick={(e) => { e.preventDefault(); onContactClick(); setMobileMenuOpen(false); }}>
                 Contact
@@ -1191,6 +1197,22 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
               >
                 MetLL
               </h3>
+              <div className="flex flex-col gap-1 mb-6">
+                <Link
+                  to="/about"
+                  className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm"
+                  style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+                >
+                  About
+                </Link>
+                <Link
+                  to="/careers"
+                  className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm"
+                  style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
+                >
+                  Careers
+                </Link>
+              </div>
               <p
                 className="text-white/30 text-sm leading-relaxed mb-6"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -1209,6 +1231,7 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
                 <h4 className="text-white/50 font-semibold text-xs uppercase tracking-wider mb-4">Company</h4>
                 <ul className="space-y-3">
                   <li><Link to="/about" className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm">About</Link></li>
+                  <li><Link to="/careers" className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm">Careers</Link></li>
                   <li><Link to="/privacy" className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm">Privacy</Link></li>
                   <li><Link to="/contact" className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm">Contact</Link></li>
                   <li><Link to="/safety-standards" className="text-white/30 hover:text-white/60 transition-colors duration-200 text-sm">Safety</Link></li>
