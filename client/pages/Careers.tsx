@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { SEOHead } from "@/components/SEOHead";
 import { getApiUrl } from "@/lib/api-config";
-import { MapPin, Briefcase, Clock, Building } from "lucide-react";
+import { MapPin, Briefcase, Clock, Building, X, Upload } from "lucide-react";
 
 interface Job {
   id: number;
@@ -18,6 +18,22 @@ interface Job {
 export default function Careers() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+  const [applySuccess, setApplySuccess] = useState(false);
+  const [applyError, setApplyError] = useState("");
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    qualification: "",
+    interest: "",
+    experience: ""
+  });
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchJobs();
@@ -34,6 +50,72 @@ export default function Careers() {
       console.error("Failed to fetch jobs", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setResumeFile(e.target.files[0]);
+    }
+  };
+
+  const closeApplyModal = () => {
+    setSelectedJob(null);
+    setApplySuccess(false);
+    setApplyError("");
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      location: "",
+      qualification: "",
+      interest: "",
+      experience: ""
+    });
+    setResumeFile(null);
+  };
+
+  const handleApplySubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!selectedJob) return;
+    if (!resumeFile) {
+      setApplyError("Please attach your resume");
+      return;
+    }
+
+    setIsApplying(true);
+    setApplyError("");
+    
+    const submitData = new FormData();
+    submitData.append("name", formData.name);
+    submitData.append("email", formData.email);
+    submitData.append("phone", formData.phone);
+    submitData.append("location", formData.location);
+    submitData.append("qualification", formData.qualification);
+    submitData.append("interest", formData.interest);
+    if (formData.experience) submitData.append("experience", formData.experience);
+    submitData.append("resume", resumeFile);
+
+    try {
+      const response = await fetch(getApiUrl(`/api/jobs/${selectedJob.id}/apply`), {
+        method: "POST",
+        body: submitData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setApplySuccess(true);
+      } else {
+        setApplyError(data.message || "Failed to submit application");
+      }
+    } catch (error) {
+      setApplyError("An error occurred. Please try again.");
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -117,13 +199,13 @@ export default function Careers() {
                     </div>
                     
                     <div className="md:w-auto w-full pt-2 md:pt-0">
-                      <a 
-                        href={`mailto:careers@metll.in?subject=Application for ${job.title}`}
-                        className="inline-flex items-center justify-center w-full md:w-auto px-8 py-3 rounded-xl bg-[#4A5E96] text-white font-medium hover:bg-[#3A4A7A] transition-colors"
+                      <button 
+                        onClick={() => setSelectedJob(job)}
+                        className="inline-flex items-center justify-center w-full md:w-auto px-8 py-3 rounded-xl bg-[#4A5E96] text-white font-medium hover:bg-[#3A4A7A] transition-colors cursor-pointer"
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       >
                         Apply Now
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -132,6 +214,189 @@ export default function Careers() {
           )}
         </div>
       </div>
+
+      {/* Application Modal */}
+      {selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <button 
+              onClick={closeApplyModal}
+              className="absolute top-4 right-4 p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="p-6 md:p-8">
+              <h2 className="text-2xl font-bold text-[#311717] mb-1" style={{ fontFamily: "'Novaklasse', sans-serif" }}>
+                Apply for {selectedJob.title}
+              </h2>
+              <p className="text-[#311717]/60 mb-8">{selectedJob.department} • {selectedJob.location}</p>
+              
+              {applySuccess ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-[#311717] mb-2" style={{ fontFamily: "'Novaklasse', sans-serif" }}>Application Submitted!</h3>
+                  <p className="text-[#311717]/70 mb-6">Thank you for applying. We will review your application and get back to you soon.</p>
+                  <button 
+                    onClick={closeApplyModal}
+                    className="px-6 py-2 bg-[#4A5E96] text-white rounded-lg font-medium hover:bg-[#3A4A7A] transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplySubmit} className="space-y-5">
+                  {applyError && (
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                      {applyError}
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#311717]">Full Name *</label>
+                      <input 
+                        type="text" 
+                        name="name"
+                        required 
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#311717]">Email Address *</label>
+                      <input 
+                        type="email" 
+                        name="email"
+                        required 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#311717]">Phone Number *</label>
+                      <input 
+                        type="tel" 
+                        name="phone"
+                        required 
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all"
+                        placeholder="+1 234 567 8900"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-[#311717]">Current Location *</label>
+                      <input 
+                        type="text" 
+                        name="location"
+                        required 
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all"
+                        placeholder="City, Country"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-[#311717]">Highest Qualification *</label>
+                    <input 
+                      type="text" 
+                      name="qualification"
+                      required 
+                      value={formData.qualification}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all"
+                      placeholder="e.g. B.Tech in Computer Science"
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-[#311717]">Why are you interested in this position? *</label>
+                    <textarea 
+                      name="interest"
+                      required 
+                      rows={3}
+                      value={formData.interest}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all resize-none"
+                      placeholder="Tell us why you'd be a great fit..."
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-[#311717]">Previous Experience (if any)</label>
+                    <textarea 
+                      name="experience"
+                      rows={3}
+                      value={formData.experience}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4A5E96]/30 focus:border-[#4A5E96] transition-all resize-none"
+                      placeholder="Briefly describe your relevant past experience..."
+                    />
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-[#311717]">Resume / CV (PDF or DOC) *</label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[#4A5E96] transition-colors relative">
+                      <div className="space-y-1 text-center">
+                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                        <div className="flex text-sm text-gray-600 justify-center">
+                          <label className="relative cursor-pointer bg-white rounded-md font-medium text-[#4A5E96] hover:text-[#3A4A7A] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#4A5E96]">
+                            <span>{resumeFile ? resumeFile.name : "Upload a file"}</span>
+                            <input 
+                              type="file" 
+                              className="sr-only" 
+                              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                              onChange={handleFileChange}
+                              required
+                            />
+                          </label>
+                        </div>
+                        {!resumeFile && <p className="text-xs text-gray-500">PDF, DOC up to 10MB</p>}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                    <button 
+                      type="button" 
+                      onClick={closeApplyModal}
+                      className="px-5 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={isApplying}
+                      className="px-6 py-2.5 rounded-lg font-medium text-white bg-[#4A5E96] hover:bg-[#3A4A7A] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isApplying ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit Application"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
