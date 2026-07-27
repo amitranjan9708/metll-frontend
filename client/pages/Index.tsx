@@ -631,7 +631,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
         </div>
 
         {/* Feature Card */}
-        <div className="relative min-h-[400px] md:min-h-[440px]">
+        <div className="relative min-h-[720px] sm:min-h-[650px] lg:min-h-[440px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
