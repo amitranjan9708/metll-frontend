@@ -566,7 +566,7 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
       {/* Seamless curved separator from hero */}
       <div className="absolute -top-1 left-0 right-0 pointer-events-none z-10 text-background">
         <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full block" preserveAspectRatio="none">
-          <path d="M0 0H1440V40C1440 62.0914 1421.09 80 1399 80H41C18.9086 80 0 62.0914 0 40V0Z" fill="white" />
+          <path d="M0 0H1440V40C1440 62.0914 1421.09 80 1399 80H41C18.9086 80 0 62.0914 0 40V0Z" fill="currentColor" />
         </svg>
       </div>
 
