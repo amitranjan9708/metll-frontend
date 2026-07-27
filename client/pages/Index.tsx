@@ -348,11 +348,11 @@ function Header({
 
 const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-24 md:py-32 overflow-hidden">
+    <section ref={ref} data-nav-bg="bg-background" data-nav-text="text-foreground" className="relative bg-background py-24 md:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 space-y-24 md:space-y-32">
 
         {/* Feature 1: Swipe Discover */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16 shadow-neo-inner p-8 lg:p-12 rounded-[3rem] bg-white">
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
@@ -367,14 +367,14 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-end"
           >
-            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-teal-900/10 border border-black/5 bg-white">
+            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-2xl overflow-hidden shadow-neo-inner">
               <img src="/feature_discover.png" alt="Discover UI" className="w-full h-full object-cover" />
             </div>
           </motion.div>
         </div>
 
         {/* Feature 2: Icebreaker Chatbot */}
-        <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 shadow-neo-inner p-8 lg:p-12 rounded-[3rem] bg-white">
           <motion.div
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
@@ -389,14 +389,14 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-start"
           >
-            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-900/10 border border-black/5 bg-white">
+            <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-2xl overflow-hidden shadow-neo-inner">
               <img src="/feature_icebreaker.png" alt="Icebreaker Chatbot UI" className="w-full h-full object-cover" />
             </div>
           </motion.div>
         </div>
 
         {/* Feature 3: Coffee Dates */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16 shadow-neo-inner p-8 lg:p-12 rounded-[3rem] bg-white">
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG }}
             className="flex-1 space-y-6"
@@ -411,7 +411,7 @@ const DiscoverFeaturesSection = forwardRef<HTMLElement>((_, ref) => {
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, ease: EASE_OUT_STRONG, delay: 0.2 }}
             className="flex-1 w-full flex justify-center lg:justify-end"
           >
-            <div className="relative  ">
+            <div className="relative">
               <img src="/Cup Of Coffee Animation GIF by Golden Wolf.gif" alt="Free Coffee Date UI" className="w-full h-full object-cover" />
             </div>
           </motion.div>
@@ -562,9 +562,9 @@ const FeaturesSection = forwardRef<HTMLElement>((_, ref) => {
   const feature = features[currentIndex];
 
   return (
-    <section ref={ref} data-nav-bg="bg-white" data-nav-text="text-black" className="relative bg-white py-16 md:py-20 lg:py-24 overflow-hidden">
+    <section ref={ref} data-nav-bg="bg-background" data-nav-text="text-foreground" className="relative bg-background py-16 md:py-20 lg:py-24 overflow-hidden">
       {/* Seamless curved separator from hero */}
-      <div className="absolute -top-1 left-0 right-0 pointer-events-none z-10">
+      <div className="absolute -top-1 left-0 right-0 pointer-events-none z-10 text-background">
         <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full block" preserveAspectRatio="none">
           <path d="M0 0H1440V40C1440 62.0914 1421.09 80 1399 80H41C18.9086 80 0 62.0914 0 40V0Z" fill="white" />
         </svg>
@@ -826,83 +826,83 @@ const TestimonialsSection = forwardRef<HTMLElement>((_, forwardedRef) => {
       />
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 xl:px-16 relative z-10 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-        
+
         {/* Left: Testimonials Text */}
         <div className="flex-1 w-full max-w-2xl">
-        {/* Section Label */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, ease: EASE_OUT_STRONG }}
-          className="text-white/30 text-xs font-semibold tracking-[0.2em] uppercase mb-16 md:mb-20"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          What Our Early Access Users Say
-        </motion.p>
+          {/* Section Label */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, ease: EASE_OUT_STRONG }}
+            className="text-white/30 text-xs font-semibold tracking-[0.2em] uppercase mb-16 md:mb-20"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            What Our Early Access Users Say
+          </motion.p>
 
-        {/* Testimonial Content */}
-        <div className="min-h-[280px] md:min-h-[240px] relative cursor-pointer" onClick={() => { setActiveIndex((prev) => (prev + 1) % testimonials.length); setProgress(0); }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.4, ease: EASE_OUT_STRONG }}
-              className="absolute inset-0"
-            >
-              {/* Quote */}
-              <svg className="w-8 h-8 md:w-10 md:h-10 text-white/10 mb-6" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
-              </svg>
-
-              <p
-                className="text-white/90 text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed mb-8"
-                style={{ fontFamily: "'Crimson Pro', serif" }}
-              >
-                {testimonials[activeIndex].content}
-              </p>
-
-              <div className="flex items-center gap-3">
-
-                <div>
-                  <p className="text-white/70 text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    {testimonials[activeIndex].name}
-                  </p>
-                  <p className="text-white/30 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    {testimonials[activeIndex].role}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Progress Bars */}
-        <div className="flex gap-2 mt-10">
-          {testimonials.map((_, index) => (
-            <button
-              key={index}
-              onClick={(e) => { e.stopPropagation(); setActiveIndex(index); setProgress(0); }}
-              className="flex-1 h-[2px] bg-white/[0.06] rounded-full overflow-hidden transition-colors duration-200 hover:bg-white/[0.1]"
-              aria-label={`Go to testimonial ${index + 1}`}
-            >
+          {/* Testimonial Content */}
+          <div className="min-h-[280px] md:min-h-[240px] relative cursor-pointer" onClick={() => { setActiveIndex((prev) => (prev + 1) % testimonials.length); setProgress(0); }}>
+            <AnimatePresence mode="wait">
               <motion.div
-                className="h-full bg-white/40 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{
-                  width: index === activeIndex ? `${progress}%` : index < activeIndex ? "100%" : "0%",
-                }}
-                transition={{ duration: 0.05, ease: "linear" }}
-              />
-            </button>
-          ))}
+                key={activeIndex}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.4, ease: EASE_OUT_STRONG }}
+                className="absolute inset-0"
+              >
+                {/* Quote */}
+                <svg className="w-8 h-8 md:w-10 md:h-10 text-white/10 mb-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
+                </svg>
+
+                <p
+                  className="text-white/90 text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed mb-8"
+                  style={{ fontFamily: "'Crimson Pro', serif" }}
+                >
+                  {testimonials[activeIndex].content}
+                </p>
+
+                <div className="flex items-center gap-3">
+
+                  <div>
+                    <p className="text-white/70 text-sm font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {testimonials[activeIndex].name}
+                    </p>
+                    <p className="text-white/30 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {testimonials[activeIndex].role}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Progress Bars */}
+          <div className="flex gap-2 mt-10">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={(e) => { e.stopPropagation(); setActiveIndex(index); setProgress(0); }}
+                className="flex-1 h-[2px] bg-white/[0.06] rounded-full overflow-hidden transition-colors duration-200 hover:bg-white/[0.1]"
+                aria-label={`Go to testimonial ${index + 1}`}
+              >
+                <motion.div
+                  className="h-full bg-white/40 rounded-full"
+                  initial={{ width: "0%" }}
+                  animate={{
+                    width: index === activeIndex ? `${progress}%` : index < activeIndex ? "100%" : "0%",
+                  }}
+                  transition={{ duration: 0.05, ease: "linear" }}
+                />
+              </button>
+            ))}
+          </div>
         </div>
-        </div>
-        
+
         {/* Right: GIF Animation */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}

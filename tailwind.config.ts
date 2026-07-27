@@ -13,6 +13,11 @@ export default {
       },
     },
     extend: {
+      boxShadow: {
+        'neo-outer': '8px 8px 16px #d1d5db, -8px -8px 16px #ffffff',
+        'neo-inner': 'inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff',
+        'neo-active': 'inset 2px 2px 5px #d1d5db, inset -2px -2px 5px #ffffff',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
