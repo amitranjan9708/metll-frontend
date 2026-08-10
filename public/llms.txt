@@ -1,0 +1,32 @@
+# MetLL
+
+> MetLL is an anonymous confession and AI-powered matchmaking app for Android. Users confess their secret crush anonymously — from school, college, the office, or any location. When mutual feelings are detected, MetLL instantly reveals the match so both people can connect and date.
+
+MetLL is free to use. Available now on Google Play. iOS coming soon.
+
+## Core Pages
+
+- [Home](https://metll.in/): Landing page with full product overview, features, and waitlist signup.
+- [About](https://metll.in/about): Story behind MetLL and the team.
+- [Safety Standards](https://metll.in/safety-standards): How MetLL protects user privacy and ensures safe, anonymous confessions.
+- [Contact](https://metll.in/contact): Get in touch with the MetLL team.
+
+## Blog Posts
+
+- [How to Anonymously Confess to Your Crush](https://metll.in/blog/how-to-anonymously-confess-to-your-crush): Step-by-step guide on confessing your feelings without revealing your identity.
+- [Signs Your Coworker Has a Crush on You](https://metll.in/blog/signs-your-coworker-has-a-crush-on-you): Reading the subtle signals in office environments.
+- [Location-Based Dating: Future of Matchmaking](https://metll.in/blog/location-based-dating-future-of-matchmaking): How proximity and location change how people find love.
+- [Psychology of Having a Crush](https://metll.in/blog/psychology-of-having-a-crush): The science and emotion behind crushes and infatuation.
+- [College Romance: How to Date on Campus](https://metll.in/blog/college-romance-how-to-date-on-campus): Navigating relationships in a college setting.
+- [Is It Just a Crush or True Love?](https://metll.in/blog/is-it-just-a-crush-or-true-love): How to tell the difference between a passing crush and genuine love.
+- [How to Deal With Rejection and Move On Gracefully](https://metll.in/blog/how-to-deal-with-rejection-and-move-on-gracefully): Healthy coping strategies after a confession doesn't go as hoped.
+- [The Rise of Introvert Dating](https://metll.in/blog/the-rise-of-introvert-dating): Why anonymous platforms are ideal for introverts looking to connect.
+- [Long-Distance Crushes: Should You Confess?](https://metll.in/blog/long-distance-crushes-should-you-confess): Weighing the pros and cons of confessing to someone far away.
+
+## App Download
+
+- [Download MetLL on Google Play](https://play.google.com/store/apps/details?id=com.metll.app): Free download, Android.
+
+## Full Content
+
+- [Full site content in Markdown](https://metll.in/llms-full.txt): Complete text of MetLL's key pages for AI ingestion.

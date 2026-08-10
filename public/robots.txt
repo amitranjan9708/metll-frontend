@@ -1,4 +1,48 @@
 User-agent: *
 Allow: /
 
+# ── AI Search / Retrieval Bots ───────────────────────────────────────────────
+# These bots are used to cite your site in AI-generated answers.
+# Allowing them is critical for appearing in ChatGPT, Claude, and Perplexity answers.
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# ── AI Training Bots ─────────────────────────────────────────────────────────
+# Allowing these bots means MetLL's content can be included in future
+# model training, increasing organic brand awareness over time.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# ── Meta AI ──────────────────────────────────────────────────────────────────
+User-agent: FacebookBot
+Allow: /
+
+# ── Sitemaps ─────────────────────────────────────────────────────────────────
 Sitemap: https://metll.in/sitemap.xml
+Sitemap: https://metll.in/llms.txt

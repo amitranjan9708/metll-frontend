@@ -1,0 +1,149 @@
+# MetLL — Full Site Content
+
+> MetLL is an anonymous confession and AI-powered matchmaking app. Confess your secret crush anonymously from school, college, the office, or any location. When mutual feelings are detected, MetLL instantly reveals the match so both people can connect and date. Free on Google Play.
+
+---
+
+## What is MetLL?
+
+MetLL (pronounced "Met All") is a dating and matchmaking app built on a simple but powerful idea: most people never confess their feelings to someone they like because of the fear of rejection. MetLL removes that barrier completely.
+
+On MetLL, you confess anonymously. You don't reveal who you are. You describe your crush — where you know them from, a few details about them — and the app holds your confession securely. If your crush is also on the app and confesses about *you*, the system detects the mutual match and instantly reveals both identities to each other. You both find out at the same moment that the feeling is mutual.
+
+If your crush hasn't confessed about you, your identity stays completely hidden. There's no awkwardness. No rejection. Just hope.
+
+---
+
+## Key Features
+
+### 1. Anonymous Confession
+Confess your feelings for someone without them ever knowing it was you — unless they feel the same way. Write out what you feel, describe your crush, and let MetLL do the rest.
+
+### 2. AI-Powered Mutual Match Detection
+MetLL's matching algorithm cross-references confessions in real time. The moment it detects that two people have confessed about each other, it triggers an instant mutual match reveal. Both users are notified simultaneously.
+
+### 3. Location-Based Matching
+MetLL supports location-based confessions. If you're at the same location as someone — a café, a library, a college campus — you can confess to them in real time. If they confess back while nearby, you're matched on the spot.
+
+### 4. Context-Based Confession Types
+- **School Crush** — for students who like someone in their school or class
+- **College Crush** — for university students
+- **Office Crush** — for workplace connections
+- **Location-Based / Live Crush** — for anyone you spot in public, anywhere
+
+### 5. Privacy First
+MetLL is built with privacy as a core value. Confessions are stored securely. No one can see who confessed about them unless a mutual match is confirmed. User data is never sold or shared.
+
+---
+
+## How It Works — Step by Step
+
+**Step 1: Confess**
+Open the app and write an anonymous confession about your crush. Provide context (school, college, office, or location) so the AI can match confessions accurately.
+
+**Step 2: Wait for a Match**
+Your confession is stored securely. MetLL's AI monitors all incoming confessions for mutual matches in real time.
+
+**Step 3: Mutual Match Detected**
+If your crush has also confessed about you, MetLL detects the mutual feeling and triggers a match reveal.
+
+**Step 4: Connect and Date**
+Both of you are notified simultaneously. You can now see each other's identities and start a conversation. The connection begins.
+
+---
+
+## Frequently Asked Questions
+
+**Q: How to confess anonymously and date?**
+A: MetLL allows you to confess your feelings anonymously to your crush. When both parties confess about each other, MetLL reveals the mutual match, allowing you to connect and date. Join the waitlist for early access.
+
+**Q: What is MetLL anonymous confession app?**
+A: MetLL is an anonymous confession and matchmaking app where you can confess your secret crush from school, college, office, or any location. Our AI-powered matching system detects mutual feelings and reveals matches when both parties confess about each other.
+
+**Q: How to confess anonymously to your crush?**
+A: On MetLL, you confess anonymously by providing details about your crush (school, college, office, or location-based). The confession is stored securely. If your crush also confesses about you, MetLL instantly reveals the mutual match.
+
+**Q: Is there an app to confess anonymously and get matched?**
+A: Yes. MetLL is the anonymous confession app that matches you when mutual feelings are detected. Confess your secret crush from school, college, office, or anywhere. When both parties confess, we reveal the match instantly.
+
+**Q: How does anonymous confession and dating work?**
+A: MetLL works by allowing you to anonymously confess about your crush. Our AI algorithm analyzes confessions in real-time. When someone confesses about you too, we detect the mutual match and reveal it to both parties.
+
+**Q: Can I confess my crush anonymously and find out if they like me?**
+A: Yes! MetLL lets you confess anonymously about your crush. If your crush also confesses about you, our AI matching system detects the mutual feelings and reveals the match instantly.
+
+**Q: What is the best anonymous confession app for dating?**
+A: MetLL is the anonymous confession app for dating. It allows you to confess your secret crush from school, college, office, or any location. When mutual feelings are detected, MetLL reveals the match.
+
+**Q: Is MetLL free?**
+A: Yes. MetLL is completely free to download and use. It is available on Google Play for Android. iOS is coming soon.
+
+**Q: Is MetLL available in India?**
+A: Yes. MetLL is built for the Indian market and available on Google Play in India. The app supports school crushes, college crushes, office crushes, and location-based confessions.
+
+**Q: How is MetLL different from other dating apps?**
+A: Unlike traditional dating apps where you swipe and get rejected publicly, MetLL keeps everything anonymous until a mutual match is confirmed. You never find out someone doesn't like you back — you only find out when they do. This eliminates fear of rejection entirely.
+
+---
+
+## Blog Content Summaries
+
+### How to Anonymously Confess to Your Crush
+URL: https://metll.in/blog/how-to-anonymously-confess-to-your-crush
+A step-by-step guide to confessing your feelings without revealing your identity. Covers the psychology of anonymous confession, why it works, and how MetLL facilitates the process safely.
+
+### Signs Your Coworker Has a Crush on You
+URL: https://metll.in/blog/signs-your-coworker-has-a-crush-on-you
+How to read subtle signals in office environments. Covers body language, behavioral cues, and how to act when you suspect a coworker has feelings for you.
+
+### Location-Based Dating: Future of Matchmaking
+URL: https://metll.in/blog/location-based-dating-future-of-matchmaking
+An exploration of how proximity and real-world location change the way people find love. Covers GPS-based matching, spontaneous connections, and why location context matters for compatibility.
+
+### Psychology of Having a Crush
+URL: https://metll.in/blog/psychology-of-having-a-crush
+The science behind crushes — dopamine, idealization, anxiety, and the rush of infatuation. Helps users understand what they're feeling and why.
+
+### College Romance: How to Date on Campus
+URL: https://metll.in/blog/college-romance-how-to-date-on-campus
+Practical tips for navigating relationships in a college setting. Covers social dynamics, study-group chemistry, hostel life, and campus dating etiquette.
+
+### Is It Just a Crush or True Love?
+URL: https://metll.in/blog/is-it-just-a-crush-or-true-love
+How to tell the difference between a fleeting infatuation and genuine romantic love. Covers emotional depth, consistency, and what mutual respect looks like.
+
+### How to Deal With Rejection and Move On Gracefully
+URL: https://metll.in/blog/how-to-deal-with-rejection-and-move-on-gracefully
+Healthy coping strategies after a confession doesn't go as hoped. Covers self-compassion, moving forward without bitterness, and why rejection is a normal part of connection.
+
+### The Rise of Introvert Dating
+URL: https://metll.in/blog/the-rise-of-introvert-dating
+Why anonymous platforms are ideal for introverts looking to connect. Covers the introvert experience in dating, the anxiety of direct confession, and why MetLL's model fits introverts perfectly.
+
+### Long-Distance Crushes: Should You Confess?
+URL: https://metll.in/blog/long-distance-crushes-should-you-confess
+Weighing the pros and cons of confessing to someone who is far away. Covers long-distance relationship viability, timing, and when it makes sense to take the leap.
+
+---
+
+## About MetLL
+
+MetLL was built to solve a simple, universal human problem: most people never tell their crush how they feel. Fear of rejection, awkwardness, or ruining a friendship stops them. MetLL removes all of that. The app creates a safe, anonymous space for confessions, and only reveals identities when feelings are mutual.
+
+The app is built for school students, college students, office workers, and anyone who has ever spotted someone interesting in public and wondered "what if."
+
+MetLL is headquartered in India and built for the Indian audience, though it is accessible globally.
+
+---
+
+## Download MetLL
+
+- **Google Play (Android):** https://play.google.com/store/apps/details?id=com.metll.app
+- **iOS:** Coming soon
+- **Website:** https://metll.in
+
+---
+
+## Contact
+
+Website: https://metll.in/contact
