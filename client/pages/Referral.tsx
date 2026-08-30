@@ -192,7 +192,7 @@ export default function Referral() {
                                 playsInline 
                                 preload="auto"
                                 className="w-[135px] h-[135px] object-contain"
-                                style={{ mixBlendMode: 'multiply' }}
+                                style={{ mixBlendMode: 'screen' }}
                             >
                                 <source src="/mascot/mascot_magnet_video.webm" type="video/webm" />
                                 <source src="/mascot/mascot_magnet_video.mp4" type="video/mp4" />

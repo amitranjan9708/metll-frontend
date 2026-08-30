@@ -268,7 +268,7 @@ export default function Register() {
               playsInline
               preload="auto"
               className="w-[180px] h-[180px] object-cover pointer-events-none mb-3"
-              style={{ mixBlendMode: 'multiply' }}
+              style={{ mixBlendMode: 'screen' }}
             >
               <source src="/mascot_welcome.webm" type="video/webm" />
               <source src="/mascot_welcome.mp4" type="video/mp4" />
