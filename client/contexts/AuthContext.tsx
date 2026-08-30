@@ -44,22 +44,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      // Immediately restore user from localStorage so the app doesn't flash login screen
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
       setHasAuthToken(true);
+      setIsLoading(false); // unblock UI immediately
 
-      // Validate session with backend
-      const validation = await authApi.validateSession(token);
-      if (!validation.valid) {
-        logout();
-      } else if (validation.user) {
-        const updatedUser = { ...parsedUser, ...validation.user };
-        setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+      // Validate session in background — only logout on explicit 401
+      try {
+        const validation = await authApi.validateSession(token);
+        if (!validation.valid) {
+          // Token is explicitly invalid — log out
+          logout();
+        } else if (validation.user) {
+          const updatedUser = { ...parsedUser, ...validation.user };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      } catch {
+        // Network error on validation — keep the user logged in
+        // They will be shown an error if they try to make API calls
+        console.warn('Session validation failed due to network error — keeping user logged in');
       }
     } catch (error) {
       console.error('Error loading local user', error);
-    } finally {
       setIsLoading(false);
     }
   };

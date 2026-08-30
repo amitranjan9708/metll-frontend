@@ -1,8 +1,24 @@
 import React from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Navigate } from "react-router-dom";
 import { Home, Radio, Heart, MessageCircle, User } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 export function MainLayout() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // While auth state is being loaded from localStorage, render nothing
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // After loading, redirect to register if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/register" replace />;
+  }
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20 md:pb-0">
       {/* Main Content Area */}
