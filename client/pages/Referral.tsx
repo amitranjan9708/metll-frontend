@@ -176,12 +176,9 @@ export default function Referral() {
                     <div className="relative mb-4 flex items-center justify-center">
                         <div className="absolute w-[140px] h-[140px] rounded-full bg-[#A4B8E7]/35 shadow-[0_8px_20px_rgba(139,163,219,0.4)] animate-pulse"></div>
                         <div className="w-[140px] h-[140px] rounded-full bg-white/95 border-2 border-white/90 shadow-[0_6px_12px_rgba(164,184,231,0.18)] flex items-center justify-center overflow-hidden z-10 relative">
-                            <video 
-                                src="/mascot/mascot_magnet_video.webm" 
-                                autoPlay 
-                                loop 
-                                muted 
-                                playsInline 
+                            <img 
+                                src="/mascot/mascot_magnet_anim.webp" 
+                                alt="Mascot Magnet"
                                 className="w-[135px] h-[135px] object-contain"
                             />
                         </div>
