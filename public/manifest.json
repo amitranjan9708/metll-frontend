@@ -1,7 +1,7 @@
 {
   "name": "MetLL",
   "short_name": "MetLL",
-  "start_url": "/register",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#5A6FA3",

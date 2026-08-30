@@ -1,9 +1,30 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useRef, useState, forwardRef } from "react";
 import AnimatedCharactersLoginPage from "@/components/ui/animated-characters-login-page";
 import { motion, AnimatePresence } from "framer-motion";
 import { HelpCircle, ArrowRight, Play, Pause, ChevronLeft, ChevronRight, Smartphone, Star } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
+
+// ─── Root Route Smart Redirect ──────────────────────────────────────────────
+function IndexOrRedirect() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <img src="/logo.png" alt="Metll" className="w-16 h-16 rounded-2xl animate-pulse" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated && user) {
+    if (!user.isOnboarded) return <Navigate to="/onboarding" replace />;
+    return <Navigate to="/home" replace />;
+  }
+
+  return <Navigate to="/register" replace />;
+}
 import {
   Accordion,
   AccordionContent,
@@ -1269,3 +1290,6 @@ const FooterSection = forwardRef<HTMLElement>((_, ref) => {
     </section>
   );
 });
+
+// The default export for the "/" route is the smart auth redirect
+export default IndexOrRedirect;
