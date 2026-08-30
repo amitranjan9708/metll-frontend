@@ -19,7 +19,7 @@ export default function Register() {
   const [errorMsg, setErrorMsg] = useState("");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
-  const MASCOT_VIDEO_URL = "/mascot_welcome.webm";
+  const MASCOT_IMG_URL = "/mascot_welcome_anim.webp";
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: any) => {
@@ -187,12 +187,9 @@ export default function Register() {
 
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-8">
-            <video 
-              src={MASCOT_VIDEO_URL} 
-              autoPlay 
-              loop 
-              muted 
-              playsInline
+            <img 
+              src={MASCOT_IMG_URL} 
+              alt="Mascot Welcome"
               className="w-[180px] h-[180px] object-cover pointer-events-none mb-3"
             />
             <h2 className="text-2xl font-bold text-[#1A1A1A] mb-1 text-center">Welcome to Metll</h2>
