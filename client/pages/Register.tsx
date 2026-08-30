@@ -57,18 +57,26 @@ export default function Register() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    // Show the install prompt
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (deferredPrompt) {
+      // Android/Chrome: trigger the native install prompt
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`PWA install outcome: ${outcome}`);
+      setDeferredPrompt(null);
     } else {
-      console.log('User dismissed the install prompt');
+      // iOS or browser that doesn't support beforeinstallprompt
+      const ua = window.navigator.userAgent.toLowerCase();
+      const isIos = /iphone|ipad|ipod/.test(ua);
+      if (isIos) {
+        setShowIosPrompt(true);
+      } else {
+        // Desktop/other — show a helpful toast
+        toast({ 
+          title: "Add to Home Screen", 
+          description: "Open this site in Chrome on Android, then tap the menu ⋮ → 'Add to Home Screen'.",
+        });
+      }
     }
-    // We've used the prompt, and can't use it again, throw it away
-    setDeferredPrompt(null);
   };
   const handleSendOTP = async () => {
     setErrorMsg("");
@@ -349,8 +357,21 @@ export default function Register() {
 
           <div className="flex-1" />
 
+          {/* Always-visible Install Banner */}
+          <div className="mt-6 mb-2">
+            <button
+              onClick={handleInstallClick}
+              className="w-full h-11 flex items-center justify-center gap-2 bg-white border border-[#E0E0E0] rounded-full shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" />
+              </svg>
+              <span className="text-[14px] font-semibold text-[#1A1A1A]">Add to Home Screen</span>
+            </button>
+          </div>
+
           {/* Footer */}
-          <p className="text-[13px] text-[#9B9B9B] text-center leading-tight px-4 mt-8 pb-4">
+          <p className="text-[13px] text-[#9B9B9B] text-center leading-tight px-4 pb-4">
             By continuing, you agree to our{" "}
             <a href="#" className="text-[#A4B8E7] underline font-medium">Terms of Service</a>
             {" "}and{" "}
