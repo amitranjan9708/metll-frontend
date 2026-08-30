@@ -177,64 +177,64 @@ export default function Register() {
             <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-[5px]" />
           </div>
 
-          {/* PWA Install Prompt for Android/Chrome */}
-          <AlertDialog open={!!deferredPrompt} onOpenChange={(open) => !open && setDeferredPrompt(null)}>
-            <AlertDialogContent className="w-[90%] max-w-sm rounded-2xl bg-white p-6 shadow-2xl overflow-hidden border border-[#E0E0E0]">
-              <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#5A6FA3]/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#A4B8E7]/20 rounded-full blur-2xl pointer-events-none" />
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4 border border-gray-100 p-2 overflow-hidden">
-                  <img src="/logo.png" alt="Metll Icon" className="w-full h-full object-contain rounded-xl" />
+          {/* PWA Install Banner for Android/Chrome */}
+          <AnimatePresence>
+            {deferredPrompt && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 bg-[#EBF3FF] border border-[#A4B8E7] rounded-xl p-3 flex items-center justify-between shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <img src="/logo.png" alt="Icon" className="w-6 h-6 rounded" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#1A1A1A]">Install Metll App</p>
+                    <p className="text-[11px] text-[#5A6FA3]">Add to Home Screen for best experience</p>
+                  </div>
                 </div>
-                <AlertDialogHeader className="text-center w-full mb-2">
-                  <AlertDialogTitle className="text-xl font-bold text-[#1A1A1A] text-center">Install Metll App</AlertDialogTitle>
-                  <AlertDialogDescription className="text-center text-[#6B6B6B] mt-2 leading-relaxed">
-                    Add Metll to your home screen for lightning fast access and a full-screen dating experience.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="w-full flex-col gap-2 mt-4 sm:flex-col sm:space-x-0">
-                  <AlertDialogAction
-                    onClick={handleInstallClick}
-                    className="w-full h-12 bg-[#1F1F1F] text-white rounded-full font-bold text-[15px] hover:bg-[#2D2D2D] transition-all"
-                  >
-                    Install Now
-                  </AlertDialogAction>
-                  <AlertDialogCancel
-                    className="w-full h-12 border-none text-[#6B6B6B] font-semibold text-[14px] hover:bg-gray-50 rounded-full mt-2"
-                  >
-                    Maybe Later
-                  </AlertDialogCancel>
-                </AlertDialogFooter>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
+                <button
+                  onClick={handleInstallClick}
+                  className="bg-[#1A1A1A] text-white text-[12px] font-bold px-4 py-2 rounded-full active:scale-95 transition-transform"
+                >
+                  Install
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* PWA Install Prompt for iOS */}
-          <AlertDialog open={showIosPrompt} onOpenChange={setShowIosPrompt}>
-            <AlertDialogContent className="w-[90%] max-w-sm rounded-2xl bg-white p-6 shadow-2xl overflow-hidden border border-[#E0E0E0]">
-              <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#5A6FA3]/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#A4B8E7]/20 rounded-full blur-2xl pointer-events-none" />
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4 border border-gray-100 p-2 overflow-hidden">
-                  <img src="/logo.png" alt="Metll Icon" className="w-full h-full object-contain rounded-xl" />
+          {/* PWA Install Instructions for iOS */}
+          <AnimatePresence>
+            {showIosPrompt && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 bg-[#FFF5EB] border border-[#FFD8B3] rounded-xl p-3 flex flex-col shadow-sm"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <img src="/logo.png" alt="Icon" className="w-6 h-6 rounded" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#1A1A1A]">Install on iPhone</p>
+                    <p className="text-[11px] text-[#D47000]">For a full-screen experience</p>
+                  </div>
                 </div>
-                <AlertDialogHeader className="text-center w-full mb-2">
-                  <AlertDialogTitle className="text-xl font-bold text-[#1A1A1A] text-center">Install on iPhone</AlertDialogTitle>
-                  <AlertDialogDescription className="text-center text-[#6B6B6B] mt-2 leading-relaxed">
-                    To install the Metll app on your iPhone, tap the <strong>Share</strong> icon at the bottom of Safari, then scroll down and tap <strong>Add to Home Screen</strong>.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="w-full mt-4">
-                  <AlertDialogAction
-                    onClick={() => setShowIosPrompt(false)}
-                    className="w-full h-12 bg-[#1F1F1F] text-white rounded-full font-bold text-[15px] hover:bg-[#2D2D2D] transition-all"
-                  >
-                    Got it!
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
+                <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
+                  Tap the <strong className="text-[#1A1A1A]">Share</strong> icon at the bottom of Safari, then select <strong className="text-[#1A1A1A]">Add to Home Screen</strong>.
+                </p>
+                <button
+                  onClick={() => setShowIosPrompt(false)}
+                  className="mt-3 bg-white border border-[#FFD8B3] text-[#D47000] text-[12px] font-bold px-4 py-1.5 rounded-full active:scale-95 transition-transform self-end"
+                >
+                  Got it
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-8">
