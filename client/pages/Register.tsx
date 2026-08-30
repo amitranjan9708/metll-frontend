@@ -244,6 +244,7 @@ export default function Register() {
               muted 
               playsInline
               className="w-[180px] h-[180px] object-cover pointer-events-none mb-3"
+              style={{ mixBlendMode: 'multiply' }}
             >
               <source src="/mascot_welcome.mp4" type='video/mp4; codecs="hvc1"' />
               <source src="/mascot_welcome.webm" type="video/webm" />

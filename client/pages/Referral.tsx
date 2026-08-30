@@ -182,6 +182,7 @@ export default function Referral() {
                                 muted 
                                 playsInline 
                                 className="w-[135px] h-[135px] object-contain"
+                                style={{ mixBlendMode: 'multiply' }}
                             >
                                 <source src="/mascot/mascot_magnet_video.mp4" type='video/mp4; codecs="hvc1"' />
                                 <source src="/mascot/mascot_magnet_video.webm" type="video/webm" />
