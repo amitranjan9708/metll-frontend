@@ -260,19 +260,12 @@ export default function Register() {
 
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-8">
-            <video 
-              ref={videoRef}
-              autoPlay 
-              loop 
-              muted 
-              playsInline
-              preload="auto"
-              className="w-[180px] h-[180px] object-cover pointer-events-none mb-3"
-              style={{ mixBlendMode: 'screen' }}
-            >
-              <source src="/mascot_welcome.webm" type="video/webm" />
-              <source src="/mascot_welcome.mp4" type="video/mp4" />
-            </video>
+            <img
+              src="/mascot_welcome_anim.webp"
+              alt="Metll Mascot"
+              className="w-[180px] h-[180px] object-contain pointer-events-none mb-3"
+              style={{ willChange: 'contents', imageRendering: 'auto' }}
+            />
             <h2 className="text-2xl font-bold text-[#1A1A1A] mb-1 text-center">Welcome to Metll</h2>
             <p className="text-[13px] text-[#6B6B6B] text-center leading-tight px-4">
               Join thousands finding meaningful connections
