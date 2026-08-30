@@ -162,7 +162,7 @@ function StoreButtons({ className = "", variant = "dark" }: { className?: string
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 
-export default function Index() {
+function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const heroRef = useRef<HTMLElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
