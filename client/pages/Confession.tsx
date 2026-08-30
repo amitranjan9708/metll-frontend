@@ -1,870 +1,505 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Heart, Send, Sparkles, Check, X, Search, Lock } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowLeft, Clock, School, Library, Briefcase, 
+  MapPin, BookOpen, Heart, X, Check, MailOpen, Lock
+} from 'lucide-react';
+import { confessionApi, PotentialMatchUser, CreateConfessionRequest } from '../lib/confessionApi';
 
-type ConfessionContext = "school" | "college" | "office" | "home" | "";
-type ConfessionStep = "details" | "searching" | "photos" | "confession" | "stored" | "success";
+const C = {
+    bg: '#FAFAFA',
+    white: '#FFFFFF',
+    primary: '#1F1F1F',
+    accent: '#A4B8E7', // Periwinkle Blue
+    accentDark: '#7A96D4',
+    accentDeep: '#5470B8',
+    textPrimary: '#1A1A1A',
+    textSecondary: '#5A5A6A',
+    textMuted: '#9B9BAA',
+    border: 'rgba(0,0,0,0.06)',
+};
 
-// Mock matching profiles - in real app this would come from API
-const MOCK_PROFILES = [
-    { id: 1, name: "Priya S.", photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face" },
-    { id: 2, name: "Aisha K.", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face" },
-    { id: 3, name: "Meera R.", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face" },
-    { id: 4, name: "Ananya P.", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=face" },
-    { id: 5, name: "Rahul M.", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" },
-    { id: 6, name: "Arjun T.", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" },
+type TabType = 'school' | 'college' | 'office';
+
+interface LocationSuggestion {
+    display_name: string;
+    city: string;
+    state: string;
+    country: string;
+}
+
+const TAB_CONFIG = [
+    { type: 'school' as TabType, label: 'School', icon: School },
+    { type: 'college' as TabType, label: 'College', icon: Library },
+    { type: 'office' as TabType, label: 'Office', icon: Briefcase },
 ];
+
+const CustomInput = ({ label, value, onChange, placeholder, required = false, icon: Icon }: any) => (
+    <div className="mb-4">
+        <label className="block text-[12px] font-bold text-[#5A5A6A] mb-1.5 ml-1">
+            {label} {required && <span className="text-[#7A96D4]">*</span>}
+        </label>
+        <div className="flex items-center bg-[#F8F9FC] border border-[#A4B8E7]/30 rounded-[16px] h-[52px] px-4 focus-within:border-[#7A96D4]">
+            <Icon size={18} className="text-[#7A96D4] mr-3" />
+            <input
+                className="flex-1 h-full text-[15px] text-[#1A1A1A] placeholder-[#9B9BAA] outline-none bg-transparent"
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                placeholder={placeholder}
+            />
+        </div>
+    </div>
+);
 
 export default function Confession() {
     const navigate = useNavigate();
-    const [step, setStep] = useState<ConfessionStep>("details");
-    const [context, setContext] = useState<ConfessionContext>("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const location = useLocation();
+    const initialTab = location.state?.initialTab || 'school';
 
-    // Selected profile from matching
-    const [selectedProfile, setSelectedProfile] = useState<typeof MOCK_PROFILES[0] | null>(null);
-    const [matchingProfiles, setMatchingProfiles] = useState<typeof MOCK_PROFILES>([]);
+    const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+    const [searching, setSearching] = useState(false);
+    
+    const [crushFirstName, setCrushFirstName] = useState('');
+    const [schoolName, setSchoolName] = useState('');
+    const [schoolClass, setSchoolClass] = useState('');
+    const [collegeName, setCollegeName] = useState('');
+    const [collegeDepartment, setCollegeDepartment] = useState('');
+    const [officeName, setOfficeName] = useState('');
+    
+    // Location State
+    const [locationQuery, setLocationQuery] = useState('');
+    const [locationCity, setLocationCity] = useState('');
+    const [locationState, setLocationState] = useState('');
+    const [locationCountry, setLocationCountry] = useState('');
+    const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
+    const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+    const [searchingLocation, setSearchingLocation] = useState(false);
+    
+    const [showPhotoModal, setShowPhotoModal] = useState(false);
+    const [potentialMatches, setPotentialMatches] = useState<PotentialMatchUser[]>([]);
+    const [selectedMatch, setSelectedMatch] = useState<PotentialMatchUser | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    // School fields
-    const [schoolName, setSchoolName] = useState("");
-    const [classGrade, setClassGrade] = useState("");
-    const [section, setSection] = useState("");
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
-    // College fields
-    const [collegeName, setCollegeName] = useState("");
-    const [department, setDepartment] = useState("");
-    const [year, setYear] = useState("");
+    const resetForm = () => {
+        setCrushFirstName(''); setSchoolName(''); setSchoolClass('');
+        setCollegeName(''); setCollegeDepartment(''); setOfficeName('');
+        setLocationQuery(''); setLocationCity(''); setLocationState(''); setLocationCountry('');
+        setPotentialMatches([]); setSelectedMatch(null);
+    };
 
-    // Office fields
-    const [companyName, setCompanyName] = useState("");
-    const [officeTeam, setOfficeTeam] = useState("");
+    const handleTabChange = (tab: TabType) => {
+        setActiveTab(tab);
+        resetForm();
+    };
 
-    // Home-based fields
-    const [locality, setLocality] = useState("");
-    const [howYouKnow, setHowYouKnow] = useState("");
+    const validateForm = () => {
+        if (!crushFirstName.trim()) { alert("Please enter your crush's first name 💕"); return false; }
+        if (activeTab === 'school' && !schoolName.trim()) { alert('Please enter the school name'); return false; }
+        if (activeTab === 'college' && !collegeName.trim()) { alert('Please enter the college name'); return false; }
+        if (activeTab === 'office' && !officeName.trim()) { alert('Please enter the office/company name'); return false; }
+        return true;
+    };
 
-    // Confession message
-    const [confession, setConfession] = useState("");
-
-    const canSearchProfiles = () => {
-        if (!context) return false;
-        switch (context) {
-            case "school":
-                return schoolName && classGrade;
-            case "college":
-                return collegeName && department;
-            case "office":
-                return companyName;
-            case "home":
-                return locality;
-            default:
-                return false;
+    const getConfessionData = (): CreateConfessionRequest => {
+        switch (activeTab) {
+            case 'school':  return { crushFirstName: crushFirstName.trim(), institutionType: 'school',  institutionName: schoolName.trim(),  className: schoolClass.trim() || undefined, city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
+            case 'college': return { crushFirstName: crushFirstName.trim(), institutionType: 'college', institutionName: collegeName.trim(), department: collegeDepartment.trim() || undefined, city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
+            case 'office':  return { crushFirstName: crushFirstName.trim(), institutionType: 'office',  institutionName: officeName.trim(),  city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
         }
     };
 
-    const handleSearchProfiles = async () => {
-        setStep("searching");
-
-        // Simulate API search delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Randomly decide if we find matches (80% chance of finding some)
-        const hasMatches = Math.random() > 0.2;
-
-        if (hasMatches) {
-            // Return random subset of profiles (2-6 profiles)
-            const numProfiles = Math.floor(Math.random() * 5) + 2;
-            const shuffled = [...MOCK_PROFILES].sort(() => Math.random() - 0.5);
-            setMatchingProfiles(shuffled.slice(0, numProfiles));
-            setStep("photos");
-        } else {
-            setMatchingProfiles([]);
-            setStep("photos");
-        }
+    const handleSearchMatches = async () => {
+        if (!validateForm()) return;
+        setSearching(true);
+        try {
+            const params = {
+                crushFirstName: crushFirstName.trim(),
+                institutionType: activeTab,
+                institutionName: activeTab === 'school' ? schoolName.trim() : activeTab === 'college' ? collegeName.trim() : officeName.trim(),
+                className:   activeTab === 'school'  ? schoolClass.trim() : undefined,
+                department:  activeTab === 'college' ? collegeDepartment.trim() : undefined,
+                city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined,
+            };
+            const result = await confessionApi.searchPotentialMatches(params);
+            if (result.success && result.data) {
+                if (result.data.count > 0) {
+                    setPotentialMatches(result.data.potentialMatches);
+                    setShowPhotoModal(true);
+                } else {
+                    if (window.confirm("🔍 No Matches Yet\nYour crush doesn't seem to be on MetLL yet. Save this confession and we'll notify you when they join!")) {
+                        handleCreateConfession(null);
+                    }
+                }
+            } else {
+                alert(result.message || 'Failed to search for matches');
+            }
+        } catch { alert('Something went wrong. Please try again.'); }
+        finally { setSearching(false); }
     };
 
-    const handleSelectProfile = (profile: typeof MOCK_PROFILES[0]) => {
-        setSelectedProfile(profile);
+    const handleCreateConfession = async (selectedUser: PotentialMatchUser | null) => {
+        setLoading(true); setShowPhotoModal(false);
+        try {
+            const data = getConfessionData();
+            if (selectedUser) { data.targetUserId = selectedUser.id; data.matchConfidence = selectedUser.matchConfidence; data.matchMethod = selectedUser.matchMethod; }
+            const result = await confessionApi.createConfession(data);
+            if (result.success) {
+                alert(selectedUser ? `💝 Confession Sent!\nYour confession has been sent to ${selectedUser.name}. They'll be notified!` : "💌 Confession Saved!\nYour confession has been saved. We'll notify you when your crush joins MetLL!");
+                resetForm();
+                navigate('/home');
+            } else { alert(result.message || 'Failed to create confession'); }
+        } catch { alert('Something went wrong. Please try again.'); }
+        finally { setLoading(false); }
     };
 
-    const handleConfirmSelection = () => {
-        if (selectedProfile) {
-            setStep("confession");
-        }
+    // --- Location Search ---
+    const searchLocation = async (query: string) => {
+        if (query.length < 3) { setLocationSuggestions([]); setShowLocationDropdown(false); return; }
+        setSearchingLocation(true);
+        try {
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`,
+                { headers: { 'Accept-Language': 'en' } }
+            );
+            const data = await res.json();
+            const sug: LocationSuggestion[] = data.map((item: any) => ({
+                display_name: item.display_name,
+                city: item.address?.city || item.address?.town || item.address?.village || item.address?.county || '',
+                state: item.address?.state || '',
+                country: item.address?.country || '',
+            })).filter((s: LocationSuggestion) => s.city || s.state);
+            setLocationSuggestions(sug);
+            setShowLocationDropdown(sug.length > 0);
+        } catch { setLocationSuggestions([]); }
+        finally { setSearchingLocation(false); }
     };
 
-    const handleNoneOfThese = () => {
-        setSelectedProfile(null);
-        setStep("stored");
+    useEffect(() => {
+        const t = setTimeout(() => { if (locationQuery && !locationCity) searchLocation(locationQuery); }, 500);
+        return () => clearTimeout(t);
+    }, [locationQuery, locationCity]);
+
+    const selectLocation = (loc: LocationSuggestion) => {
+        setLocationCity(loc.city); setLocationState(loc.state); setLocationCountry(loc.country);
+        setLocationQuery([loc.city, loc.state, loc.country].filter(Boolean).join(', '));
+        setShowLocationDropdown(false);
     };
 
-    const handleSubmitConfession = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        setIsSubmitting(false);
-        setStep("success");
-    };
-
-    const getContextLabel = () => {
-        switch (context) {
-            case "school": return schoolName;
-            case "college": return collegeName;
-            case "office": return companyName;
-            case "home": return locality;
-            default: return "";
-        }
-    };
-
-    // Stored privately state
-    if (step === "stored") {
-        return (
-            <div className="min-h-screen bg-[#A4B8E7] flex items-center justify-center p-6">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="bg-white rounded-3xl p-12 text-center max-w-md shadow-2xl"
-                >
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#5A6FA3] to-[#A4B8E7] flex items-center justify-center"
-                    >
-                        <Lock className="w-10 h-10 text-white" />
-                    </motion.div>
-                    <h2
-                        className="text-2xl font-bold text-[#311717] mb-3"
-                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    >
-                        Confession Stored Privately 🔒
-                    </h2>
-                    <p
-                        className="text-[#311717]/70 mb-6"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        Your crush details have been stored. When they join MetLL and confess about you, we'll match you both! 💜
-                    </p>
-                    <Button
-                        onClick={() => navigate("/")}
-                        className="px-8 py-3 bg-[#6C3FF5] hover:bg-[#5A2ED4] text-white rounded-full"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        Go to Home
-                    </Button>
-                </motion.div>
+    const renderLocationInput = () => (
+        <div className="mb-4 relative">
+            <label className="block text-[12px] font-bold text-[#5A5A6A] mb-1.5 ml-1">Location</label>
+            <div className="relative flex items-center bg-[#F8F9FC] border border-[#A4B8E7]/30 rounded-[16px] h-[52px] focus-within:border-[#7A96D4]">
+                <div className="pl-4 pr-3 flex items-center justify-center">
+                    <MapPin size={18} className="text-[#7A96D4]" />
+                </div>
+                <input
+                    className="w-full h-full text-[15px] text-[#1A1A1A] placeholder-[#9B9BAA] outline-none bg-transparent"
+                    value={locationQuery}
+                    onChange={(e) => {
+                        setLocationQuery(e.target.value);
+                        if (locationCity) { setLocationCity(''); setLocationState(''); setLocationCountry(''); }
+                        setShowLocationDropdown(true);
+                    }}
+                    onFocus={() => { if (locationSuggestions.length > 0) setShowLocationDropdown(true); }}
+                    placeholder="Search city, state..."
+                />
+                <div className="pr-4">
+                    {searchingLocation ? (
+                        <div className="w-4 h-4 border-2 border-[#7A96D4] border-t-transparent rounded-full animate-spin" />
+                    ) : locationCity ? (
+                        <Check size={18} className="text-green-500" />
+                    ) : null}
+                </div>
             </div>
-        );
-    }
-
-    // Success state
-    if (step === "success") {
-        return (
-            <div className="min-h-screen bg-[#A4B8E7] flex items-center justify-center p-6">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="bg-white rounded-3xl p-12 text-center max-w-md shadow-2xl"
-                >
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#6C3FF5] to-[#A4B8E7] flex items-center justify-center"
+            
+            <AnimatePresence>
+                {showLocationDropdown && locationSuggestions.length > 0 && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                        className="absolute top-[80px] left-0 right-0 bg-white rounded-[16px] border border-[#E8E8E8] shadow-lg overflow-hidden z-50"
                     >
-                        <Heart className="w-12 h-12 text-white" fill="white" />
-                    </motion.div>
-                    <h2
-                        className="text-2xl font-bold text-[#311717] mb-3"
-                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    >
-                        Confession Sent! 💜
-                    </h2>
-                    <p
-                        className="text-[#311717]/70 mb-6"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        Your feelings have been anonymously shared with {selectedProfile?.name}. If they confess about you too, you'll both be notified!
-                    </p>
-                    <motion.div
-                        className="flex justify-center gap-2 mb-6"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                    >
-                        {[0, 1, 2].map((i) => (
-                            <motion.div
+                        {locationSuggestions.map((item, i) => (
+                            <button
                                 key={i}
-                                className="w-3 h-3 rounded-full bg-[#6C3FF5]"
-                                animate={{
-                                    scale: [1, 1.3, 1],
-                                    opacity: [0.5, 1, 0.5],
-                                }}
-                                transition={{
-                                    duration: 0.8,
-                                    repeat: Infinity,
-                                    delay: i * 0.2,
-                                }}
-                            />
+                                onClick={() => selectLocation(item)}
+                                className={`w-full flex items-center px-4 py-3 text-left hover:bg-[#F8F9FC] ${i !== locationSuggestions.length - 1 ? 'border-b border-[#E8E8E8]' : ''}`}
+                            >
+                                <MapPin size={16} className="text-[#7A96D4] mr-3 shrink-0" />
+                                <div className="flex-1 overflow-hidden">
+                                    <div className="text-[14px] font-semibold text-[#1A1A1A] truncate">{item.city || item.state}</div>
+                                    <div className="text-[12px] text-[#9B9BAA] truncate">{[item.state, item.country].filter(Boolean).join(', ')}</div>
+                                </div>
+                            </button>
                         ))}
                     </motion.div>
-                    <Button
-                        onClick={() => navigate("/")}
-                        className="px-8 py-3 bg-[#6C3FF5] hover:bg-[#5A2ED4] text-white rounded-full"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        Go to Home
-                    </Button>
-                </motion.div>
-            </div>
-        );
-    }
-
-    // Searching state
-    if (step === "searching") {
-        return (
-            <div className="min-h-screen bg-[#A4B8E7] flex items-center justify-center p-6">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="bg-white rounded-3xl p-12 text-center max-w-md shadow-2xl"
-                >
-                    <motion.div
-                        className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#6C3FF5] to-[#A4B8E7] flex items-center justify-center"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    >
-                        <Search className="w-10 h-10 text-white" />
-                    </motion.div>
-                    <h2
-                        className="text-xl font-bold text-[#311717] mb-3"
-                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    >
-                        Searching for matches...
-                    </h2>
-                    <p
-                        className="text-[#311717]/60"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        Looking for people from {getContextLabel()}
-                    </p>
-                </motion.div>
-            </div>
-        );
-    }
-
-    // Photo selection state
-    if (step === "photos") {
-        return (
-            <div className="min-h-screen bg-[#A4B8E7] relative overflow-hidden">
-                {/* Background decorations */}
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#6C3FF5]/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#5A6FA3]/30 rounded-full blur-3xl" />
-                </div>
-
-                {/* Header */}
-                <header className="relative z-10 px-6 py-4 flex items-center justify-between">
-                    <h1
-                        className="text-2xl md:text-3xl font-semibold text-[#311717]"
-                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    >
-                        MetLL
-                    </h1>
-                    <button
-                        onClick={() => setStep("details")}
-                        className="text-sm text-[#311717]/70 hover:text-[#311717] transition-colors"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        ← Go Back
+                )}
+            </AnimatePresence>
+            
+            {locationCity && (
+                <div className="flex items-center bg-[#7A96D4] px-3 py-2 rounded-xl mt-3 w-max">
+                    <MapPin size={14} className="text-white mr-2" />
+                    <span className="text-[13px] text-white font-semibold mr-3">
+                        {[locationCity, locationState, locationCountry].filter(Boolean).join(', ')}
+                    </span>
+                    <button onClick={() => { setLocationQuery(''); setLocationCity(''); setLocationState(''); setLocationCountry(''); }}>
+                        <X size={16} className="text-white/80 hover:text-white" />
                     </button>
-                </header>
-
-                {/* Content */}
-                <div className="relative z-10 px-6 py-8 max-w-3xl mx-auto">
-                    <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
-                        <div className="text-center mb-8">
-                            <h2
-                                className="text-2xl md:text-3xl font-bold text-[#311717] mb-2"
-                                style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                            >
-                                {matchingProfiles.length > 0 ? "Is your crush here?" : "No matches found"}
-                            </h2>
-                            <p
-                                className="text-[#311717]/60"
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                                {matchingProfiles.length > 0
-                                    ? `We found ${matchingProfiles.length} people from ${getContextLabel()}. Select your crush!`
-                                    : "We couldn't find anyone matching those details yet. Your confession will be stored privately."}
-                            </p>
-                        </div>
-
-                        {matchingProfiles.length > 0 ? (
-                            <>
-                                {/* Photo Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                                    {matchingProfiles.map((profile) => (
-                                        <motion.button
-                                            key={profile.id}
-                                            type="button"
-                                            onClick={() => handleSelectProfile(profile)}
-                                            className={`relative p-4 rounded-2xl border-3 transition-all duration-300 ${selectedProfile?.id === profile.id
-                                                    ? "border-[#6C3FF5] bg-[#6C3FF5]/10 shadow-lg"
-                                                    : "border-[#A4B8E7]/30 hover:border-[#6C3FF5]/50"
-                                                }`}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                        >
-                                            <div className="relative">
-                                                <img
-                                                    src={profile.photo}
-                                                    alt={profile.name}
-                                                    className="w-full aspect-square rounded-xl object-cover"
-                                                />
-                                                {selectedProfile?.id === profile.id && (
-                                                    <motion.div
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        className="absolute -top-2 -right-2 w-8 h-8 bg-[#6C3FF5] rounded-full flex items-center justify-center shadow-lg"
-                                                    >
-                                                        <Check className="w-5 h-5 text-white" />
-                                                    </motion.div>
-                                                )}
-                                            </div>
-                                            <p
-                                                className={`mt-3 text-sm font-medium ${selectedProfile?.id === profile.id ? "text-[#6C3FF5]" : "text-[#311717]"
-                                                    }`}
-                                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                            >
-                                                {profile.name}
-                                            </p>
-                                        </motion.button>
-                                    ))}
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={handleNoneOfThese}
-                                        className="flex-1 h-14 border-2 border-[#A4B8E7]/50 text-[#311717] hover:bg-[#A4B8E7]/10 rounded-xl"
-                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                    >
-                                        <X className="w-5 h-5 mr-2" />
-                                        None of these is my crush
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        onClick={handleConfirmSelection}
-                                        disabled={!selectedProfile}
-                                        className="flex-1 h-14 bg-gradient-to-r from-[#6C3FF5] to-[#8B5CF6] hover:from-[#5A2ED4] hover:to-[#7C3AED] text-white rounded-xl disabled:opacity-50"
-                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                    >
-                                        <Heart className="w-5 h-5 mr-2" fill="currentColor" />
-                                        This is my crush!
-                                    </Button>
-                                </div>
-                            </>
-                        ) : (
-                            <Button
-                                type="button"
-                                onClick={handleNoneOfThese}
-                                className="w-full h-14 bg-gradient-to-r from-[#6C3FF5] to-[#8B5CF6] hover:from-[#5A2ED4] hover:to-[#7C3AED] text-white rounded-xl"
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                                <Lock className="w-5 h-5 mr-2" />
-                                Store my confession privately
-                            </Button>
-                        )}
-                    </div>
                 </div>
+            )}
+        </div>
+    );
+
+    const renderCrushNameInput = () => (
+        <div className="relative mb-5 mt-2">
+            {/* Glow gradient border (behind) */}
+            <div className="absolute inset-[-4px] bg-[#E8EEF8] rounded-[24px] pointer-events-none" />
+            
+            <div className="relative bg-white rounded-[20px] p-5 flex flex-col items-center border-[1.5px] border-[#7A96D4] shadow-[0_4px_10px_rgba(122,150,212,0.2)]">
+                <img src="/mascot/mascot_shy_giggle.png" className="w-[70px] h-[70px] object-contain mb-2" alt="mascot" />
+                <div className="flex items-center gap-1.5 mb-3">
+                    <Heart size={18} className="text-[#5470B8]" />
+                    <span className="text-[11px] font-[800] tracking-[1.2px] text-[#5470B8]">WHO ARE YOU LOOKING FOR?</span>
+                </div>
+                
+                <input
+                    value={crushFirstName}
+                    onChange={e => setCrushFirstName(e.target.value)}
+                    placeholder="Crush's First Name"
+                    className="w-full text-center text-[28px] font-[800] text-[#1A1A1A] placeholder-[#9B9BAA] outline-none border-b border-[#E8EEF8] pb-2 mb-3"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                />
+                <span className="text-[12px] text-[#9B9BAA] text-center italic mt-3">* Don't worry about spelling, we use smart matching!</span>
             </div>
-        );
-    }
+        </div>
+    );
 
-    // Confession writing state
-    if (step === "confession") {
-        return (
-            <div className="min-h-screen bg-[#A4B8E7] relative overflow-hidden">
-                {/* Background decorations */}
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#6C3FF5]/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#5A6FA3]/30 rounded-full blur-3xl" />
-                </div>
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'school': return (
+                <>
+                    {renderCrushNameInput()}
+                    <CustomInput label="School Name" required value={schoolName} onChange={setSchoolName} placeholder="e.g. DPS Noida, St. Xavier's" icon={School} />
+                    {renderLocationInput()}
+                    <CustomInput label="Class (Optional)" value={schoolClass} onChange={setSchoolClass} placeholder="e.g. 10th, 12th" icon={BookOpen} />
+                </>
+            );
+            case 'college': return (
+                <>
+                    {renderCrushNameInput()}
+                    <CustomInput label="College Name" required value={collegeName} onChange={setCollegeName} placeholder="e.g. IIT Delhi, SRCC" icon={Briefcase} />
+                    {renderLocationInput()}
+                    <CustomInput label="Department (Optional)" value={collegeDepartment} onChange={setCollegeDepartment} placeholder="e.g. CS, Arts" icon={Library} />
+                </>
+            );
+            case 'office': return (
+                <>
+                    {renderCrushNameInput()}
+                    <CustomInput label="Company Name" required value={officeName} onChange={setOfficeName} placeholder="e.g. Google, Infosys" icon={Briefcase} />
+                    {renderLocationInput()}
+                </>
+            );
+        }
+    };
 
-                {/* Header */}
-                <header className="relative z-10 px-6 py-4 flex items-center justify-between">
-                    <h1
-                        className="text-2xl md:text-3xl font-semibold text-[#311717]"
-                        style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                    >
-                        MetLL
-                    </h1>
-                    <button
-                        onClick={() => setStep("photos")}
-                        className="text-sm text-[#311717]/70 hover:text-[#311717] transition-colors"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                        ← Change Selection
-                    </button>
-                </header>
-
-                {/* Content */}
-                <div className="relative z-10 px-6 py-8 max-w-2xl mx-auto">
-                    <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
-                        {/* Selected Profile Preview */}
-                        <div className="flex items-center gap-4 mb-8 p-4 bg-[#6C3FF5]/5 rounded-2xl">
-                            <img
-                                src={selectedProfile?.photo}
-                                alt={selectedProfile?.name}
-                                className="w-16 h-16 rounded-full object-cover border-2 border-[#6C3FF5]"
-                            />
-                            <div>
-                                <p
-                                    className="text-sm text-[#311717]/60"
-                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                >
-                                    Confessing to
-                                </p>
-                                <p
-                                    className="text-lg font-medium text-[#6C3FF5]"
-                                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                                >
-                                    {selectedProfile?.name}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="text-center mb-8">
-                            <h2
-                                className="text-2xl md:text-3xl font-bold text-[#311717] mb-2"
-                                style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                            >
-                                Write your confession 💜
-                            </h2>
-                            <p
-                                className="text-[#311717]/60"
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                                Express how you feel. Be genuine, be yourself!
-                            </p>
-                        </div>
-
-                        <form onSubmit={handleSubmitConfession} className="space-y-6">
-                            {/* Confession Message */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <Label
-                                        htmlFor="confession"
-                                        className="text-sm font-medium text-[#311717]"
-                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                    >
-                                        Your message
-                                    </Label>
-                                    <span
-                                        className="text-xs text-[#311717]/50"
-                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                    >
-                                        {confession.length}/500
-                                    </span>
-                                </div>
-                                <textarea
-                                    id="confession"
-                                    value={confession}
-                                    onChange={(e) => setConfession(e.target.value.slice(0, 500))}
-                                    placeholder={`Tell ${selectedProfile?.name} how you feel... What makes them special to you? 💕`}
-                                    className="w-full min-h-[180px] p-4 rounded-xl bg-[#A4B8E7]/10 border border-[#A4B8E7]/30 focus:border-[#6C3FF5] focus:outline-none focus:ring-1 focus:ring-[#6C3FF5] text-[#311717] resize-none"
-                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                />
-                                <p
-                                    className="text-xs text-[#311717]/50"
-                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                >
-                                    💡 Tip: Mention something specific you admire about them!
-                                </p>
-                            </div>
-
-                            {/* Submit Button */}
-                            <Button
-                                type="submit"
-                                disabled={!confession.trim() || isSubmitting}
-                                className="w-full h-14 bg-gradient-to-r from-[#6C3FF5] to-[#8B5CF6] hover:from-[#5A2ED4] hover:to-[#7C3AED] text-white rounded-xl font-medium text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg shadow-[#6C3FF5]/30"
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <motion.div
-                                            className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                                            animate={{ rotate: 360 }}
-                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                        />
-                                        Sending your confession...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send className="w-5 h-5" />
-                                        Send Anonymous Confession
-                                        <Heart className="w-5 h-5" fill="currentColor" />
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-
-                        {/* Privacy Note */}
-                        <p
-                            className="text-center text-xs text-[#311717]/50 mt-6"
-                            style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                            🔒 Your confession is 100% anonymous. We'll only reveal the match if it's mutual!
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Details entry state (default)
     return (
-        <div className="min-h-screen bg-[#A4B8E7] relative overflow-hidden">
-            {/* Decorative background elements */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#6C3FF5]/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#5A6FA3]/30 rounded-full blur-3xl" />
-                <motion.div
-                    className="absolute top-1/4 left-[10%] text-6xl"
-                    animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                    💜
-                </motion.div>
-                <motion.div
-                    className="absolute bottom-1/4 right-[10%] text-5xl"
-                    animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                >
-                    💕
-                </motion.div>
-            </div>
+        <div className="min-h-screen bg-[#FAFAFA] flex flex-col relative">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 pointer-events-none opacity-15" style={{ backgroundImage: 'url(/32905340_j.png)', backgroundSize: 'cover' }} />
 
             {/* Header */}
-            <header className="relative z-10 px-6 py-4 flex items-center justify-between">
-                <h1
-                    className="text-2xl md:text-3xl font-semibold text-[#311717]"
-                    style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                >
-                    MetLL
-                </h1>
-                <button
-                    onClick={() => navigate("/")}
-                    className="text-sm text-[#311717]/70 hover:text-[#311717] transition-colors"
-                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                    Back to Home
+            <div className="relative z-10 flex items-center justify-between px-4 pt-10 pb-3">
+                <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center bg-white/70 rounded-full">
+                    <ArrowLeft size={24} className="text-[#1A1A1A]" />
                 </button>
-            </header>
+                <h1 className="text-[18px] font-bold text-[#1A1A1A] italic" style={{ fontFamily: 'Georgia, serif' }}>Make a Confession</h1>
+                <button onClick={() => navigate('/home')} className="w-10 h-10 flex items-center justify-center bg-white/70 rounded-full">
+                    <Clock size={24} className="text-[#1A1A1A]" />
+                </button>
+            </div>
 
-            {/* Main Content */}
-            <div className="relative z-10 px-6 py-8 max-w-2xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
-                    {/* Header */}
-                    <div className="text-center mb-10">
-                        <div className="flex items-center justify-center gap-2 mb-4">
-                            <Sparkles className="w-6 h-6 text-[#6C3FF5]" />
-                            <h2
-                                className="text-2xl md:text-3xl font-bold text-[#311717]"
-                                style={{ fontFamily: "'Novaklasse', sans-serif" }}
-                            >
-                                Confess Your Feelings
-                            </h2>
-                            <Sparkles className="w-6 h-6 text-[#6C3FF5]" />
+            <div className="flex-1 overflow-y-auto pb-24 relative z-10">
+                {/* Hero Image */}
+                <div className="w-full h-[260px] relative -mt-5">
+                    <img src="/confession_hero_new.jpg" className="w-full h-full object-cover" alt="Hero" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    
+                    <div className="absolute bottom-[30px] left-6 right-6 flex flex-col items-center text-center">
+                        <h2 className="text-white font-[800] text-[24px] leading-tight mb-2 drop-shadow-md" style={{ fontFamily: 'Georgia, serif' }}>
+                            Secretly Admiring Someone?
+                        </h2>
+                        <div className="flex items-center justify-center flex-wrap mt-1 px-2">
+                            <span className="text-white font-medium text-[14px] leading-[20px] drop-shadow-md">
+                                Tell us who they are. It stays completely anonymous until they like you back!
+                            </span>
+                            <Heart className="w-3.5 h-3.5 text-white fill-white ml-1.5 drop-shadow-md" />
                         </div>
-                        <p
-                            className="text-[#311717]/60"
-                            style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                            Tell us where you know your crush from, and we'll help you find them!
-                        </p>
                     </div>
+                </div>
 
-                    <div className="space-y-6">
-                        {/* Context Selection */}
-                        <div className="space-y-3">
-                            <Label
-                                className="text-sm font-medium text-[#311717]"
-                                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                            >
-                                Where do you know your crush from?
-                            </Label>
-                            <Select
-                                value={context}
-                                onValueChange={(value: ConfessionContext) => setContext(value)}
-                            >
-                                <SelectTrigger className="h-14 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl">
-                                    <SelectValue placeholder="Select where you met..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="school">🏫 School</SelectItem>
-                                    <SelectItem value="college">🎓 College / University</SelectItem>
-                                    <SelectItem value="office">🏢 Office / Workplace</SelectItem>
-                                    <SelectItem value="home">🏠 Home / Neighborhood</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Context-Specific Fields */}
-                        <AnimatePresence mode="wait">
-                            {context && (
-                                <motion.div
-                                    key={context}
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="space-y-4 overflow-hidden"
+                {/* Main Card */}
+                <div className="bg-white mx-4 rounded-[24px] -mt-2.5 p-2 shadow-[0_10px_20px_rgba(0,0,0,0.1)] border border-white/50 relative z-20">
+                    {/* Tabs */}
+                    <div className="flex bg-[#A4B8E714] p-1 rounded-[16px] mb-4">
+                        {TAB_CONFIG.map(tab => {
+                            const active = activeTab === tab.type;
+                            return (
+                                <button
+                                    key={tab.type}
+                                    onClick={() => handleTabChange(tab.type)}
+                                    className={`flex-1 flex flex-row items-center justify-center py-[14px] rounded-[24px] transition-colors ${active ? 'bg-[#4A4A4A] shadow-[0_4px_8px_rgba(74,74,74,0.2)]' : 'bg-transparent'}`}
                                 >
-                                    {/* School Fields */}
-                                    {context === "school" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="schoolName"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    School Name <span className="text-red-400">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="schoolName"
-                                                    type="text"
-                                                    value={schoolName}
-                                                    onChange={(e) => setSchoolName(e.target.value)}
-                                                    placeholder="e.g., DPS, St. Mary's, etc."
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label
-                                                        htmlFor="classGrade"
-                                                        className="text-sm font-medium text-[#311717]"
-                                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                    >
-                                                        Class / Grade <span className="text-red-400">*</span>
-                                                    </Label>
-                                                    <Input
-                                                        id="classGrade"
-                                                        type="text"
-                                                        value={classGrade}
-                                                        onChange={(e) => setClassGrade(e.target.value)}
-                                                        placeholder="e.g., 12th"
-                                                        className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label
-                                                        htmlFor="section"
-                                                        className="text-sm font-medium text-[#311717]"
-                                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                    >
-                                                        Section <span className="text-[#311717]/50 font-normal">(optional)</span>
-                                                    </Label>
-                                                    <Input
-                                                        id="section"
-                                                        type="text"
-                                                        value={section}
-                                                        onChange={(e) => setSection(e.target.value)}
-                                                        placeholder="e.g., A, B, C"
-                                                        className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {/* College Fields */}
-                                    {context === "college" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="collegeName"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    College / University Name <span className="text-red-400">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="collegeName"
-                                                    type="text"
-                                                    value={collegeName}
-                                                    onChange={(e) => setCollegeName(e.target.value)}
-                                                    placeholder="e.g., IIT Delhi, Stanford, etc."
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label
-                                                        htmlFor="department"
-                                                        className="text-sm font-medium text-[#311717]"
-                                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                    >
-                                                        Department <span className="text-red-400">*</span>
-                                                    </Label>
-                                                    <Input
-                                                        id="department"
-                                                        type="text"
-                                                        value={department}
-                                                        onChange={(e) => setDepartment(e.target.value)}
-                                                        placeholder="e.g., Computer Science"
-                                                        className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label
-                                                        htmlFor="year"
-                                                        className="text-sm font-medium text-[#311717]"
-                                                        style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                    >
-                                                        Year <span className="text-[#311717]/50 font-normal">(optional)</span>
-                                                    </Label>
-                                                    <Input
-                                                        id="year"
-                                                        type="text"
-                                                        value={year}
-                                                        onChange={(e) => setYear(e.target.value)}
-                                                        placeholder="e.g., 2nd Year"
-                                                        className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {/* Office Fields */}
-                                    {context === "office" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="companyName"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    Company Name <span className="text-red-400">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="companyName"
-                                                    type="text"
-                                                    value={companyName}
-                                                    onChange={(e) => setCompanyName(e.target.value)}
-                                                    placeholder="e.g., Google, TCS, etc."
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="officeTeam"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    Department / Team <span className="text-[#311717]/50 font-normal">(optional)</span>
-                                                </Label>
-                                                <Input
-                                                    id="officeTeam"
-                                                    type="text"
-                                                    value={officeTeam}
-                                                    onChange={(e) => setOfficeTeam(e.target.value)}
-                                                    placeholder="e.g., Engineering, Marketing"
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {/* Home-based Fields */}
-                                    {context === "home" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="locality"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    Locality / Area <span className="text-red-400">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="locality"
-                                                    type="text"
-                                                    value={locality}
-                                                    onChange={(e) => setLocality(e.target.value)}
-                                                    placeholder="e.g., Koramangala, Manhattan"
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label
-                                                    htmlFor="howYouKnow"
-                                                    className="text-sm font-medium text-[#311717]"
-                                                    style={{ fontFamily: "'DM Sans', sans-serif" }}
-                                                >
-                                                    How do you know them? <span className="text-[#311717]/50 font-normal">(optional)</span>
-                                                </Label>
-                                                <Input
-                                                    id="howYouKnow"
-                                                    type="text"
-                                                    value={howYouKnow}
-                                                    onChange={(e) => setHowYouKnow(e.target.value)}
-                                                    placeholder="e.g., Neighbor, Same apartment, Park"
-                                                    className="h-12 bg-[#A4B8E7]/10 border-[#A4B8E7]/30 focus:border-[#6C3FF5] text-[#311717] rounded-xl"
-                                                />
-                                            </div>
-                                        </>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Search Button */}
-                        <Button
-                            type="button"
-                            onClick={handleSearchProfiles}
-                            disabled={!canSearchProfiles()}
-                            className="w-full h-14 bg-gradient-to-r from-[#6C3FF5] to-[#8B5CF6] hover:from-[#5A2ED4] hover:to-[#7C3AED] text-white rounded-xl font-medium text-base transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg shadow-[#6C3FF5]/30"
-                            style={{ fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                            <Search className="w-5 h-5" />
-                            Find my crush
-                            <Heart className="w-5 h-5" fill="currentColor" />
-                        </Button>
+                                    <tab.icon size={18} className={`mr-1.5 ${active ? 'text-white' : 'text-[#9B9BAA]'}`} />
+                                    <span className={`text-[14px] font-bold ${active ? 'text-white' : 'text-[#9B9BAA]'}`}>
+                                        {tab.label}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    {/* Privacy Note */}
-                    <p
-                        className="text-center text-xs text-[#311717]/50 mt-6"
-                        style={{ fontFamily: "'DM Sans', sans-serif" }}
+                    {/* Form Fields */}
+                    <div className="px-2 pb-2">
+                        {renderTabContent()}
+                    </div>
+                </div>
+
+                {/* Search Button */}
+                <div className="px-4 mt-6">
+                    <button 
+                        onClick={handleSearchMatches}
+                        disabled={searching}
+                        className="w-full h-[54px] bg-[#4A4A4A] rounded-[16px] active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5"
                     >
-                        🔒 Your search is completely private. No one will know you're looking for them!
-                    </p>
+                        {searching ? (
+                            <span className="text-white font-bold text-[17px]">Searching...</span>
+                        ) : (
+                            <>
+                                <Heart size={22} className="text-white" fill="white" />
+                                <span className="text-white font-bold text-[17px]">Find My Crush</span>
+                                <span className="text-white/90">✨</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+                
+                <div className="flex items-center justify-center mt-4 gap-1.5">
+                    <Lock size={14} className="text-[#9B9BAA]" />
+                    <span className="text-[12px] text-[#9B9BAA] font-medium">100% Anonymous • 100% Secure</span>
                 </div>
             </div>
 
-            {/* Bottom decorative element */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#5A6FA3]/30 to-transparent pointer-events-none" />
+            {/* Photo Modal */}
+            <AnimatePresence>
+                {showPhotoModal && (
+                    <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className="fixed inset-0 bg-[#FAFAFA] z-50 flex flex-col"
+                    >
+                        <div className="absolute inset-0 pointer-events-none opacity-40" style={{ backgroundImage: 'url(/32905340_j.png)', backgroundSize: 'cover' }} />
+                        
+                        {/* Modal Header */}
+                        <div className="relative z-10 pt-10 px-4 pb-4 bg-gradient-to-b from-[#A4B8E7]/20 to-transparent flex items-start">
+                            <button onClick={() => setShowPhotoModal(false)} className="w-10 h-10 flex items-center justify-center">
+                                <X size={24} className="text-[#1A1A1A]" />
+                            </button>
+                            <div className="flex-1 flex flex-col items-center">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                    <MailOpen size={18} className="text-[#1A1A1A]" />
+                                    <h2 className="text-[18px] font-bold text-[#1A1A1A]">Is this your crush?</h2>
+                                </div>
+                                <span className="text-[13px] text-[#5A5A6A]">Found {potentialMatches.length} matches</span>
+                            </div>
+                            <div className="w-10" />
+                        </div>
+
+                        <div className="relative z-10 px-4 mb-4">
+                            <div className="bg-[#A4B8E7]/10 border border-[#A4B8E7]/30 p-3 rounded-xl flex items-start gap-2">
+                                <div className="mt-0.5"><Lock size={16} className="text-[#7A96D4]" /></div>
+                                <p className="text-[13px] text-[#5A5A6A] leading-snug">
+                                    Photos are blurred to protect privacy until a mutual match occurs.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-32">
+                            <div className="grid grid-cols-2 gap-4">
+                                {potentialMatches.map(match => {
+                                    const selected = selectedMatch?.id === match.id;
+                                    return (
+                                        <button
+                                            key={match.id}
+                                            onClick={() => setSelectedMatch(match)}
+                                            className={`text-left relative rounded-3xl overflow-hidden transition-all duration-300 ${selected ? 'ring-4 ring-[#A4B8E7]/50 scale-[0.98]' : ''}`}
+                                        >
+                                            <div className="relative aspect-square">
+                                                <img src={match.profilePhoto} className="w-full h-full object-cover blur-[8px]" alt="match" />
+                                                <div className="absolute inset-0 bg-white/20" />
+                                                
+                                                {/* Confidence Badge */}
+                                                <div className="absolute top-2 left-2 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full">
+                                                    <span className="text-white text-[12px] font-bold">{match.matchConfidence}%</span>
+                                                </div>
+
+                                                {/* Selected Overlay */}
+                                                {selected && (
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-[#A4B8E7]/90 to-[#7A96D4]/90 flex items-center justify-center">
+                                                        <Heart size={38} className="text-white" fill="white" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="p-3 bg-white border border-t-0 border-black/5 rounded-b-3xl">
+                                                <h4 className="font-bold text-[15px] text-[#1A1A1A] mb-0.5">{match.name}</h4>
+                                                <p className="text-[12px] text-[#5A5A6A] truncate">🏫 {match.institution}</p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Bottom Actions */}
+                        <div className="relative z-10 absolute bottom-0 left-0 right-0 p-5 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t border-black/5">
+                            <button
+                                onClick={() => handleCreateConfession(selectedMatch)}
+                                disabled={!selectedMatch || loading}
+                                className={`w-full relative h-14 rounded-full overflow-hidden active:scale-[0.98] transition-all flex items-center justify-center mb-3 ${selectedMatch ? 'shadow-lg' : 'opacity-50'}`}
+                            >
+                                {selectedMatch ? (
+                                    <>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#A4B8E7] to-[#7A96D4]" />
+                                        {loading ? (
+                                            <span className="relative text-white font-bold text-[16px]">Sending...</span>
+                                        ) : (
+                                            <>
+                                                <Heart size={20} className="relative text-white mr-2" fill="white" />
+                                                <span className="relative text-white font-bold text-[16px]">Confess to {selectedMatch.name}</span>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="w-full h-full bg-[#D4D4D4] flex items-center justify-center">
+                                        <Heart size={20} className="text-white mr-2" />
+                                        <span className="text-white font-bold text-[16px]">Select Your Crush</span>
+                                    </div>
+                                )}
+                            </button>
+                            <button onClick={() => handleCreateConfession(null)} className="w-full py-3" disabled={loading}>
+                                <span className="text-[15px] font-semibold text-[#5A5A6A]">None of these is my crush</span>
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

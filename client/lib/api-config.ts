@@ -15,11 +15,11 @@ const getDefaultApiUrl = () => {
 
   // Use production backend in production mode, localhost in development
   if (import.meta.env.PROD) {
-    return "https://api.metll.in";
+    return "https://api.metll.in/api";
   }
 
-  // Development mode - use localhost
-  return "http://api.metll.in";
+  // Development mode - use production backend as requested
+  return "https://api.metll.in/api";
 };
 
 export const API_BASE_URL = getDefaultApiUrl();

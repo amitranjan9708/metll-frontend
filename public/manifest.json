@@ -1,0 +1,21 @@
+{
+  "name": "MetLL",
+  "short_name": "MetLL",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5A6FA3",
+  "description": "Anonymous confession and matchmaking platform",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
