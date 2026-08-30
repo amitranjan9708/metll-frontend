@@ -286,6 +286,14 @@
       </div>
     </noscript>
 
+    <script>
+      // Capture PWA install prompt BEFORE React mounts — this fires very early
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__pwaInstallPrompt = e;
+        console.log('PWA install prompt captured early');
+      });
+    </script>
     <script type="module" src="/client/App.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {

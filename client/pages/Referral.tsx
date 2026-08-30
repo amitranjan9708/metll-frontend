@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Copy, Share2, Download, Wallet, Coffee, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +11,7 @@ const COFFEE_REWARD_EVERY = 10;
 export default function Referral() {
     const navigate = useNavigate();
     const { toast } = useToast();
+    const magnetVideoRef = useRef<HTMLVideoElement>(null);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<any>(null);
     const [rewards, setRewards] = useState<any[]>([]);
@@ -24,6 +25,13 @@ export default function Referral() {
     const [withdrawing, setWithdrawing] = useState(false);
 
     useEffect(() => {
+    // Force-play mascot video on mobile
+    if (magnetVideoRef.current) {
+      magnetVideoRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
         loadReferralData();
     }, []);
 
@@ -177,15 +185,17 @@ export default function Referral() {
                         <div className="absolute w-[140px] h-[140px] rounded-full bg-[#A4B8E7]/35 shadow-[0_8px_20px_rgba(139,163,219,0.4)] animate-pulse"></div>
                         <div className="w-[140px] h-[140px] rounded-full bg-white/95 border-2 border-white/90 shadow-[0_6px_12px_rgba(164,184,231,0.18)] flex items-center justify-center overflow-hidden z-10 relative">
                             <video 
+                                ref={magnetVideoRef}
                                 autoPlay 
                                 loop 
                                 muted 
                                 playsInline 
+                                preload="auto"
                                 className="w-[135px] h-[135px] object-contain"
                                 style={{ mixBlendMode: 'multiply' }}
                             >
-                                <source src="/mascot/mascot_magnet_video.mp4" type='video/mp4; codecs="hvc1"' />
                                 <source src="/mascot/mascot_magnet_video.webm" type="video/webm" />
+                                <source src="/mascot/mascot_magnet_video.mp4" type="video/mp4" />
                             </video>
                         </div>
                     </div>
