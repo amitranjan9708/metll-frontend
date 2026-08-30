@@ -42,3 +42,20 @@ export function getUrgencyLevel(): UrgencyLevel {
 export function pad(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
 }
+
+export function getShareMessage(referralCode: string, daysLeft: number): string {
+  const urgency =
+    daysLeft <= 7
+      ? `⚠️ Only ${daysLeft} days left — this offer ends soon!`
+      : daysLeft <= 30
+      ? `🔥 Only ${daysLeft} days left!`
+      : `⏳ Offer ends in ${daysLeft} days.`;
+
+  return (
+    `😳 Someone on Metll may have already confessed to you anonymously...\n\n` +
+    `Metll is an anonymous confession app — join before Oct 24 to find out who! 💌\n\n` +
+    `${urgency}\n\n` +
+    `Download & use my code to join FREE: ${referralCode}\n` +
+    `(After Oct 24, key features become paid 🔒)`
+  );
+}

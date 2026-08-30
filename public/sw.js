@@ -15,6 +15,15 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only intercept GET requests
+  if (event.request.method !== 'GET') return;
+  
+  // Only intercept requests to our own origin (ignore external APIs, Google, etc.)
+  if (!event.request.url.startsWith(self.location.origin)) return;
+  
+  // Ignore API requests if they are same-origin but routed to backend
+  if (event.request.url.includes('/api/')) return;
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

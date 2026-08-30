@@ -33,6 +33,8 @@ import Live from "./pages/Live";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Profile from "./pages/Profile";
+import Referral from "./pages/Referral";
+import Ambassador from "./pages/Ambassador";
 
 const queryClient = new QueryClient();
 const GOOGLE_CLIENT_ID = "557642332261-s9v6dr4jsus02c73mu5qk32204fg0g1j.apps.googleusercontent.com";
@@ -76,6 +78,8 @@ const App = () => (
                   <Route path="/photo-upload" element={<PhotoUpload />} />
                   <Route path="/situations" element={<Situations />} />
                   <Route path="/confess" element={<Confession />} />
+                  <Route path="/referral" element={<Referral />} />
+                  <Route path="/ambassador" element={<Ambassador />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

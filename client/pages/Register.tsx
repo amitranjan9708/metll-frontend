@@ -17,9 +17,39 @@ export default function Register() {
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const MASCOT_VIDEO_URL = "/mascot_welcome.webm";
 
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    // We've used the prompt, and can't use it again, throw it away
+    setDeferredPrompt(null);
+  };
   const handleSendOTP = async () => {
     setErrorMsg("");
     if (!email.trim() || !email.includes("@")) {
@@ -126,6 +156,34 @@ export default function Register() {
             <h1 className="text-[32px] font-['Novaklasse'] text-[#1A1A1A] tracking-[1px] leading-none m-0">metll</h1>
             <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-[5px]" />
           </div>
+
+          {/* PWA Install Banner */}
+          <AnimatePresence>
+            {deferredPrompt && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 bg-[#EBF3FF] border border-[#A4B8E7] rounded-xl p-3 flex items-center justify-between shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <img src="/logo.png" alt="Icon" className="w-6 h-6 rounded" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#1A1A1A]">Install Metll App</p>
+                    <p className="text-[11px] text-[#5A6FA3]">Add to Home Screen for best experience</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleInstallClick}
+                  className="bg-[#1A1A1A] text-white text-[12px] font-bold px-4 py-2 rounded-full active:scale-95 transition-transform"
+                >
+                  Install
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-8">
