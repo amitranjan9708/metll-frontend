@@ -20,7 +20,7 @@ export const PlatformGate: React.FC<{ children: React.ReactNode }> = ({ children
   if (isAndroid === null) return null; // Loading state before determining OS
 
   // Always allow the landing page / marketing pages on Android
-  const allowedRoutes = ["/", "/about", "/contact", "/careers", "/privacy", "/deletion", "/safety-standards", "/blog"];
+  const allowedRoutes = ["/", "/index.html", "/about", "/contact", "/careers", "/privacy", "/deletion", "/safety-standards", "/blog"];
   if (allowedRoutes.includes(location.pathname) || location.pathname.startsWith("/blog/")) {
     return <>{children}</>;
   }

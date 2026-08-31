@@ -57,7 +57,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       clearTimeout(timer);
       clearTimeout(completeTimer);
     };
-  }, [onComplete]);
+  }, []); // Remove onComplete from dependencies to prevent infinite resetting
 
   return (
     <motion.div
