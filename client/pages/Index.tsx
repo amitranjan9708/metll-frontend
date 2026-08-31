@@ -23,7 +23,8 @@ function IndexOrRedirect() {
     return <Navigate to="/home" replace />;
   }
 
-  return <Navigate to="/register" replace />;
+  // If not authenticated, render the landing page instead of forcing them to register
+  return <Index />;
 }
 import {
   Accordion,
