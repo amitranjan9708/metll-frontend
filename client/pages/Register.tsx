@@ -30,7 +30,7 @@ export default function Register() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showIosPrompt, setShowIosPrompt] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const MASCOT_IMG_URL = "/mascot_welcome_anim.webp";
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Register() {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIos = /iphone|ipad|ipod/.test(userAgent);
     const isStandalone = ('standalone' in window.navigator) && (window.navigator as any).standalone;
-    
+
     if (isIos && !isStandalone) {
       setShowIosPrompt(true);
     }
@@ -85,8 +85,8 @@ export default function Register() {
         setShowIosPrompt(true);
       } else {
         // Desktop/other — show a helpful toast
-        toast({ 
-          title: "Add to Home Screen", 
+        toast({
+          title: "Add to Home Screen",
           description: "Open this site in Chrome on Android, then tap the menu ⋮ → 'Add to Home Screen'.",
         });
       }
@@ -117,7 +117,7 @@ export default function Register() {
         setErrorMsg(response.message || "Failed to send OTP");
         return;
       }
-      
+
       // Navigate to OTP
       navigate("/otp", { state: { user: { email: email.trim().toLowerCase() } } });
     } catch (error: any) {
@@ -242,7 +242,7 @@ export default function Register() {
                   <AlertDialogTitle className="text-xl font-bold text-[#1A1A1A] text-center">Install on iPhone</AlertDialogTitle>
                   <AlertDialogDescription className="text-center text-[#6B6B6B] mt-2 leading-relaxed">
                     Tap the <strong className="text-[#1A1A1A]">Share</strong> icon{" "}
-                    <span className="text-lg">⎙</span> at the bottom of Safari, then tap{" "}
+                    <span className="text-lg">⎙</span> at the top of Chrome, then choose <strong>"View more"</strong> and tap{" "}
                     <strong className="text-[#1A1A1A]">Add to Home Screen</strong>.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
