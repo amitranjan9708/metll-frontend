@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import MascotMedia from "../components/MascotMedia";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -266,21 +267,12 @@ export default function Register() {
 
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-8">
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
+            <MascotMedia
+              videoSrc="/mascot_welcome.webm"
+              imageSrc="/mascot/mascot_welcome_wave.png"
+              alt="Metll Mascot"
               className="w-[180px] h-[180px] object-contain pointer-events-none mb-3"
-            >
-              <source src="/mascot_welcome.webm" type="video/webm" />
-              <img
-                src="/mascot/mascot_welcome_wave.png"
-                alt="Metll Mascot"
-                className="w-[180px] h-[180px] object-contain pointer-events-none mb-3"
-              />
-            </video>
+            />
             <h2 className="text-2xl font-bold text-[#1A1A1A] mb-1 text-center">Welcome to Metll</h2>
             <p className="text-[13px] text-[#6B6B6B] text-center leading-tight px-4">
               Join thousands finding meaningful connections
