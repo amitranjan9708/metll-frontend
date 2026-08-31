@@ -6,7 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Careers from "./pages/Careers";
@@ -50,16 +50,17 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <PlatformGate>
             <BrowserGate>
               <AuthProvider>
                 <Toaster />
                 <Sonner />
               <BrowserRouter>
                 <Routes>
-                  {/* Public Auth Routes */}
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/otp" element={<OTP />} />
+                  <Route element={<PlatformGate><Outlet /></PlatformGate>}>
+                    {/* Public Auth Routes */}
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/otp" element={<OTP />} />
+                  </Route>
                   
                   {/* Marketing Pages */}
                   <Route path="/" element={<Index />} />
@@ -72,26 +73,28 @@ const App = () => (
                   <Route path="/blog" element={<BlogListing />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
                   
-                  <Route element={<MainLayout />}>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/live" element={<Live />} />
-                    <Route path="/date" element={<DateFeed />} />
-                    <Route path="/matches" element={<Matches />} />
-                    <Route path="/profile" element={<Profile />} />
-                  </Route>
+                  <Route element={<PlatformGate><Outlet /></PlatformGate>}>
+                    <Route element={<MainLayout />}>
+                      <Route path="/home" element={<Home />} />
+                      <Route path="/live" element={<Live />} />
+                      <Route path="/date" element={<DateFeed />} />
+                      <Route path="/matches" element={<Matches />} />
+                      <Route path="/profile" element={<Profile />} />
+                    </Route>
 
-                  <Route path="/onboarding" element={<Onboarding />} />
-                  <Route path="/photo-upload" element={<PhotoUpload />} />
-                  <Route path="/situations" element={<Situations />} />
-                  <Route path="/confess" element={<Confession />} />
-                  <Route path="/referral" element={<Referral />} />
-                  <Route path="/ambassador" element={<Ambassador />} />
-                  <Route path="/my-confessions" element={<MyConfessions />} />
-                  <Route path="/dates" element={<Dates />} />
-                  <Route path="/edit-profile" element={<EditProfile />} />
-                  <Route path="/privacy-security" element={<PrivacySecurity />} />
-                  <Route path="/help-center" element={<HelpCenter />} />
-                  <Route path="/chat/:matchId" element={<Chat />} />
+                    <Route path="/onboarding" element={<Onboarding />} />
+                    <Route path="/photo-upload" element={<PhotoUpload />} />
+                    <Route path="/situations" element={<Situations />} />
+                    <Route path="/confess" element={<Confession />} />
+                    <Route path="/referral" element={<Referral />} />
+                    <Route path="/ambassador" element={<Ambassador />} />
+                    <Route path="/my-confessions" element={<MyConfessions />} />
+                    <Route path="/dates" element={<Dates />} />
+                    <Route path="/edit-profile" element={<EditProfile />} />
+                    <Route path="/privacy-security" element={<PrivacySecurity />} />
+                    <Route path="/help-center" element={<HelpCenter />} />
+                    <Route path="/chat/:matchId" element={<Chat />} />
+                  </Route>
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
@@ -99,7 +102,6 @@ const App = () => (
               </BrowserRouter>
               </AuthProvider>
             </BrowserGate>
-          </PlatformGate>
         </GoogleOAuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Download, Smartphone } from "lucide-react";
 
 export const PlatformGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAndroid, setIsAndroid] = useState<boolean | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Detect Android via userAgent
