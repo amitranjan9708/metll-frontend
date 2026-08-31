@@ -66,5 +66,56 @@ export const confessionApi = {
             console.error("Create confession error:", error);
             return { success: false, message: "Failed to create confession" };
         }
+    },
+
+    getMyConfessions: async (): Promise<{ success: boolean; data?: { confessions: any[]; count: number } }> => {
+        const token = localStorage.getItem("authToken");
+        try {
+            const response = await fetch(`${API_BASE_URL}/confessions`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Get my confessions error:', error);
+            return { success: false };
+        }
+    },
+
+    getConfessionsForMe: async (): Promise<{ success: boolean; data?: { confessions: any[]; count: number } }> => {
+        const token = localStorage.getItem("authToken");
+        try {
+            const response = await fetch(`${API_BASE_URL}/confessions/for-me`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Get confessions for me error:', error);
+            return { success: false };
+        }
+    },
+
+    deleteConfession: async (confessionId: number): Promise<{ success: boolean; message?: string }> => {
+        const token = localStorage.getItem("authToken");
+        try {
+            const response = await fetch(`${API_BASE_URL}/confessions/${confessionId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Delete confession error:', error);
+            return { success: false, message: "Failed to delete confession" };
+        }
     }
 };

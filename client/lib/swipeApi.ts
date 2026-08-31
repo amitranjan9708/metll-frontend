@@ -55,46 +55,28 @@ export const swipeApi = {
   },
 
   getMatches: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: 1,
-            matchedUser: { id: "user_4", name: "Sara", isVerified: true, profilePhoto: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=600&auto=format&fit=crop" },
-            lastMessage: { content: "Hey! How's your day going?" },
-            matchedAt: new Date().toISOString()
-          },
-          {
-            id: 2,
-            matchedUser: { id: "user_5", name: "Rahul", isVerified: false, profilePhoto: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop" },
-            lastMessage: null,
-            matchedAt: new Date(Date.now() - 86400000).toISOString()
-          }
-        ]);
-      }, 600);
+    const token = localStorage.getItem("authToken");
+    const response = await fetch(`${API_BASE_URL}/swipe/matches`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
+    const data = await response.json();
+    return data.success && Array.isArray(data.data) ? data.data : [];
   },
 
   getWhoLikedMe: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: "user_6",
-            name: "Anjali",
-            age: 23,
-            profilePhoto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop",
-            likedAt: new Date().toISOString()
-          },
-          {
-            id: "user_7",
-            name: "Kabir",
-            age: 25,
-            profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
-            likedAt: new Date(Date.now() - 172800000).toISOString()
-          }
-        ]);
-      }, 600);
+    const token = localStorage.getItem("authToken");
+    const response = await fetch(`${API_BASE_URL}/swipe/likes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
+    const data = await response.json();
+    return data.success && Array.isArray(data.data) ? data.data : [];
   }
 };

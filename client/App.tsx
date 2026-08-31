@@ -33,8 +33,13 @@ import Live from "./pages/Live";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Profile from "./pages/Profile";
+import Dates from "./pages/Dates";
+import EditProfile from "./pages/EditProfile";
+import PrivacySecurity from "./pages/PrivacySecurity";
+import HelpCenter from "./pages/HelpCenter";
 import Referral from "./pages/Referral";
 import Ambassador from "./pages/Ambassador";
+import MyConfessions from "./pages/MyConfessions";
 
 const queryClient = new QueryClient();
 const GOOGLE_CLIENT_ID = "557642332261-s9v6dr4jsus02c73mu5qk32204fg0g1j.apps.googleusercontent.com";
@@ -80,6 +85,11 @@ const App = () => (
                   <Route path="/confess" element={<Confession />} />
                   <Route path="/referral" element={<Referral />} />
                   <Route path="/ambassador" element={<Ambassador />} />
+                  <Route path="/my-confessions" element={<MyConfessions />} />
+                  <Route path="/dates" element={<Dates />} />
+                  <Route path="/edit-profile" element={<EditProfile />} />
+                  <Route path="/privacy-security" element={<PrivacySecurity />} />
+                  <Route path="/help-center" element={<HelpCenter />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

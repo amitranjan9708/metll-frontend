@@ -3,7 +3,7 @@ import { getDeviceId } from "./deviceUtils";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://api.metll.in/api";
 
 const getAuthToken = () => {
-    return localStorage.getItem('auth_token');
+    return localStorage.getItem('authToken');
 };
 
 const authFetch = async (endpoint: string, options: RequestInit = {}) => {

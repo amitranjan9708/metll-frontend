@@ -1,7 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const getAuthToken = () => {
-    return localStorage.getItem('auth_token');
+    return localStorage.getItem('authToken');
 };
 
 const authFetch = async (endpoint: string, options: RequestInit = {}) => {

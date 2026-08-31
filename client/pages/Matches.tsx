@@ -45,10 +45,7 @@ export default function Matches() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col pt-8 pb-24">
-      {/* Header */}
-      <div className="px-6 mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Connections</h1>
-      </div>
+
 
       {/* Tabs */}
       <div className="flex px-6 gap-2 mb-6">
@@ -165,20 +162,48 @@ export default function Matches() {
   );
 }
 
+import { useNavigate } from "react-router-dom";
+
 function EmptyState({ type }: { type: "matches" | "likes" }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        {type === "matches" ? <MessageCircle className="w-10 h-10 text-gray-400" /> : <Heart className="w-10 h-10 text-gray-400" />}
+  const navigate = useNavigate();
+
+  if (type === "likes") {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+        <img 
+          src="/mascot/mascot_no_likes.png" 
+          alt="No likes" 
+          className="w-48 h-48 object-contain mb-6 drop-shadow-md"
+        />
+        <h3 className="text-[22px] font-bold text-gray-900 mb-3 tracking-tight">
+          No likes yet
+        </h3>
+        <p className="text-[15px] text-gray-500 max-w-[280px] leading-relaxed">
+          When someone likes your profile, they'll appear here!
+        </p>
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-2">
-        {type === "matches" ? "No matches yet" : "No likes yet"}
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+      <img 
+        src="/mascot/mascot_no_matches.png" 
+        alt="No matches" 
+        className="w-48 h-48 object-contain mb-6 drop-shadow-md"
+      />
+      <h3 className="text-[22px] font-bold text-gray-900 mb-3 tracking-tight">
+        No matches yet
       </h3>
-      <p className="text-gray-500 max-w-[250px]">
-        {type === "matches" 
-          ? "Keep swiping to find people you vibe with!" 
-          : "When someone likes your profile, they'll appear here."}
+      <p className="text-[15px] text-gray-500 max-w-[280px] leading-relaxed mb-8">
+        Take it easy! Start swiping to find people you vibe with.
       </p>
+      <button 
+        onClick={() => navigate('/date')}
+        className="bg-primary text-white font-bold text-[15px] px-8 py-3.5 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+      >
+        Find Matches
+      </button>
     </div>
   );
 }

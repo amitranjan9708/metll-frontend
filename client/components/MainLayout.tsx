@@ -30,7 +30,7 @@ export function MainLayout() {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-3 flex justify-between items-center z-50 md:hidden pb-safe">
         <NavLink 
           to="/home" 
-          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-gray-400'}`}
+          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-gray-900' : 'text-gray-400'}`}
         >
           <Home className="w-6 h-6" />
           <span className="text-[10px] font-medium">Home</span>
@@ -38,7 +38,7 @@ export function MainLayout() {
 
         <NavLink 
           to="/live" 
-          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-gray-400'}`}
+          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-gray-900' : 'text-gray-400'}`}
         >
           <Radio className="w-6 h-6" />
           <span className="text-[10px] font-medium">Live</span>
@@ -46,7 +46,7 @@ export function MainLayout() {
 
         <NavLink 
           to="/date" 
-          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-gray-400'}`}
+          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-gray-900' : 'text-gray-400'}`}
         >
           <Heart className="w-6 h-6" />
           <span className="text-[10px] font-medium">Date</span>
@@ -54,7 +54,7 @@ export function MainLayout() {
 
         <NavLink 
           to="/matches" 
-          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-gray-400'}`}
+          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-gray-900' : 'text-gray-400'}`}
         >
           <MessageCircle className="w-6 h-6" />
           <span className="text-[10px] font-medium">Matches</span>
@@ -62,7 +62,7 @@ export function MainLayout() {
 
         <NavLink 
           to="/profile" 
-          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-gray-400'}`}
+          className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-gray-900' : 'text-gray-400'}`}
         >
           <User className="w-6 h-6" />
           <span className="text-[10px] font-medium">Profile</span>

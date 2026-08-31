@@ -1,74 +1,54 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Rocket, Navigation, Users, Heart } from "lucide-react";
+import { Radio, Sparkles } from "lucide-react";
 
 export default function Live() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 overflow-hidden relative">
-      {/* Subtle Background Pattern */}
-      <div className="absolute top-[-150px] right-[-100px] w-[350px] h-[350px] bg-gray-200/50 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-80px] left-[-100px] w-[280px] h-[280px] bg-gray-200/50 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col pb-24">
 
-      {/* Animated Rings */}
-      <div className="relative w-[260px] h-[260px] flex items-center justify-center mb-12">
-        <motion.div
-          animate={{ scale: [0.9, 1.15, 0.9], opacity: [0.3, 0.1, 0.3] }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute w-[260px] h-[260px] rounded-full border-[1.5px] border-gray-900"
-        />
-        <motion.div
-          animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.4, 0.15, 0.4] }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-          className="absolute w-[200px] h-[200px] rounded-full border-[1.5px] border-gray-900"
-        />
-        <motion.div
-          animate={{ scale: [0.9, 1.05, 0.9], opacity: [0.5, 0.2, 0.5] }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-          className="absolute w-[140px] h-[140px] rounded-full border-[1.5px] border-gray-900"
-        />
+      <div className="flex-1 px-4 flex flex-col items-center justify-center -mt-10">
+        <div className="w-full max-w-sm relative">
+          {/* Decorative background glows */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[250px] h-[250px] bg-[#A4B8E7] rounded-full blur-[80px] opacity-40 pointer-events-none" />
 
-        {/* Center Icon */}
-        <motion.div
-          animate={{ y: [-12, 0, -12] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="relative z-10 w-[88px] h-[88px] bg-white rounded-full flex items-center justify-center border-2 border-gray-900 shadow-xl"
-        >
-          <Rocket className="w-11 h-11 text-gray-900" />
-        </motion.div>
-      </div>
+          <div className="bg-white rounded-[32px] p-8 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-[#A4B8E7]/20 relative z-10 flex flex-col items-center text-center overflow-hidden">
+            {/* Top Badge */}
+            <div className="bg-gradient-to-r from-[#A4B8E7] to-[#7A96D4] text-white px-4 py-1.5 rounded-full mb-8 shadow-md">
+              <span className="text-[11px] font-[800] tracking-[1.5px] uppercase flex items-center gap-1.5">
+                <Sparkles size={12} /> App Exclusive
+              </span>
+            </div>
 
-      {/* Text Content */}
-      <div className="flex flex-col items-center text-center max-w-sm z-10">
-        <div className="flex items-center gap-2 bg-gray-900 text-white px-4 py-1.5 rounded-full mb-6 shadow-sm">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span className="text-[10px] font-bold tracking-[0.15em] uppercase">Coming Soon</span>
-        </div>
+            {/* Icon */}
+            <div className="w-24 h-24 bg-[#F4F7FF] rounded-full flex items-center justify-center mb-6 border-4 border-white shadow-lg relative">
+              <div className="absolute inset-0 bg-[#A4B8E7] rounded-full animate-ping opacity-20" />
+              <Radio className="w-10 h-10 text-[#7A96D4]" />
+            </div>
 
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-          Discover Nearby
-        </h1>
-        <p className="text-gray-500 mb-8 leading-relaxed">
-          Find and connect with people around you in real-time. This exciting feature is under development.
-        </p>
+            {/* Content */}
+            <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'serif' }}>
+              Live Matching
+            </h2>
+            <p className="text-[15px] text-[#5A5A6A] leading-relaxed mb-8 px-2">
+              Find and connect with people who are currently online and nearby in real-time.
+            </p>
 
-        {/* Feature Preview */}
-        <div className="w-full space-y-3">
-          <FeatureItem icon={<Navigation className="w-5 h-5"/>} text="Real-time location tracking" />
-          <FeatureItem icon={<Users className="w-5 h-5"/>} text="See who's around you" />
-          <FeatureItem icon={<Heart className="w-5 h-5"/>} text="Send anonymous confessions" />
+            {/* Availability Badges */}
+            <div className="w-full flex flex-col gap-3">
+              <div className="bg-[#E8F5E9] border border-[#A5D6A7] rounded-2xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#4CAF50] rounded-full animate-pulse" />
+                  <span className="text-[14px] font-bold text-[#2E7D32]">Live for Android</span>
+                </div>
+              </div>
+
+              <div className="bg-[#F5F5F5] border border-[#E0E0E0] rounded-2xl p-4 flex items-center gap-3">
+                <div className="w-2 h-2 bg-[#9E9E9E] rounded-full" />
+                <span className="text-[14px] font-bold text-[#757575]">Coming soon on App Store</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FeatureItem({ icon, text }: { icon: React.ReactNode, text: string }) {
-  return (
-    <div className="flex items-center bg-white px-4 py-4 rounded-2xl border border-gray-100 shadow-sm">
-      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-900 mr-3">
-        {icon}
-      </div>
-      <span className="flex-1 text-left text-[15px] font-semibold text-gray-900">{text}</span>
     </div>
   );
 }

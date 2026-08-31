@@ -1,6 +1,18 @@
 import { API_BASE_URL } from "./api-config";
 
 export const userApi = {
+  getUserProfile: async () => {
+    const token = localStorage.getItem("authToken");
+    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  },
+
   updateProfile: async (data: any) => {
     const token = localStorage.getItem("authToken");
     const response = await fetch(`${API_BASE_URL}/user/profile`, {

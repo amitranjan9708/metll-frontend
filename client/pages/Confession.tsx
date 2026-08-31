@@ -20,7 +20,7 @@ const C = {
     border: 'rgba(0,0,0,0.06)',
 };
 
-type TabType = 'school' | 'college' | 'office';
+type TabType = 'school' | 'college' | 'office' | 'social';
 
 interface LocationSuggestion {
     display_name: string;
@@ -33,6 +33,7 @@ const TAB_CONFIG = [
     { type: 'school' as TabType, label: 'School', icon: School },
     { type: 'college' as TabType, label: 'College', icon: Library },
     { type: 'office' as TabType, label: 'Office', icon: Briefcase },
+    { type: 'social' as TabType, label: 'Social', icon: MailOpen },
 ];
 
 const CustomInput = ({ label, value, onChange, placeholder, required = false, icon: Icon }: any) => (
@@ -66,6 +67,8 @@ export default function Confession() {
     const [collegeName, setCollegeName] = useState('');
     const [collegeDepartment, setCollegeDepartment] = useState('');
     const [officeName, setOfficeName] = useState('');
+    const [socialPlatform, setSocialPlatform] = useState('instagram');
+    const [socialUsername, setSocialUsername] = useState('');
     
     // Location State
     const [locationQuery, setLocationQuery] = useState('');
@@ -89,6 +92,7 @@ export default function Confession() {
     const resetForm = () => {
         setCrushFirstName(''); setSchoolName(''); setSchoolClass('');
         setCollegeName(''); setCollegeDepartment(''); setOfficeName('');
+        setSocialUsername(''); setSocialPlatform('instagram');
         setLocationQuery(''); setLocationCity(''); setLocationState(''); setLocationCountry('');
         setPotentialMatches([]); setSelectedMatch(null);
     };
@@ -103,6 +107,7 @@ export default function Confession() {
         if (activeTab === 'school' && !schoolName.trim()) { alert('Please enter the school name'); return false; }
         if (activeTab === 'college' && !collegeName.trim()) { alert('Please enter the college name'); return false; }
         if (activeTab === 'office' && !officeName.trim()) { alert('Please enter the office/company name'); return false; }
+        if (activeTab === 'social' && !socialUsername.trim()) { alert('Please enter their social username'); return false; }
         return true;
     };
 
@@ -111,6 +116,7 @@ export default function Confession() {
             case 'school':  return { crushFirstName: crushFirstName.trim(), institutionType: 'school',  institutionName: schoolName.trim(),  className: schoolClass.trim() || undefined, city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
             case 'college': return { crushFirstName: crushFirstName.trim(), institutionType: 'college', institutionName: collegeName.trim(), department: collegeDepartment.trim() || undefined, city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
             case 'office':  return { crushFirstName: crushFirstName.trim(), institutionType: 'office',  institutionName: officeName.trim(),  city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined };
+            case 'social':  return { crushFirstName: crushFirstName.trim(), institutionType: 'social', socialPlatform, socialUsername: socialUsername.trim() };
         }
     };
 
@@ -118,14 +124,23 @@ export default function Confession() {
         if (!validateForm()) return;
         setSearching(true);
         try {
-            const params = {
+            let params: any = {
                 crushFirstName: crushFirstName.trim(),
                 institutionType: activeTab,
-                institutionName: activeTab === 'school' ? schoolName.trim() : activeTab === 'college' ? collegeName.trim() : officeName.trim(),
-                className:   activeTab === 'school'  ? schoolClass.trim() : undefined,
-                department:  activeTab === 'college' ? collegeDepartment.trim() : undefined,
-                city: locationCity || undefined, state: locationState || undefined, country: locationCountry || undefined,
             };
+
+            if (activeTab === 'social') {
+                params.socialPlatform = socialPlatform;
+                params.socialUsername = socialUsername.trim();
+            } else {
+                params.institutionName = activeTab === 'school' ? schoolName.trim() : activeTab === 'college' ? collegeName.trim() : officeName.trim();
+                params.className = activeTab === 'school' ? schoolClass.trim() : undefined;
+                params.department = activeTab === 'college' ? collegeDepartment.trim() : undefined;
+                params.city = locationCity || undefined;
+                params.state = locationState || undefined;
+                params.country = locationCountry || undefined;
+            }
+            
             const result = await confessionApi.searchPotentialMatches(params);
             if (result.success && result.data) {
                 if (result.data.count > 0) {
@@ -304,6 +319,39 @@ export default function Confession() {
                     {renderLocationInput()}
                 </>
             );
+            case 'social': return (
+                <>
+                    {renderCrushNameInput()}
+                    
+                    <div className="mb-4">
+                        <label className="block text-[12px] font-bold text-[#5A5A6A] mb-2 ml-1">Select Platform</label>
+                        <div className="flex gap-2">
+                            <button onClick={() => setSocialPlatform('instagram')} className={`flex-1 py-2.5 rounded-xl border flex items-center justify-center gap-2 ${socialPlatform === 'instagram' ? 'bg-[#E1306C]/10 border-[#E1306C] text-[#E1306C]' : 'bg-white border-gray-200 text-gray-500'}`}>
+                                Instagram
+                            </button>
+                            <button onClick={() => setSocialPlatform('facebook')} className={`flex-1 py-2.5 rounded-xl border flex items-center justify-center gap-2 ${socialPlatform === 'facebook' ? 'bg-[#1877F2]/10 border-[#1877F2] text-[#1877F2]' : 'bg-white border-gray-200 text-gray-500'}`}>
+                                Facebook
+                            </button>
+                            <button onClick={() => setSocialPlatform('twitter')} className={`flex-1 py-2.5 rounded-xl border flex items-center justify-center gap-2 ${socialPlatform === 'twitter' ? 'bg-[#1DA1F2]/10 border-[#1DA1F2] text-[#1DA1F2]' : 'bg-white border-gray-200 text-gray-500'}`}>
+                                X / Twitter
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-[12px] font-bold text-[#5A5A6A] mb-1.5 ml-1">Username / Handle <span className="text-[#7A96D4]">*</span></label>
+                        <div className="flex items-center bg-[#F8F9FC] border border-[#A4B8E7]/30 rounded-[16px] h-[52px] px-4 focus-within:border-[#7A96D4]">
+                            <span className="text-[#7A96D4] font-bold mr-2 text-[16px]">@</span>
+                            <input
+                                className="flex-1 h-full text-[15px] text-[#1A1A1A] placeholder-[#9B9BAA] outline-none bg-transparent"
+                                value={socialUsername}
+                                onChange={e => setSocialUsername(e.target.value)}
+                                placeholder="their_username"
+                            />
+                        </div>
+                    </div>
+                </>
+            );
         }
     };
 
@@ -441,7 +489,7 @@ export default function Confession() {
                                             className={`text-left relative rounded-3xl overflow-hidden transition-all duration-300 ${selected ? 'ring-4 ring-[#A4B8E7]/50 scale-[0.98]' : ''}`}
                                         >
                                             <div className="relative aspect-square">
-                                                <img src={match.profilePhoto} className="w-full h-full object-cover blur-[8px]" alt="match" />
+                                                <img src={match.profilePhoto} className="w-full h-full object-cover blur-[2px]" alt="match" />
                                                 <div className="absolute inset-0 bg-white/20" />
                                                 
                                                 {/* Confidence Badge */}

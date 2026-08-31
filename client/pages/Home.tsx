@@ -70,8 +70,7 @@ export default function Home() {
         'coming_soon'
       );
     } else if (type === 'social') {
-      // Mock navigation
-      showAlert('Coming Soon!', 'Social Confession is coming soon!');
+      navigate('/confess', { state: { initialTab: 'social' } });
     } else {
       navigate('/confess', { state: { initialTab: type } });
     }
@@ -97,7 +96,7 @@ export default function Home() {
           <h1 className="text-[32px] text-[#2A2A2A] leading-none" style={{ fontFamily: 'Novaklasse, sans-serif', letterSpacing: '1px' }}>metll</h1>
 
           <div className="flex flex-row items-center gap-3">
-            <button className="flex items-center bg-[#F5F5F5] px-3 py-1.5 rounded-full shadow-sm active:scale-95 transition-transform">
+            <button onClick={() => navigate('/referral')} className="flex items-center bg-[#F5F5F5] px-3 py-1.5 rounded-full shadow-sm active:scale-95 transition-transform">
               <motion.img 
                 src="/mascot/mascot_magnet.png" 
                 alt="magnet" 
@@ -114,7 +113,7 @@ export default function Home() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <AmbassadorBanner onPress={() => {}} />
+        <AmbassadorBanner onPress={() => navigate('/referral')} />
 
         {/* Poster Banner */}
         <div className="px-4 mb-8">
@@ -226,7 +225,7 @@ export default function Home() {
 
         {/* Refer and Get Reward Card */}
         <div className="px-4 mt-6 mb-6">
-          <button className="w-full text-left rounded-3xl overflow-hidden relative shadow-xl active:scale-[0.98] transition-transform border border-[#3F3F46]">
+          <button onClick={() => navigate('/referral')} className="w-full text-left rounded-3xl overflow-hidden relative shadow-xl active:scale-[0.98] transition-transform border border-[#3F3F46]">
             <img src="/refer_couple_blue_bg.png" alt="Refer" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/60" />
             <div className="relative z-10 p-6 flex flex-row items-center">

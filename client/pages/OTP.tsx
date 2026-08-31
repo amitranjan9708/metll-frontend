@@ -112,7 +112,7 @@ export default function OTP() {
         {/* Header */}
         <div className="flex flex-col items-center mb-12 text-center">
           <img 
-            src="https://raw.githubusercontent.com/indianguy123/metll-backend/main/metll-app-android/assets/mascot/mascot_thinking.png" 
+            src="/mascot/mascot_thinking.png" 
             alt="Mascot" 
             className="w-[90px] h-[90px] object-contain mb-3"
           />

@@ -52,28 +52,28 @@ export default function Profile() {
       title: 'Dates',
       subtitle: 'See your upcoming connections',
       iconBg: '#4A4A4A',
-      onPress: () => navigate('/date'),
+      onPress: () => navigate('/dates'),
     },
     {
       icon: Mail,
       title: 'My Confessions',
       subtitle: 'View and manage your confessions',
       iconBg: '#4A4A4A',
-      onPress: () => navigate('/matches'), // Will add proper route later
+      onPress: () => navigate('/my-confessions'),
     },
     {
       icon: User,
       title: 'Edit Profile',
       subtitle: 'Update your photos and info',
       iconBg: '#4A4A4A',
-      onPress: () => navigate('/profile'),
+      onPress: () => navigate('/edit-profile'),
     },
     {
       icon: Ribbon,
       title: 'Ambassador Program',
       subtitle: 'Free until Oct 24 — invite your crush',
       iconBg: '#4A4A4A',
-      onPress: () => alert('Ambassador program coming soon on Web'),
+      onPress: () => navigate('/ambassador'),
     },
     {
       icon: Gift,
@@ -87,14 +87,14 @@ export default function Profile() {
       title: 'Privacy & Security',
       subtitle: 'Manage your account safety',
       iconBg: '#4A4A4A',
-      onPress: () => alert('Privacy & Security coming soon'),
+      onPress: () => navigate('/privacy-security'),
     },
     {
       icon: HelpCircle,
       title: 'Help Center',
       subtitle: 'Get help with your account',
       iconBg: '#4A4A4A',
-      onPress: () => alert('Help Center coming soon'),
+      onPress: () => navigate('/help-center'),
     },
     {
       icon: FileText,
@@ -170,7 +170,7 @@ export default function Profile() {
           </div>
 
           <div 
-            onClick={() => navigate('/matches')}
+            onClick={() => navigate('/my-confessions')}
             className="flex-1 bg-white rounded-[20px] p-4 flex flex-col items-center border border-black/5 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
           >
             <div className="w-10 h-10 rounded-full bg-[#4A4A4A] flex items-center justify-center mb-2">
