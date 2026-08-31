@@ -18,8 +18,14 @@ import {
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(user?.isOnboarded ? "/home" : "/onboarding");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const [authMode, setAuthMode] = useState<"LOGIN" | "SIGNUP">("LOGIN");
   const [email, setEmail] = useState("");
