@@ -184,12 +184,22 @@ export default function Referral() {
                     <div className="relative mb-4 flex items-center justify-center">
                         <div className="absolute w-[140px] h-[140px] rounded-full bg-[#A4B8E7]/35 shadow-[0_8px_20px_rgba(139,163,219,0.4)] animate-pulse"></div>
                         <div className="w-[140px] h-[140px] rounded-full bg-white/95 border-2 border-white/90 shadow-[0_6px_12px_rgba(164,184,231,0.18)] flex items-center justify-center overflow-hidden z-10 relative">
-                            <img
-                                src="/mascot/mascot_magnet_anim.webp"
-                                alt="Mascot Magnet"
-                                className="w-[135px] h-[135px] object-contain"
-                                style={{ willChange: 'contents' }}
-                            />
+                            <video
+                                ref={magnetVideoRef}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-[135px] h-[135px] object-contain pointer-events-none"
+                            >
+                                <source src="/mascot/mascot_magnet_video.webm" type="video/webm" />
+                                <source src="/mascot/mascot_magnet_video.mp4" type="video/mp4" />
+                                <img
+                                    src="/mascot/mascot_magnet.png"
+                                    alt="Mascot Magnet"
+                                    className="w-[135px] h-[135px] object-contain"
+                                />
+                            </video>
                         </div>
                     </div>
                     <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-2 tracking-tight">Earn Magnets</h2>
