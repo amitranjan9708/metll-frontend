@@ -50,6 +50,7 @@ export default function PhotoUpload() {
     try {
       const result = await authApi.uploadVerificationVideo(file);
       if (result.success) {
+        updateUser({ isOnboarded: true, isVerified: true });
         toast({
           title: "Success! 🎉",
           description: "Your profile photo and video have been uploaded successfully. You can now explore the app!",
@@ -65,8 +66,14 @@ export default function PhotoUpload() {
     }
   };
 
-  const handleSkipVideo = () => {
+  const handleSkipVideo = async () => {
     if (window.confirm("You can always verify your profile later. Verified profiles get more matches! Skip for now?")) {
+      try {
+        await userApi.updateProfile({ isOnboarded: true });
+        updateUser({ isOnboarded: true });
+      } catch (e) {
+        console.error(e);
+      }
       navigate("/home");
     }
   };

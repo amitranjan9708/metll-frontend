@@ -47,3 +47,13 @@ export function getApiUrl(endpoint: string): string {
   return `${API_BASE_URL}${cleanEndpoint}`;
 }
 
+/**
+ * Get authentication headers with the Bearer token
+ */
+export function getAuthHeaders() {
+  const token = localStorage.getItem("authToken");
+  return {
+    "Authorization": token ? `Bearer ${token}` : "",
+  };
+}
+

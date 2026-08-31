@@ -40,6 +40,7 @@ import HelpCenter from "./pages/HelpCenter";
 import Referral from "./pages/Referral";
 import Ambassador from "./pages/Ambassador";
 import MyConfessions from "./pages/MyConfessions";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 const GOOGLE_CLIENT_ID = "557642332261-s9v6dr4jsus02c73mu5qk32204fg0g1j.apps.googleusercontent.com";
@@ -90,6 +91,7 @@ const App = () => (
                   <Route path="/edit-profile" element={<EditProfile />} />
                   <Route path="/privacy-security" element={<PrivacySecurity />} />
                   <Route path="/help-center" element={<HelpCenter />} />
+                  <Route path="/chat/:matchId" element={<Chat />} />
                   
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

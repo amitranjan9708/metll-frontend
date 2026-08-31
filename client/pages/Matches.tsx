@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { swipeApi } from "../lib/swipeApi";
 import { MessageCircle, Heart, ChevronRight, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function Matches() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"matches" | "likes">("matches");
   const [matches, setMatches] = useState<any[]>([]);
   const [likers, setLikers] = useState<any[]>([]);
@@ -31,11 +33,8 @@ export default function Matches() {
     }
   };
 
-  const handleMatchClick = (name: string) => {
-    toast({
-      title: "Chat Coming Soon",
-      description: `Messaging with ${name} will be available in the next update!`,
-    });
+  const handleMatchClick = (id: number | string) => {
+    navigate(`/chat/${id}`);
   };
 
   const handleLikeBack = async (id: string, name: string) => {
@@ -89,7 +88,7 @@ export default function Matches() {
                     key={match.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    onClick={() => handleMatchClick(match.matchedUser.name)}
+                    onClick={() => handleMatchClick(match.id)}
                     className="bg-white p-4 rounded-2xl flex items-center gap-4 border border-gray-100 shadow-sm cursor-pointer hover:shadow-md active:scale-[0.98] transition-all"
                   >
                     <div className="relative">
@@ -162,7 +161,6 @@ export default function Matches() {
   );
 }
 
-import { useNavigate } from "react-router-dom";
 
 function EmptyState({ type }: { type: "matches" | "likes" }) {
   const navigate = useNavigate();
