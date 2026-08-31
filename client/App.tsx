@@ -55,7 +55,6 @@ const App = () => (
                 <Toaster />
                 <Sonner />
               <BrowserRouter>
-                <PlatformGate>
                 <Routes>
                   {/* Public Auth Routes */}
                   <Route path="/register" element={<Register />} />
@@ -96,7 +95,6 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                </PlatformGate>
               </BrowserRouter>
               </AuthProvider>
             </BrowserGate>
